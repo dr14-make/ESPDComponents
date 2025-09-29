@@ -65,7 +65,6 @@
   push!(__systems, @named road_data = DyadExampleComponents.RoadData())
   push!(__systems, @named road = DyadExampleComponents.SimplePosition())
   push!(__systems, @named force = TranslationalComponents.Force())
-  push!(__systems, @named pid = BlockComponents.LimPID(k=Kp, Ti=Ti, Td=Td))
   push!(__systems, @named set_point = BlockComponents.Constant(k=1.5))
   push!(__systems, @named seat_pos = TranslationalComponents.PositionSensor())
 
@@ -79,17 +78,12 @@
   __assertions = []
 
   ### Equations
-  push!(__eqs, pid.u_ff ~ 0)
-  push!(__eqs, AnalysisPoint() ~ AnalysisPoint(pid.y, :u, [force.f]))
-  push!(__eqs, AnalysisPoint() ~ AnalysisPoint(seat_pos.s, :y, [pid.u_m]))
   push!(__eqs, connect(road_data.y, road.s))
   push!(__eqs, connect(wheel.flange_sd, road.flange))
   push!(__eqs, connect(car_and_suspension.flange_sd, wheel.flange_m))
   push!(__eqs, connect(car_and_suspension.flange_m, seat.flange_sd, force.flange_a))
   push!(__eqs, connect(seat.flange_m, force.flange_b, seat_pos.flange))
-  push!(__eqs, connect(seat_pos.s, pid.u_m))
-  push!(__eqs, connect(set_point.y, pid.u_s))
-  push!(__eqs, connect(pid.y, force.f))
+  push!(__eqs, connect(set_point.y, force.f))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)
@@ -260,34 +254,7 @@ Base.show(io::IO, a::MIME"image/svg+xml", t::typeof(ActiveSuspension)) = print(i
 <g transform="translate(0 -350) scale(0.1 0.1) rotate(90)" transform-origin="center center"><svg baseProfile="full" height="210" version="1.1" viewBox="0 0 210 210" width="210" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><polygon fill="rgb(0,0,127)" fill-opacity="1" points="5.0,5.0 205.0,105.0 5.0,205.0" stroke="rgb(0,0,127)" stroke-width="0.25mm" /><defs /></svg></g>
     <text x="500" y="1100" transform="rotate(180, 0, 600)" fill="black" font-size="200" dominant-baseline="central" text-anchor="middle">force</text>
     </svg></g>
-<g filter="url(#drop-shadow)" transform="translate(30 -120) scale(0.1 -0.1) rotate(0)" transform-origin="center center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000"
-    overflow="visible" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
-    <style>
-    text {
-      transform-origin: center center;
-    }
-    </style><g transform="translate(0 0) scale(1.0) rotate(0)" transform-origin="center center"><svg xmlns="http://www.w3.org/2000/svg" id="a" viewBox="0 0 1000 1000">
-  <defs>
-    <style>
-      .b{stroke:#8f8f8f;stroke-linejoin:round;stroke-width:6px;fill:none}.d{fill:#8f8f8f;stroke-width:0}
-    </style>
-  </defs>
-  <path fill="#fff" stroke-width="0" d="M4 4h992v992H4z"/>
-  <path fill="#84bfed" stroke-width="0" d="M992 8v984H8V8zm8-8H0v1000h1000z"/>
-  <path d="M198.62 250.73v602.53" class="b"/>
-  <path d="m181.19 262.62 17.43-65.04 17.44 65.04z" class="d"/>
-  <path d="M752.71 800.31H150.18" class="b"/>
-  <path d="m740.82 782.88 65.05 17.43-65.05 17.43z" class="d"/>
-  <path fill="none" stroke="#5757db" stroke-miterlimit="10" stroke-width="8" d="M199.14 299.27s-3.6 505.26-.51 502.17V604.9l455.99-371.84h112.39"/>
-</svg>
-</g>
-<g transform="translate(-500 0) scale(0.1 0.1) rotate(0)" transform-origin="center center"><svg baseProfile="full" height="210" version="1.1" viewBox="0 0 210 210" width="210" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><polygon fill="rgb(0,0,127)" fill-opacity="1" points="5.0,5.0 205.0,105.0 5.0,205.0" stroke="rgb(0,0,127)" stroke-width="0.25mm" /><defs /></svg></g>
-<g transform="translate(-200 500) scale(0.1 0.1) rotate(-90)" transform-origin="center center"><svg baseProfile="full" height="210" version="1.1" viewBox="0 0 210 210" width="210" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><polygon fill="rgb(0,0,127)" fill-opacity="1" points="5.0,5.0 205.0,105.0 5.0,205.0" stroke="rgb(0,0,127)" stroke-width="0.25mm" /><defs /></svg></g>
-<g transform="translate(500 0) scale(0.1 0.1) rotate(0)" transform-origin="center center"><svg baseProfile="full" height="210" version="1.1" viewBox="0 0 210 210" width="210" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><polygon fill="rgb(220,220,247)" fill-opacity="1" points="5.0,5.0 205.0,105.0 5.0,205.0" stroke="rgb(0,0,127)" stroke-width="0.25mm" /><defs /></svg></g>
-<g transform="translate(200 500) scale(0.1 0.1) rotate(-90)" transform-origin="center center"><svg baseProfile="full" height="210" version="1.1" viewBox="0 0 210 210" width="210" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><polygon fill="rgb(0,0,127)" fill-opacity="1" points="5.0,5.0 205.0,105.0 5.0,205.0" stroke="rgb(0,0,127)" stroke-width="0.25mm" /><defs /></svg></g>
-    <text x="500" y="1100" transform="rotate(0, 0, 600)" fill="black" font-size="200" dominant-baseline="central" text-anchor="middle">pid</text>
-    </svg></g>
-<g filter="url(#drop-shadow)" transform="translate(-140 -120) scale(0.1 0.1) rotate(0)" transform-origin="center center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000"
+<g filter="url(#drop-shadow)" transform="translate(-320 -120) scale(0.1 0.1) rotate(0)" transform-origin="center center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000"
     overflow="visible" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
     <style>
     text {
@@ -340,9 +307,7 @@ Base.show(io::IO, a::MIME"image/svg+xml", t::typeof(ActiveSuspension)) = print(i
     <path d="M 880 310 L 880 330 " stroke-stroke="4" fill="transparent" stroke="#2a661f" vector-effect="non-scaling-stroke"/>
     <path d="M 880 310 L 690 310 L 690 330 " stroke-stroke="4" fill="transparent" stroke="#2a661f" vector-effect="non-scaling-stroke"/>
     <path d="M 880 310 L 880 210 L 790 210 " stroke-stroke="4" fill="transparent" stroke="#2a661f" vector-effect="non-scaling-stroke"/>
-    <path d="M 510 330 L 510 210 L 690 210 " stroke-stroke="4" fill="transparent" stroke="blue" vector-effect="non-scaling-stroke"/>
-    <path d="M 410 380 L 480 380 " stroke-stroke="4" fill="transparent" stroke="blue" vector-effect="non-scaling-stroke"/>
-    <path d="M 580 380 L 655 380 " stroke-stroke="4" fill="transparent" stroke="blue" vector-effect="non-scaling-stroke"/>
+    <path d="M 230 380 L 655 380 " stroke-stroke="4" fill="transparent" stroke="blue" vector-effect="non-scaling-stroke"/>
     <circle cx="880" cy="450" r="5" fill="#2a661f" />
     <circle cx="880" cy="310" r="5" fill="#2a661f" />
       </svg></div></div>""")

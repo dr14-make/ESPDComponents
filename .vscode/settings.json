@@ -1,5 +1,4 @@
 {
   "julia.NumThreads": "auto",
-  "files.autoSave": "off",
-  "julia.environmentPath": "c:\\Users\\luukm\\Desktop\\CTU PRAGUE\\Electronic Systems in Modern Vehicles\\git\\ESPDComponents"
+  "files.autoSave": "off"
 }

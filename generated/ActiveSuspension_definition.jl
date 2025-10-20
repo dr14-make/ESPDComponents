@@ -5,7 +5,9 @@
 
 
 @doc Markdown.doc"""
-   ActiveSuspension(; name, wheel_mass, wheel_stiffness, wheel_damping, car_mass, suspension_stiffness, suspension_damping, human_and_seat_mass, seat_stiffness, seat_damping, wheel_initial_position, suspension_initial_position, seat_initial_position, Kp, Ti, Td)
+   ActiveSuspension(; name, wheel_mass, wheel_stiffness, wheel_damping, car_mass, suspension_stiffness, suspension_damping, human_and_seat_mass, seat_stiffness, seat_damping, wheel_initial_position, suspension_initial_position, seat_initial_position, Kp, Ti, Td, Nd, On)
+
+This model was copied from the DyadExampleComponents
 
 ## Parameters: 
 
@@ -26,8 +28,10 @@
 | `Kp`         |                          | --  |   20 |
 | `Ti`         |                          | --  |   5 |
 | `Td`         |                          | --  |   1 |
+| `Nd`         |                          | --  |   10 |
+| `On`         |                          | --  |   false |
 """
-@component function ActiveSuspension(; name, wheel_mass=25, wheel_stiffness=100, wheel_damping=10000, car_mass=1000, suspension_stiffness=10000, suspension_damping=10, human_and_seat_mass=100, seat_stiffness=1000, seat_damping=1, wheel_initial_position=0.5, suspension_initial_position=1, seat_initial_position=1.5, Kp=20, Ti=5, Td=1)
+@component function ActiveSuspension(; name, wheel_mass=25, wheel_stiffness=100, wheel_damping=10000, car_mass=1000, suspension_stiffness=10000, suspension_damping=10, human_and_seat_mass=100, seat_stiffness=1000, seat_damping=1, wheel_initial_position=0.5, suspension_initial_position=1, seat_initial_position=1.5, Kp=20, Ti=5, Td=1, Nd=10, On=false)
   __params = Any[]
   __vars = Any[]
   __systems = System[]
@@ -52,6 +56,8 @@
   append!(__params, @parameters (Kp::Real = Kp))
   append!(__params, @parameters (Ti::Real = Ti))
   append!(__params, @parameters (Td::Real = Td))
+  append!(__params, @parameters (Nd::Real = Nd))
+  append!(__params, @parameters (On::Bool = On))
 
   ### Variables
 
@@ -65,13 +71,14 @@
   push!(__systems, @named road_data = DyadExampleComponents.RoadData())
   push!(__systems, @named road = DyadExampleComponents.SimplePosition())
   push!(__systems, @named force = TranslationalComponents.Force())
-  push!(__systems, @named set_point = BlockComponents.Constant(k=0))
+  push!(__systems, @named set_point = BlockComponents.Constant(k=1.5))
   push!(__systems, @named seat_pos = TranslationalComponents.PositionSensor())
-  push!(__systems, @named gain = BlockComponents.Gain(k=1))
-  push!(__systems, @named derivative = BlockComponents.Derivative())
-  push!(__systems, @named integrator = BlockComponents.Integrator())
+  push!(__systems, @named gain = BlockComponents.Gain(k=Kp))
+  push!(__systems, @named derivative = BlockComponents.Derivative(k=Td, T=max(Td / Nd, 1e-14)))
+  push!(__systems, @named integrator = BlockComponents.Integrator(k=1 / Ti))
   push!(__systems, @named add = BlockComponents.Add(k1=-1))
   push!(__systems, @named add3 = BlockComponents.Add3())
+  push!(__systems, @named pid_on = BlockComponents.Gain(k=ifelse(On, 1, 0)))
 
   ### Guesses
 
@@ -90,11 +97,12 @@
   push!(__eqs, connect(seat.flange_m, force.flange_b, seat_pos.flange))
   push!(__eqs, connect(seat_pos.s, add.u1))
   push!(__eqs, connect(set_point.y, add.u2))
-  push!(__eqs, connect(gain.y, add3.u1))
-  push!(__eqs, connect(derivative.y, add3.u2))
+  push!(__eqs, connect(derivative.y, add3.u1))
+  push!(__eqs, connect(gain.y, add3.u2))
   push!(__eqs, connect(integrator.y, add3.u3))
   push!(__eqs, connect(add.y, gain.u, derivative.u, integrator.u))
-  push!(__eqs, connect(add3.y, force.f))
+  push!(__eqs, connect(pid_on.y, force.f))
+  push!(__eqs, connect(add3.y, pid_on.u))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

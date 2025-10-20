@@ -1,7 +1,12 @@
 # short PIDTest analysis description
 analysis PIDTest
-  extends TransientAnalysis(stop = 15)
-  model = ActiveSuspension()
+  extends TransientAnalysis(alg = "auto", abstol = 10m, reltol = 1m, start = 0, stop = 10)
+  model = ActiveSuspension(Kp = Kp, Td = Td, Ti = Ti, Nd = Nd, On = On)
+  parameter Kp::Real = 20
+  parameter Ti::Real = 5
+  parameter Td::Real = 1
+  parameter Nd::Real = 10
+  parameter On::Boolean = false
 metadata {
   "Dyad": {
     "experiments": {},

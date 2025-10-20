@@ -12,5 +12,4 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 
 
 
-include("Module_test.jl")
 include("TestComponent_test.jl")

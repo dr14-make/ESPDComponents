@@ -4,8 +4,10 @@
 ### If you edit this code it is likely to get overwritten.
 ### Instead, update the Dyad source code and regenerate this file
 
+using ModelingToolkit
+import Markdown
+using OrdinaryDiffEqDefault
+using RuntimeGeneratedFunctions
+RuntimeGeneratedFunctions.init(@__MODULE__)
 
-include("ActiveSuspension_experiment.jl")
-include("DerivativeTest_experiment.jl")
-include("Hello_experiment.jl")
-include("SimpleCar_experiment.jl")
+

@@ -1,0 +1,39 @@
+# short DerivativeTest component description
+component DerivativeTest
+  sine = BlockComponents.Sine(frequency = 10, amplitude = 1) [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 30, "y1": 370, "x2": 130, "y2": 470, "rot": 0}
+      }
+    }
+  }]
+  derivative = BlockComponents.Derivative(T = T) [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 360, "y1": 370, "x2": 460, "y2": 470, "rot": 0}
+      }
+    }
+  }]
+  parameter T::Real = 0.01
+relations
+  connect(sine.y, derivative.u) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}]}}]
+metadata {
+  "Dyad": {
+    "experiments": {},
+    "tests": {},
+    "icons": {"default": "dyad://ESPDComponents/DerivativeTest"},
+    "labels": [
+      {
+        "label": "$(instance)",
+        "x": 500,
+        "y": 1100,
+        "rot": 0,
+        "layer": "icon",
+        "attrs": {}
+      }
+    ],
+    "path": {},
+    "doc": {"behavior": true}
+  }
+}
+end

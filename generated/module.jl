@@ -9,4 +9,6 @@ include("types.jl")
 include("precompilation.jl")
 # submodules:
 include("Lectures/module.jl")
+include("Manifest/module.jl")
+include("Project/module.jl")
 include("TestModule/module.jl")

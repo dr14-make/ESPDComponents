@@ -5,11 +5,17 @@
 
 
 @doc Markdown.doc"""
-   Module(; name)
+   DerivativeTest(; name, T)
 
-short Module component description
+short DerivativeTest component description
+
+## Parameters: 
+
+| Name         | Description                         | Units  |   Default value |
+| ------------ | ----------------------------------- | ------ | --------------- |
+| `T`         |                          | --  |   0.01 |
 """
-@component function Module(; name)
+@component function DerivativeTest(; name, T=0.01)
   __params = Any[]
   __vars = Any[]
   __systems = System[]
@@ -19,6 +25,7 @@ short Module component description
   __eqs = Equation[]
 
   ### Symbolic Parameters
+  append!(__params, @parameters (T::Real = T))
 
   ### Variables
 
@@ -26,6 +33,8 @@ short Module component description
   __constants = Any[]
 
   ### Components
+  push!(__systems, @named sine = BlockComponents.Sine(frequency=10, amplitude=1))
+  push!(__systems, @named derivative = BlockComponents.Derivative(T=T))
 
   ### Guesses
 
@@ -37,8 +46,9 @@ short Module component description
   __assertions = []
 
   ### Equations
+  push!(__eqs, connect(sine.y, derivative.u))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)
 end
-export Module
+export DerivativeTest

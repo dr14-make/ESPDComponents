@@ -1,3 +1,4 @@
+# This model was copied from the DyadExampleComponents
 component ActiveSuspension
   wheel = DyadExampleComponents.MassSpringDamper(m = wheel_mass, d = wheel_damping, c = wheel_stiffness, g = -10, theta = pi / 2, s0 = wheel_initial_position) [{
     "Dyad": {
@@ -41,7 +42,7 @@ component ActiveSuspension
       }
     }
   }]
-  set_point = BlockComponents.Constant(k = 0) [{
+  set_point = BlockComponents.Constant(k = 1.5) [{
     "Dyad": {
       "placement": {
         "diagram": {"iconName": "default", "x1": 200, "y1": 330, "x2": 300, "y2": 430, "rot": 0}
@@ -55,24 +56,27 @@ component ActiveSuspension
       }
     }
   }]
-  gain = BlockComponents.Gain(k = 1) [{
+  gain = BlockComponents.Gain(k = Kp) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 40, "y1": 450, "x2": 140, "y2": 550, "rot": 0}
+        "icon": {"iconName": "input", "x1": 300, "y1": 100, "x2": 400, "y2": 200, "rot": 0},
+        "diagram": {"iconName": "input", "x1": 10, "y1": 640, "x2": 110, "y2": 740, "rot": 0}
       }
     }
   }]
-  derivative = BlockComponents.Derivative() [{
+  derivative = BlockComponents.Derivative(k = Td, T = max(Td / Nd, 1e-14)) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 40, "y1": 580, "x2": 140, "y2": 680, "rot": 0}
+        "icon": {"iconName": "input", "x1": 300, "y1": 300, "x2": 400, "y2": 400, "rot": 0},
+        "diagram": {"iconName": "input", "x1": 10, "y1": 500, "x2": 110, "y2": 600, "rot": 0}
       }
     }
   }]
-  integrator = BlockComponents.Integrator() [{
+  integrator = BlockComponents.Integrator(k = 1 / Ti) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 40, "y1": 730, "x2": 140, "y2": 830, "rot": 0}
+        "icon": {"iconName": "input", "x1": 300, "y1": 500, "x2": 400, "y2": 600, "rot": 0},
+        "diagram": {"iconName": "input", "x1": 10, "y1": 770, "x2": 110, "y2": 870, "rot": 0}
       }
     }
   }]
@@ -86,7 +90,14 @@ component ActiveSuspension
   add3 = BlockComponents.Add3() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 270, "y1": 580, "x2": 370, "y2": 680, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 270, "y1": 640, "x2": 370, "y2": 740, "rot": 0}
+      }
+    }
+  }]
+  pid_on = BlockComponents.Gain(k = On ? 1 : 0) [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 440, "y1": 330, "x2": 540, "y2": 430, "rot": 0}
       }
     }
   }]
@@ -105,6 +116,8 @@ component ActiveSuspension
   parameter Kp::Real = 20
   parameter Ti::Real = 5
   parameter Td::Real = 1
+  parameter Nd::Real = 10
+  parameter On::Boolean = false
 relations
   connect(road.s, road_data.y) [{"Dyad": {"edges": [{"S": 2, "M": [], "E": 1}], "junctions": []}}]
   connect(wheel.flange_sd, road.flange) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 880, "y": 780}]}]}}]
@@ -133,32 +146,27 @@ relations
   connect(set_point.y, add.u2) [{
     "Dyad": {"edges": [{"S": 1, "M": [{"x": 320, "y": 380}, {"x": 320, "y": 270}], "E": 2}]}
   }]
-  connect(gain.y, add3.u1) [{
-    "Dyad": {"edges": [{"S": 1, "M": [{"x": 205, "y": 500}, {"x": 205, "y": 600}], "E": 2}]}
+  connect(derivative.y, add3.u1) [{
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 190, "y": 550}, {"x": 190, "y": 660}], "E": 2}]}
   }]
-  connect(add3.u2, derivative.y) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(gain.y, add3.u2) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}]}}]
   connect(integrator.y, add3.u3) [{
-    "Dyad": {"edges": [{"S": 1, "M": [{"x": 205, "y": 780}, {"x": 205, "y": 660}], "E": 2}]}
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 190, "y": 820}, {"x": 190, "y": 720}], "E": 2}]}
   }]
   connect(add.y, gain.u, derivative.u, integrator.u) [{
     "Dyad": {
       "edges": [
-        {
-          "S": 1,
-          "M": [{"x": -280, "y": 240}, {"x": -280, "y": 460}, {"x": -80, "y": 460}],
-          "E": -1
-        },
-        {"S": -1, "M": [], "E": 2},
-        {"S": 3, "M": [{"x": -80, "y": 630}], "E": -1},
-        {"S": 4, "M": [{"x": -80, "y": 780}], "E": -1}
+        {"S": 1, "M": [{"x": -120, "y": 240}], "E": -1},
+        {"S": -1, "M": [{"x": -120, "y": 690}], "E": 2},
+        {"S": 3, "M": [{"x": -120, "y": 550}], "E": -1},
+        {"S": 4, "M": [{"x": -120, "y": 820}], "E": -1}
       ],
-      "junctions": [{"x": -80, "y": 500}]
+      "junctions": [{"x": -120, "y": 690}]
     }
   }]
-  connect(add3.y, force.f) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 512.5, "y": 630}, {"x": 512.5, "y": 380}], "E": 2}]
-    }
+  connect(pid_on.y, force.f) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(add3.y, pid_on.u) [{
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 405, "y": 690}, {"x": 405, "y": 380}], "E": 2}]}
   }]
 metadata {
   "Dyad": {

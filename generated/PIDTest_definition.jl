@@ -10,17 +10,23 @@ using DyadInterface
   name::Symbol = :PIDTest
   var"alg"::String = "auto"
   var"start"::Float64 = 0
-  var"stop"::Float64 = 15
-  var"abstol"::Float64 = 0.000001
-  var"reltol"::Float64 = 0.000001
+  var"stop"::Float64 = 10
+  var"abstol"::Float64 = 0.01
+  var"reltol"::Float64 = 0.001
   var"saveat"::Float64 = 0
   var"dtmax"::Float64 = 0
   var"IfLifting"::Bool = false
+  var"Kp"::Float64 = 20
+  var"Ti"::Float64 = 5
+  var"Td"::Float64 = 1
+  var"Nd"::Float64 = 10
+  var"On"::Bool = false
+  # This model was copied from the DyadExampleComponents
   var"model"::Union{Nothing, System} = ESPDComponents.ActiveSuspension(; name=:ActiveSuspension)
 end
 
 function DyadInterface.run_analysis(spec::PIDTestSpec)
-  spec.model = DyadInterface.update_model(spec.model, (; ))
+  spec.model = DyadInterface.update_model(spec.model, (; var"Kp"=spec.var"Kp", var"Td"=spec.var"Td", var"Ti"=spec.var"Ti", var"Nd"=spec.var"Nd", var"On"=spec.var"On"))
   base_spec = TransientAnalysisSpec(;
     name=:TransientAnalysis, alg=spec.alg, start=spec.start, stop=spec.stop, abstol=spec.abstol, reltol=spec.reltol, saveat=spec.saveat, dtmax=spec.dtmax, IfLifting=spec.IfLifting, model=spec.model
   )

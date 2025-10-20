@@ -1,10 +1,13 @@
-# short Module component description
-component Module
+# short DerivativeTestAnalysis analysis description
+analysis DerivativeTestAnalysis
+  extends TransientAnalysis
+  model = DerivativeTest(T = T)
+  parameter T::Real = 0.1
 metadata {
   "Dyad": {
     "experiments": {},
     "tests": {},
-    "icons": {"default": "dyad://ESPDComponents/Module"},
+    "icons": {"default": "dyad://ESPDComponents/DerivativeTestAnalysis"},
     "labels": [
       {
         "label": "$(instance)",

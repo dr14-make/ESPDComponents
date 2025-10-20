@@ -4,8 +4,4 @@
 ### If you edit this code it is likely to get overwritten.
 ### Instead, update the Dyad source code and regenerate this file
 
-
-include("ActiveSuspension_experiment.jl")
-include("DerivativeTest_experiment.jl")
-include("Hello_experiment.jl")
-include("SimpleCar_experiment.jl")
+using ModelingToolkit

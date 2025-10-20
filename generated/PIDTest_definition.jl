@@ -10,13 +10,13 @@ using DyadInterface
   name::Symbol = :PIDTest
   var"alg"::String = "auto"
   var"start"::Float64 = 0
-  var"stop"::Float64 = 10
+  var"stop"::Float64 = 15
   var"abstol"::Float64 = 0.000001
   var"reltol"::Float64 = 0.000001
   var"saveat"::Float64 = 0
   var"dtmax"::Float64 = 0
   var"IfLifting"::Bool = false
-  var"model"::Union{Nothing, System} = ESPDComponents.Lectures.ActiveSuspension(; name=:ActiveSuspension)
+  var"model"::Union{Nothing, System} = ESPDComponents.ActiveSuspension(; name=:ActiveSuspension)
 end
 
 function DyadInterface.run_analysis(spec::PIDTestSpec)

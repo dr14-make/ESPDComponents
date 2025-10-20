@@ -57,3 +57,6 @@ This connector represents a rotational spline with angle and torque as the poten
   end
   return System(Equation[], t, vars, []; name)
 end
+
+include("Module_definition.jl")
+include("TestComponent_definition.jl")

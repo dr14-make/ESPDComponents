@@ -1,12 +1,10 @@
-# short PIDTest analysis description
-analysis PIDTest
-  extends TransientAnalysis(stop = 10)
-  model = ActiveSuspension()
+# short Module component description
+component Module
 metadata {
   "Dyad": {
     "experiments": {},
     "tests": {},
-    "icons": {"default": "dyad://ESPDComponents/PIDTest"},
+    "icons": {"default": "dyad://ESPDComponents/Module"},
     "labels": [
       {
         "label": "$(instance)",

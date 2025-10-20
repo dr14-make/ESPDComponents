@@ -38,3 +38,28 @@ can run the provided example models by doing the following:
 
 10. You can plot variations on that simulation using keyword arguments.  For example,
     try `plot(World(stop=20, k=4))`.
+
+## List avaliable results
+
+```julia
+using DyadInterface 
+Dict(string(s) => DyadInterface.artifacts(result, s) for s in DyadInterface.artifacts(result))
+```
+
+## Plot
+
+```
+using Plots
+plot(result)
+```
+
+Docs are [here](https://help.juliahub.com/dyad/dev/manual/advanced/custom_analysis.html#Customizable-Visualizations)
+
+```
+res_meta = AnalysisSolutionMetadata(result)
+println(res_meta.allowed_symbols)
+
+vizdef = PlotlyVisualizationSpec(res_meta.allowed_symbols[[2, 1]], (;), [Attribute("tstart", "start time", 0.0)])
+
+customizable_visualization(result, vizdef)
+```

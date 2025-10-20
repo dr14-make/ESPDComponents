@@ -12,4 +12,5 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 
 
 
+include("ActiveSuspension_test.jl")
 include("Hello_test.jl")

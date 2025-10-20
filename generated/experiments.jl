@@ -5,4 +5,5 @@
 ### Instead, update the Dyad source code and regenerate this file
 
 
+include("ActiveSuspension_experiment.jl")
 include("Hello_experiment.jl")

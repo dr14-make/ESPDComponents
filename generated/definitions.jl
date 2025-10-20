@@ -22,8 +22,8 @@ This connector represents an electrical pin with voltage and current as the pote
 """
 @connector function __Dyad__Pin(; name)
   vars = @variables begin
-    v(t), []
-    i(t), [connect = Flow]
+    (v(t)::Real), []
+    (i(t)::Real), [connect = Flow]
   end
   return System(Equation[], t, vars, []; name)
 end
@@ -32,8 +32,8 @@ This connector represents a thermal node with temperature and heat flow as the p
 """
 @connector function __Dyad__Node(; name)
   vars = @variables begin
-    T(t), []
-    Q(t), [connect = Flow]
+    (T(t)::Real), []
+    (Q(t)::Real), [connect = Flow]
   end
   return System(Equation[], t, vars, []; name)
 end
@@ -42,8 +42,8 @@ This connector represents a mechanical flange with position and force as the pot
 """
 @connector function __Dyad__Flange(; name)
   vars = @variables begin
-    s(t), []
-    f(t), [connect = Flow]
+    (s(t)::Real), []
+    (f(t)::Real), [connect = Flow]
   end
   return System(Equation[], t, vars, []; name)
 end
@@ -52,11 +52,13 @@ This connector represents a rotational spline with angle and torque as the poten
 """
 @connector function __Dyad__Spline(; name)
   vars = @variables begin
-    phi(t), []
-    tau(t), [connect = Flow]
+    (phi(t)::Real), []
+    (tau(t)::Real), [connect = Flow]
   end
   return System(Equation[], t, vars, []; name)
 end
 
+include("ActiveSuspension_definition.jl")
 include("Hello_definition.jl")
 include("World_definition.jl")
+include("PIDTest_definition.jl")

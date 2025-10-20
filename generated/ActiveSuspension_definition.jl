@@ -27,11 +27,11 @@ This model was copied from the DyadExampleComponents
 | `seat_initial_position`         |                          | m  |   1.5 |
 | `Kp`         |                          | --  |   20 |
 | `Ti`         |                          | --  |   5 |
-| `Td`         |                          | --  |   1 |
+| `Td`         |                          | --  |   10 |
 | `Nd`         |                          | --  |   10 |
 | `On`         |                          | --  |   false |
 """
-@component function ActiveSuspension(; name, wheel_mass=25, wheel_stiffness=100, wheel_damping=10000, car_mass=1000, suspension_stiffness=10000, suspension_damping=10, human_and_seat_mass=100, seat_stiffness=1000, seat_damping=1, wheel_initial_position=0.5, suspension_initial_position=1, seat_initial_position=1.5, Kp=20, Ti=5, Td=1, Nd=10, On=false)
+@component function ActiveSuspension(; name, wheel_mass=25, wheel_stiffness=100, wheel_damping=10000, car_mass=1000, suspension_stiffness=10000, suspension_damping=10, human_and_seat_mass=100, seat_stiffness=1000, seat_damping=1, wheel_initial_position=0.5, suspension_initial_position=1, seat_initial_position=1.5, Kp=20, Ti=5, Td=10, Nd=10, On=false)
   __params = Any[]
   __vars = Any[]
   __systems = System[]

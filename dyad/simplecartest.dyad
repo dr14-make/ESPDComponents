@@ -1,0 +1,24 @@
+# short SimpleCarTest analysis description
+analysis SimpleCarTest
+  extends TransientAnalysis
+  model = SimpleCar()
+metadata {
+  "Dyad": {
+    "experiments": {},
+    "tests": {},
+    "icons": {"default": "dyad://ESPDComponents/SimpleCarTest"},
+    "labels": [
+      {
+        "label": "$(instance)",
+        "x": 500,
+        "y": 1100,
+        "rot": 0,
+        "layer": "icon",
+        "attrs": {}
+      }
+    ],
+    "path": {},
+    "doc": {"behavior": true}
+  }
+}
+end

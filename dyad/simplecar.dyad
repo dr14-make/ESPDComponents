@@ -10,7 +10,7 @@ component SimpleCar
   torquesource = RotationalComponents.TorqueSource() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 190, "y1": 430, "x2": 290, "y2": 530, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 160, "y1": 430, "x2": 260, "y2": 530, "rot": 0}
       }
     }
   }]
@@ -21,26 +21,10 @@ component SimpleCar
       }
     }
   }]
-  speedsensor = TranslationalComponents.SpeedSensor() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "default", "x1": 750, "y1": 600, "x2": 850, "y2": 700, "rot": 0}
-      }
-    }
-  }]
   force = TranslationalComponents.Force() [{
     "Dyad": {
       "placement": {
-        "diagram": {
-          "iconName": "default",
-          "x1": 780,
-          "y1": 430,
-          "x2": 880,
-          "y2": 530,
-          "rot": 0,
-          "sw": 0.1,
-          "sh": 0.1
-        }
+        "diagram": {"iconName": "default", "x1": 780, "y1": 430, "x2": 880, "y2": 530, "rot": 0}
       }
     }
   }]
@@ -54,49 +38,45 @@ component SimpleCar
   constant1 = BlockComponents.Constant(k = 100) [{
     "Dyad": {
       "placement": {
-        "diagram": {
-          "iconName": "default",
-          "x1": 660,
-          "y1": 200,
-          "x2": 760,
-          "y2": 300,
-          "rot": 0,
-          "sw": 0.1,
-          "sh": 0.1
-        }
+        "diagram": {"iconName": "default", "x1": 660, "y1": 200, "x2": 760, "y2": 300, "rot": 0}
       }
     }
   }]
-  fixed = RotationalComponents.Fixed() [{
+  inertia = RotationalComponents.Inertia(J = 1) [{
     "Dyad": {
       "placement": {
-        "diagram": {"x1": 290, "x2": 390, "y1": 640, "y2": 740, "sh": 1, "sw": 1, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 280, "y1": 430, "x2": 380, "y2": 530, "rot": 0}
       }
     }
   }]
-  fixed1 = TranslationalComponents.Fixed() [{
+  fixed0 = TranslationalComponents.Fixed() [{
     "Dyad": {
       "placement": {
-        "diagram": {"x1": 1000, "x2": 1100, "y1": 590, "y2": 690, "sh": 1, "sw": 1, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 460, "y1": 870, "x2": 560, "y2": 970, "rot": 0}
       }
     }
   }]
 relations
-  connect(torquesource.spline, idealrollingwheel.spline) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
   connect(idealrollingwheel.flange, mass.flange_a) [{"Dyad": {"edges": [{"S": 1, "E": 2}]}}]
-  connect(mass.flange_b, speedsensor.flange) [{
-    "Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 725, "y": 480}, {"x": 725, "y": 650}]}]}
-  }]
-  connect(constant0.y, torquesource.tau) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(constant0.y, torquesource.tau) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}]}}]
   connect(constant1.y, force.f) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 830, "y": 250}]}]}}]
-  connect(torquesource.support, fixed.spline) [{
-    "Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 240, "y": 585}, {"x": 340, "y": 585}]}]}
-  }]
-  connect(idealrollingwheel.support_r, fixed.spline) [{
-    "Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 425, "y": 585}, {"x": 340, "y": 585}]}]}
-  }]
   connect(force.flange_a, mass.flange_b) [{"Dyad": {"edges": [{"S": 1, "E": 2}]}}]
-  connect(fixed1.flange, force.flange_b) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 1050, "y": 480}]}]}}]
+  connect(fixed0.flange, idealrollingwheel.support_t) [{
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 510, "y": 595}, {"x": 495, "y": 595}], "E": 2}]}
+  }]
+  connect(inertia.spline_b, idealrollingwheel.spline) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(inertia.spline_a, torquesource.spline) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(force.flange_b, fixed0.flange) [{
+    "Dyad": {
+      "edges": [
+        {
+          "S": 1,
+          "M": [{"x": 990, "y": 480}, {"x": 990, "y": 830}, {"x": 510, "y": 830}],
+          "E": 2
+        }
+      ]
+    }
+  }]
 metadata {
   "Dyad": {
     "experiments": {},

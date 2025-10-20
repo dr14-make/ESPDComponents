@@ -115,7 +115,7 @@ component ActiveSuspension
   parameter seat_initial_position::Dyad.Position = 1.5
   parameter Kp::Real = 20
   parameter Ti::Real = 5
-  parameter Td::Real = 1
+  parameter Td::Real = 10
   parameter Nd::Real = 10
   parameter On::Boolean = false
 relations

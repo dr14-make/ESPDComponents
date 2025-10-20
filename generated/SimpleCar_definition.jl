@@ -29,12 +29,11 @@ short SimpleCar component description
   push!(__systems, @named idealrollingwheel = RotationalComponents.IdealRollingWheel(radius=0.14))
   push!(__systems, @named torquesource = RotationalComponents.TorqueSource())
   push!(__systems, @named mass = TranslationalComponents.Mass(L=2, m=100))
-  push!(__systems, @named speedsensor = TranslationalComponents.SpeedSensor())
   push!(__systems, @named force = TranslationalComponents.Force())
   push!(__systems, @named constant0 = BlockComponents.Constant(k=100))
   push!(__systems, @named constant1 = BlockComponents.Constant(k=100))
-  push!(__systems, @named fixed = RotationalComponents.Fixed())
-  push!(__systems, @named fixed1 = TranslationalComponents.Fixed())
+  push!(__systems, @named inertia = RotationalComponents.Inertia(J=1))
+  push!(__systems, @named fixed0 = TranslationalComponents.Fixed())
 
   ### Guesses
 
@@ -46,15 +45,14 @@ short SimpleCar component description
   __assertions = []
 
   ### Equations
-  push!(__eqs, connect(torquesource.spline, idealrollingwheel.spline))
   push!(__eqs, connect(idealrollingwheel.flange, mass.flange_a))
-  push!(__eqs, connect(mass.flange_b, speedsensor.flange))
   push!(__eqs, connect(constant0.y, torquesource.tau))
   push!(__eqs, connect(constant1.y, force.f))
-  push!(__eqs, connect(torquesource.support, fixed.spline))
-  push!(__eqs, connect(idealrollingwheel.support_r, fixed.spline))
   push!(__eqs, connect(force.flange_a, mass.flange_b))
-  push!(__eqs, connect(fixed1.flange, force.flange_b))
+  push!(__eqs, connect(fixed0.flange, idealrollingwheel.support_t))
+  push!(__eqs, connect(inertia.spline_b, idealrollingwheel.spline))
+  push!(__eqs, connect(inertia.spline_a, torquesource.spline))
+  push!(__eqs, connect(force.flange_b, fixed0.flange))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

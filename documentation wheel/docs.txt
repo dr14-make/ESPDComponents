@@ -1,6 +1,8 @@
-hello world
+Objective Wheel: advance the IdealRollingWheel component by means of adding slipping, etc.
 
-hi
+Now the IdealRollingWheel has only pure rolling:
 
-add the slipping to simple wheel
-- so no ideal wheel sim
+  (spline.phi - support_r.phi) * radius = flange.s - support_t.s
+  0 = radius * flange.f + spline.tau
+
+It has a perfect kinematic constraint between angular motion and translational motion and a static force balance.

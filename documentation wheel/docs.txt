@@ -1,8 +1,14 @@
 Objective Wheel: advance the IdealRollingWheel component by means of adding slipping, etc.
 
+https://help.juliahub.com/dyad/dev/stdlib/RotationalComponents/components/IdealRollingWheel.html
+
 Now the IdealRollingWheel has only pure rolling:
 
   (spline.phi - support_r.phi) * radius = flange.s - support_t.s
   0 = radius * flange.f + spline.tau
 
 It has a perfect kinematic constraint between angular motion and translational motion and a static force balance.
+
+https://people.inf.ethz.ch/fcellier/MS/andres_ms.pdf
+
+https://help.juliahub.com/multibody/dev/examples/wheel/

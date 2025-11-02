@@ -15,6 +15,7 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 import BlockComponents
 import DyadExampleComponents
 import DyadInterface
+import ElectricalComponents
 import RotationalComponents
 import TranslationalComponents
 @doc Markdown.doc"""
@@ -60,7 +61,7 @@ end
 
 include("ActiveSuspension_definition.jl")
 include("Hello_definition.jl")
+include("World_definition.jl")
 include("PIDTest_definition.jl")
 include("SimpleCar_definition.jl")
 include("SimpleCarTest_definition.jl")
-include("World_definition.jl")

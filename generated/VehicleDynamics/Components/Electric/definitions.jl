@@ -15,6 +15,7 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 import BlockComponents
 import DyadExampleComponents
 import DyadInterface
+import ElectricalComponents
 import RotationalComponents
 import TranslationalComponents
 @doc Markdown.doc"""

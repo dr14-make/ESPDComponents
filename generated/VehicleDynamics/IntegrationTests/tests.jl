@@ -13,6 +13,6 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 
 
 include("ConventionalPowertrainIntegration_test.jl")
-include("ElectricPowertrainIntegration_test.jl")
 include("ConventionalVehicle_Comparison_test.jl")
+include("ElectricPowertrainIntegration_test.jl")
 include("ElectricVehicle_Comparison_test.jl")

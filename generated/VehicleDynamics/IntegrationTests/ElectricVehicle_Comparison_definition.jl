@@ -63,6 +63,18 @@ end
   __constants = Any[]
 
   ### Components
+  push!(__systems, @named battery = ESPDComponents.VehicleDynamics.Components.Electric.Battery())
+  push!(__systems, @named ground_elec = ElectricalComponents.Ground())
+  push!(__systems, @named motor = ESPDComponents.VehicleDynamics.Components.Electric.ElectricMotor())
+  push!(__systems, @named differential = ESPDComponents.VehicleDynamics.Components.Differential())
+  push!(__systems, @named wheel_left = ESPDComponents.VehicleDynamics.Components.Wheel())
+  push!(__systems, @named wheel_right = ESPDComponents.VehicleDynamics.Components.Wheel())
+  push!(__systems, @named brake_left = ESPDComponents.VehicleDynamics.Components.Brake())
+  push!(__systems, @named brake_right = ESPDComponents.VehicleDynamics.Components.Brake())
+  push!(__systems, @named vehicle = ESPDComponents.VehicleDynamics.Components.VehicleBody())
+  push!(__systems, @named throttle_cmd = BlockComponents.Constant(k=0.5))
+  push!(__systems, @named brake_cmd = BlockComponents.Constant(k=0))
+  push!(__systems, @named ground_mech = TranslationalComponents.Fixed())
 
   ### Guesses
 
@@ -74,6 +86,24 @@ end
   __assertions = []
 
   ### Equations
+  # ========== ELECTRICAL CONNECTIONS ==========
+  push!(__eqs, connect(battery.p, motor.p))
+  push!(__eqs, connect(battery.n, motor.n))
+  push!(__eqs, connect(battery.n, ground_elec.g))
+  push!(__eqs, connect(motor.n, ground_elec.g))
+  # ========== MECHANICAL POWERTRAIN ==========
+  push!(__eqs, connect(motor.flange, differential.flange_input))
+  # ========== LEFT SIDE ==========
+  push!(__eqs, connect(differential.flange_left, brake_left.flange_a))
+  push!(__eqs, connect(brake_left.flange_b, wheel_left.flange_rot))
+  # ========== RIGHT SIDE ==========
+  push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
+  push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))
+  # ========== WHEELS TO VEHICLE BODY ==========
+  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange))
+  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange))
+  # ========== VEHICLE TO GROUND ==========
+  push!(__eqs, connect(vehicle.flange, ground_mech.flange))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

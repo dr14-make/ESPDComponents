@@ -15,6 +15,7 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 import BlockComponents
 import DyadExampleComponents
 import DyadInterface
+import ElectricalComponents
 import RotationalComponents
 import TranslationalComponents
 @doc Markdown.doc"""
@@ -59,6 +60,10 @@ This connector represents a rotational spline with angle and torque as the poten
 end
 
 include("ConventionalPowertrainIntegration_definition.jl")
-include("ElectricPowertrainIntegration_definition.jl")
+include("ConventionalPowertrainIntegration_Analysis_definition.jl")
 include("ConventionalVehicle_Comparison_definition.jl")
+include("ConventionalVehicle_Comparison_Analysis_definition.jl")
+include("ElectricPowertrainIntegration_definition.jl")
+include("ElectricPowertrainIntegration_Analysis_definition.jl")
 include("ElectricVehicle_Comparison_definition.jl")
+include("ElectricVehicle_Comparison_Analysis_definition.jl")

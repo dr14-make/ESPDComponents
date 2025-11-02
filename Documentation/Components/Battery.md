@@ -11,6 +11,7 @@ The Battery component models an electrical energy storage system with voltage-cu
 ### Your Task
 
 Model a battery that:
+
 - Provides electrical energy with voltage that depends on state of charge
 - Has internal resistance causing voltage drop under load
 - Tracks state of charge (SOC) as energy is drawn
@@ -83,11 +84,13 @@ Model a battery that:
 **Objective:** Verify SOC dynamics and voltage drop
 
 **Suggested Test Configuration:**
+
 - Battery connected to resistive load
 - Constant current discharge
 - Monitor voltage and SOC over time
 
 **What to Validate:**
+
 - SOC decreases linearly with constant current
 - Terminal voltage drops due to internal resistance
 - Calculate expected SOC after discharge time
@@ -99,11 +102,13 @@ Model a battery that:
 **Objective:** Verify charging behavior
 
 **Suggested Test Configuration:**
+
 - Battery connected to current source (negative current = charging)
 - Monitor SOC increase
 - Verify voltage rise due to charging current
 
 **What to Validate:**
+
 - SOC increases during charge
 - Terminal voltage > open-circuit voltage during charge
 - Power balance: electrical power in = stored energy rate + resistive losses

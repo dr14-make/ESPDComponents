@@ -1,0 +1,66 @@
+# ============================================================================
+# Electric Motor Test: Load Torque
+# ============================================================================
+#
+# Objective: Verify torque-current relationship
+# Expected: tau = K_t * I
+#
+# Reference: Documentation/ElectricMotor.md
+#
+# TODO: Instantiate your ElectricMotor component
+# Example:
+# motor = ElectricMotor(
+#   K_e = 0.1,
+#   K_t = 0.1,
+#   R = 0.5,
+#   J = 0.01
+# )
+#
+# TODO: Add voltage source and mechanical load
+# Example:
+# voltage_source = ElectricalComponents.VoltageSource()
+# voltage_cmd = BlockComponents.Constant(k = 48.0)
+# load_inertia = RotationalComponents.Inertia(J = 0.05)
+# load_damper = RotationalComponents.Damper(d = 0.2)
+# ground_elec = ElectricalComponents.Ground()
+# ground_mech = RotationalComponents.Fixed()
+#
+# TODO: Connect components
+# Example:
+# connect(voltage_cmd.y, voltage_source.V_input)
+# connect(voltage_source.p, motor.p)
+# connect(voltage_source.n, ground_elec.g)
+# connect(motor.n, ground_elec.g)
+# connect(motor.flange, load_inertia.flange)
+# connect(load_inertia.flange, load_damper.flange_a)
+# connect(load_damper.flange_b, ground_mech.flange)
+#
+# TODO: Set initial conditions
+# Example:
+# initial motor.flange.phi = 0.0
+# initial der(motor.flange.phi) = 0.0
+#
+# TODO: Add analysis
+# Example:
+# analysis TestElectricMotor_Load_Analysis
+#   extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
+#   model = TestElectricMotor_Load()
+# end
+#
+# VALIDATION (calculate BEFORE running):
+# - Torque proportional to current (tau = K_t * I)
+# - P_elec = P_mech + P_loss
+# - Steady-state speed where motor torque = load torque
+# - Power balance verified
+#
+# VALIDATION CHECKLIST:
+# [ ] Torque matches K_t * I
+# [ ] Steady-state reached
+# [ ] Power balance: P_elec = P_mech + P_loss (< 1% error)
+# [ ] Speed settles at expected value
+# ============================================================================
+
+test component TestElectricMotor_Load
+  # TODO: Implement test harness following header instructions
+  
+end

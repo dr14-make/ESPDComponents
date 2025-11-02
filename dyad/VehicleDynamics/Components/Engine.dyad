@@ -6,62 +6,58 @@
 # Domain: Rotational mechanics
 #
 # Physics to Model:
-#   - Torque curve as function of engine speed
-#   - Throttle scaling (0-1)
-#   - Rotational inertia
-#   - Friction losses
-#   - Fuel cutoff at maximum speed
+# - Torque curve as function of engine speed
+# - Throttle scaling (0-1)
+# - Rotational inertia
+# - Friction losses
+# - Fuel cutoff at maximum speed
 #
 # Interface:
-#   - flange: RotationalComponents.Flange (mechanical output)
-#   - throttle_input: RealInput (throttle command 0-1)
+# - flange: RotationalComponents.Flange (mechanical output)
+# - throttle_input: RealInput (throttle command 0-1)
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/Engine.md
+#
+# TODO: Add parameters
+# Example:
+# parameter J::Inertia = 0.15                  # Engine inertia [kg⋅m²]
+# parameter tau_peak::Torque = 200.0           # Peak torque [N⋅m]
+# parameter omega_peak::AngularVelocity = 400.0 # Speed at peak torque [rad/s] (~4000 rpm)
+# parameter omega_max::AngularVelocity = 630.0  # Maximum speed [rad/s] (~6000 rpm)
+# parameter tau_friction::Torque = 15.0        # Friction torque [N⋅m]
+#
+# TODO: Add variables
+# Example:
+# variable throttle::Real                      # Throttle command [0-1]
+# variable omega::AngularVelocity              # Engine speed [rad/s]
+# variable alpha::AngularAcceleration          # Angular acceleration [rad/s²]
+# variable tau_max::Torque                     # Max torque at current speed [N⋅m]
+# variable tau_produced::Torque                # Actual torque produced [N⋅m]
+#
+# TODO: Implement physics
+# Hints:
+# 1. Read throttle: throttle = throttle_input
+# 2. Extract speed and acceleration: omega = der(flange.phi), alpha = der(omega)
+# 3. Calculate max torque curve as f(omega):
+# - Simple: parabolic (tau_max = tau_peak * 4*x*(1-x) where x = omega/omega_max)
+# - Advanced: lookup table or polynomial
+# 4. Scale by throttle: tau_produced = throttle * tau_max
+# 5. Include friction: tau_net = tau_produced - tau_friction*sign(omega)
+# 6. Apply rotational dynamics: J * alpha = tau_net + flange.tau
+#
+# Remember:
+# - Torque curve shape: low at idle, peak at mid-range, drops at high speed
+# - Fuel cutoff at omega > omega_max (tau = 0)
+# - Power = torque × speed
+# - Friction opposes motion
 # ============================================================================
-
 component Engine
   # Mechanical output
-  flange = RotationalComponents.Flange()
-  
+  flange = Dyad.Spline()
   # Control input
   throttle_input = RealInput()
-  
-  # TODO: Add parameters
-  # Example:
-  # parameter J::Inertia = 0.15                  # Engine inertia [kg⋅m²]
-  # parameter tau_peak::Torque = 200.0           # Peak torque [N⋅m]
-  # parameter omega_peak::AngularVelocity = 400.0 # Speed at peak torque [rad/s] (~4000 rpm)
-  # parameter omega_max::AngularVelocity = 630.0  # Maximum speed [rad/s] (~6000 rpm)
-  # parameter tau_friction::Torque = 15.0        # Friction torque [N⋅m]
-  
-  # TODO: Add variables
-  # Example:
-  # variable throttle::Real                      # Throttle command [0-1]
-  # variable omega::AngularVelocity              # Engine speed [rad/s]
-  # variable alpha::AngularAcceleration          # Angular acceleration [rad/s²]
-  # variable tau_max::Torque                     # Max torque at current speed [N⋅m]
-  # variable tau_produced::Torque                # Actual torque produced [N⋅m]
-  
 relations
-  # TODO: Implement physics
-  #
-  # Hints:
-  # 1. Read throttle: throttle = throttle_input
-  # 2. Extract speed and acceleration: omega = der(flange.phi), alpha = der(omega)
-  # 3. Calculate max torque curve as f(omega):
-  #    - Simple: parabolic (tau_max = tau_peak * 4*x*(1-x) where x = omega/omega_max)
-  #    - Advanced: lookup table or polynomial
-  # 4. Scale by throttle: tau_produced = throttle * tau_max
-  # 5. Include friction: tau_net = tau_produced - tau_friction*sign(omega)
-  # 6. Apply rotational dynamics: J * alpha = tau_net + flange.tau
-  #
-  # Remember:
-  # - Torque curve shape: low at idle, peak at mid-range, drops at high speed
-  # - Fuel cutoff at omega > omega_max (tau = 0)
-  # - Power = torque × speed
-  # - Friction opposes motion
-  
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange.tau = 0.0
 end

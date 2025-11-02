@@ -1,0 +1,57 @@
+# ============================================================================
+# Battery Test: Charging/Regeneration
+# ============================================================================
+#
+# Objective: Verify SOC increases during charging
+# Expected: SOC increases, terminal voltage > open-circuit voltage
+#
+# Reference: Documentation/Battery.md
+#
+# TODO: Instantiate your Battery component
+# Example:
+# battery = Battery(
+# V_nominal = 400.0,
+# Q_capacity = 75.0,
+# R_internal = 0.05,
+# SOC_initial = 0.5    # Start at 50% charge
+# )
+#
+# TODO: Add charging current source (negative current)
+# Example:
+# charger = ElectricalComponents.CurrentSource()
+# charge_cmd = BlockComponents.Constant(k = -20.0)  # -20 A (charging)
+# ground = ElectricalComponents.Ground()
+#
+# TODO: Connect components
+# Example:
+# connect(charge_cmd.y, charger.I_input)
+# connect(charger.p, battery.p)
+# connect(battery.n, ground.g)
+# connect(charger.n, ground.g)
+#
+# TODO: Set initial conditions
+# Example:
+# initial battery.SOC = 0.5
+#
+# TODO: Add analysis
+# Example:
+# analysis TestBattery_Charging_Analysis
+# extends TransientAnalysis(stop = 1800.0, alg = "Rodas5P")
+# model = TestBattery_Charging()
+# end
+#
+# VALIDATION (calculate BEFORE running):
+# - SOC should increase
+# - V_terminal > V_oc during charge (voltage rise due to internal resistance)
+# - Power balance verified
+# - Charging current is negative
+#
+# VALIDATION CHECKLIST:
+# [ ] SOC increases during charging
+# [ ] Terminal voltage exceeds open-circuit voltage
+# [ ] Charging rate matches current
+# [ ] Energy balance verified
+# ============================================================================
+# TODO: Implement test harness following header instructions
+test component TestBattery_Charging
+end

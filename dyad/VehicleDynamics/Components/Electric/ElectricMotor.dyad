@@ -6,80 +6,78 @@
 # Domain: Mixed (Electrical + Rotational)
 #
 # Physics to Model:
-#   - Back-EMF proportional to speed
-#   - Torque proportional to current
-#   - Electrical-mechanical coupling
-#   - Rotational inertia
-#   - Resistive losses
-#   - Bidirectional operation (motor and generator modes)
+# - Back-EMF proportional to speed
+# - Torque proportional to current
+# - Electrical-mechanical coupling
+# - Rotational inertia
+# - Resistive losses
+# - Bidirectional operation (motor and generator modes)
 #
 # Interface:
-#   - p, n: ElectricalComponents.Pin (electrical side)
-#   - flange: RotationalComponents.Flange (mechanical side)
+# - p, n: ElectricalComponents.Pin (electrical side)
+# - flange: RotationalComponents.Flange (mechanical side)
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/ElectricMotor.md
+#
+# TODO: Add parameters
+# Example:
+# parameter K_e::Real = 0.1                # Back-EMF constant [V/(rad/s)] or [V⋅s/rad]
+# parameter K_t::Real = 0.1                # Torque constant [N⋅m/A]
+# parameter R::Resistance = 0.5            # Winding resistance [Ω]
+# parameter J::Inertia = 0.01              # Rotor inertia [kg⋅m²]
+# Note: For ideal DC motor, K_t = K_e (in SI units)
+#
+# TODO: Add variables
+# Example:
+# variable V::Voltage                      # Applied voltage [V]
+# variable I::Current                      # Motor current [A]
+# variable V_bemf::Voltage                 # Back-EMF voltage [V]
+# variable omega::AngularVelocity          # Angular velocity [rad/s]
+# variable alpha::AngularAcceleration      # Angular acceleration [rad/s²]
+# variable tau::Torque                     # Motor torque [N⋅m]
+# variable P_elec::Power                   # Electrical power [W]
+# variable P_mech::Power                   # Mechanical power [W]
+# variable P_loss::Power                   # Resistive loss [W]
+#
+# TODO: Implement physics
+# Hints:
+# 1. Electrical side:
+# - Extract voltage: V = p.v - n.v
+# - Extract current: I = p.i (assuming p.i + n.i = 0)
+# - Back-EMF: V_bemf = K_e * omega
+# - Voltage equation: V = V_bemf + I * R
+# 2. Mechanical side:
+# - Extract speed: omega = der(flange.phi)
+# - Angular acceleration: alpha = der(omega)
+# - Torque generation: tau = K_t * I
+# - Rotational dynamics: J * alpha = tau + flange.tau
+# 3. Power calculations:
+# - Electrical power: P_elec = V * I
+# - Mechanical power: P_mech = tau * omega
+# - Resistive loss: P_loss = I^2 * R
+# - Verify: P_elec = P_mech + P_loss
+# 4. Operating modes:
+# - Motor (I > 0, tau > 0): electrical → mechanical
+# - Generator (I < 0, tau < 0): mechanical → electrical
+#
+# Remember:
+# - Back-EMF limits no-load speed
+# - K_t = K_e for ideal DC motor (SI units)
+# - Power must be conserved (with losses)
+# - Handle both motor and generator modes
+# - Check sign conventions on both electrical and mechanical sides
 # ============================================================================
-
 component ElectricMotor
   # Electrical side
-  p = ElectricalComponents.Pin()
-  n = ElectricalComponents.Pin()
-  
+  p = Dyad.Pin()
+  n = Dyad.Pin()
   # Mechanical side
-  flange = RotationalComponents.Flange()
-  
-  # TODO: Add parameters
-  # Example:
-  # parameter K_e::Real = 0.1                # Back-EMF constant [V/(rad/s)] or [V⋅s/rad]
-  # parameter K_t::Real = 0.1                # Torque constant [N⋅m/A]
-  # parameter R::Resistance = 0.5            # Winding resistance [Ω]
-  # parameter J::Inertia = 0.01              # Rotor inertia [kg⋅m²]
-  # Note: For ideal DC motor, K_t = K_e (in SI units)
-  
-  # TODO: Add variables
-  # Example:
-  # variable V::Voltage                      # Applied voltage [V]
-  # variable I::Current                      # Motor current [A]
-  # variable V_bemf::Voltage                 # Back-EMF voltage [V]
-  # variable omega::AngularVelocity          # Angular velocity [rad/s]
-  # variable alpha::AngularAcceleration      # Angular acceleration [rad/s²]
-  # variable tau::Torque                     # Motor torque [N⋅m]
-  # variable P_elec::Power                   # Electrical power [W]
-  # variable P_mech::Power                   # Mechanical power [W]
-  # variable P_loss::Power                   # Resistive loss [W]
-  
+  flange = Dyad.Spline()
 relations
-  # TODO: Implement physics
-  #
-  # Hints:
-  # 1. Electrical side:
-  #    - Extract voltage: V = p.v - n.v
-  #    - Extract current: I = p.i (assuming p.i + n.i = 0)
-  #    - Back-EMF: V_bemf = K_e * omega
-  #    - Voltage equation: V = V_bemf + I * R
-  # 2. Mechanical side:
-  #    - Extract speed: omega = der(flange.phi)
-  #    - Angular acceleration: alpha = der(omega)
-  #    - Torque generation: tau = K_t * I
-  #    - Rotational dynamics: J * alpha = tau + flange.tau
-  # 3. Power calculations:
-  #    - Electrical power: P_elec = V * I
-  #    - Mechanical power: P_mech = tau * omega
-  #    - Resistive loss: P_loss = I^2 * R
-  #    - Verify: P_elec = P_mech + P_loss
-  # 4. Operating modes:
-  #    - Motor (I > 0, tau > 0): electrical → mechanical
-  #    - Generator (I < 0, tau < 0): mechanical → electrical
-  #
-  # Remember:
-  # - Back-EMF limits no-load speed
-  # - K_t = K_e for ideal DC motor (SI units)
-  # - Power must be conserved (with losses)
-  # - Handle both motor and generator modes
-  # - Check sign conventions on both electrical and mechanical sides
-  
   # Placeholder to prevent compilation error (REMOVE when implementing):
-  p.i + n.i = 0.0      # Current conservation
-  flange.tau = 0.0     # Mechanical side placeholder
+  # Current conservation
+  p.i + n.i = 0.0
+  # Mechanical side placeholder
+  flange.tau = 0.0
 end

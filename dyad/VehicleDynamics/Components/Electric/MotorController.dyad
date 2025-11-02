@@ -6,72 +6,69 @@
 # Domain: Control/Signal
 #
 # Physics to Model:
-#   - Throttle to torque mapping
-#   - Regenerative braking logic
-#   - Speed threshold for regeneration
-#   - Mode transitions (accelerate, coast, regen)
+# - Throttle to torque mapping
+# - Regenerative braking logic
+# - Speed threshold for regeneration
+# - Mode transitions (accelerate, coast, regen)
 #
 # Interface:
-#   - throttle_input: RealInput (throttle command 0-1)
-#   - brake_input: RealInput (brake command 0-1)
-#   - speed_input: RealInput (motor speed feedback [rad/s])
-#   - torque_output: RealOutput (torque command [N⋅m])
+# - throttle_input: RealInput (throttle command 0-1)
+# - brake_input: RealInput (brake command 0-1)
+# - speed_input: RealInput (motor speed feedback [rad/s])
+# - torque_output: RealOutput (torque command [N⋅m])
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/MotorController.md
+#
+# TODO: Add parameters
+# Example:
+# parameter tau_max_motor::Torque = 300.0      # Maximum motor torque [N⋅m]
+# parameter tau_max_regen::Torque = 150.0      # Maximum regen torque [N⋅m]
+# parameter omega_min_regen::AngularVelocity = 10.0  # Minimum speed for regen [rad/s]
+#
+# TODO: Add variables
+# Example:
+# variable throttle::Real                      # Throttle command [0-1]
+# variable brake::Real                         # Brake command [0-1]
+# variable omega::AngularVelocity              # Motor speed [rad/s]
+# variable tau_cmd::Torque                     # Commanded torque [N⋅m]
+# variable mode::Real                          # Operating mode indicator
+#
+# TODO: Implement physics
+# Hints:
+# 1. Read inputs:
+# - throttle = throttle_input
+# - brake = brake_input
+# - omega = speed_input
+# 2. Mode logic:
+# - Accelerate: throttle > 0, brake = 0 → tau_cmd = throttle * tau_max_motor
+# - Coast: throttle = 0, brake = 0 → tau_cmd = 0
+# - Regen: brake > 0, omega > omega_min_regen → tau_cmd = -brake * tau_max_regen
+# - Mechanical brake: brake > 0, omega < omega_min_regen → tau_cmd = 0 (use mech brakes)
+# 3. Priority logic:
+# - What if both throttle AND brake pressed? (decide priority)
+# 4. Speed threshold:
+# - Regen only works above minimum speed
+# - Smooth transition (avoid discontinuity)
+# 5. Output:
+# - torque_output = tau_cmd
+#
+# Remember:
+# - Positive torque = forward acceleration
+# - Negative torque = braking/regeneration
+# - Regen charges battery (motor acts as generator)
+# - Below minimum speed, use mechanical brakes
+# - Smooth transitions to avoid solver issues
 # ============================================================================
-
 component MotorController
   # Control inputs
   throttle_input = RealInput()
   brake_input = RealInput()
   speed_input = RealInput()
-  
   # Control output
   torque_output = RealOutput()
-  
-  # TODO: Add parameters
-  # Example:
-  # parameter tau_max_motor::Torque = 300.0      # Maximum motor torque [N⋅m]
-  # parameter tau_max_regen::Torque = 150.0      # Maximum regen torque [N⋅m]
-  # parameter omega_min_regen::AngularVelocity = 10.0  # Minimum speed for regen [rad/s]
-  
-  # TODO: Add variables
-  # Example:
-  # variable throttle::Real                      # Throttle command [0-1]
-  # variable brake::Real                         # Brake command [0-1]
-  # variable omega::AngularVelocity              # Motor speed [rad/s]
-  # variable tau_cmd::Torque                     # Commanded torque [N⋅m]
-  # variable mode::Real                          # Operating mode indicator
-  
 relations
-  # TODO: Implement physics
-  #
-  # Hints:
-  # 1. Read inputs:
-  #    - throttle = throttle_input
-  #    - brake = brake_input
-  #    - omega = speed_input
-  # 2. Mode logic:
-  #    - Accelerate: throttle > 0, brake = 0 → tau_cmd = throttle * tau_max_motor
-  #    - Coast: throttle = 0, brake = 0 → tau_cmd = 0
-  #    - Regen: brake > 0, omega > omega_min_regen → tau_cmd = -brake * tau_max_regen
-  #    - Mechanical brake: brake > 0, omega < omega_min_regen → tau_cmd = 0 (use mech brakes)
-  # 3. Priority logic:
-  #    - What if both throttle AND brake pressed? (decide priority)
-  # 4. Speed threshold:
-  #    - Regen only works above minimum speed
-  #    - Smooth transition (avoid discontinuity)
-  # 5. Output:
-  #    - torque_output = tau_cmd
-  #
-  # Remember:
-  # - Positive torque = forward acceleration
-  # - Negative torque = braking/regeneration
-  # - Regen charges battery (motor acts as generator)
-  # - Below minimum speed, use mechanical brakes
-  # - Smooth transitions to avoid solver issues
-  
   # Placeholder to prevent compilation error (REMOVE when implementing):
-  torque_output = 0.0  # No torque command placeholder
+  # No torque command placeholder
+  torque_output = 0.0
 end

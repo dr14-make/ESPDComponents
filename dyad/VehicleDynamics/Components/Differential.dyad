@@ -6,60 +6,57 @@
 # Domain: Rotational mechanics
 #
 # Physics to Model:
-#   - Equal torque split to left and right outputs
-#   - Speed averaging with final drive ratio
-#   - Kinematic constraint relating input/output speeds
-#   - Power conservation
+# - Equal torque split to left and right outputs
+# - Speed averaging with final drive ratio
+# - Kinematic constraint relating input/output speeds
+# - Power conservation
 #
 # Interface:
-#   - flange_input: RotationalComponents.Flange (from transmission)
-#   - flange_left: RotationalComponents.Flange (to left wheel)
-#   - flange_right: RotationalComponents.Flange (to right wheel)
+# - flange_input: RotationalComponents.Flange (from transmission)
+# - flange_left: RotationalComponents.Flange (to left wheel)
+# - flange_right: RotationalComponents.Flange (to right wheel)
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/Differential.md
+#
+# TODO: Add parameters
+# Example:
+# parameter ratio::Real = 3.5          # Final drive ratio [-] (typical: 3.0-5.0)
+#
+# TODO: Add variables
+# Example:
+# variable omega_in::AngularVelocity   # Input speed [rad/s]
+# variable omega_left::AngularVelocity # Left output speed [rad/s]
+# variable omega_right::AngularVelocity # Right output speed [rad/s]
+# variable tau_in::Torque              # Input torque [N⋅m]
+# variable tau_left::Torque            # Left output torque [N⋅m]
+# variable tau_right::Torque           # Right output torque [N⋅m]
+#
+# TODO: Implement physics
+# Hints:
+# 1. Extract speeds: omega_in = der(flange_input.phi), etc.
+# 2. Kinematic constraint: omega_in = (omega_left + omega_right) / 2 * ratio
+# - Input speed is average of output speeds times ratio
+# - Straight line: omega_left = omega_right = omega_in / ratio
+# - Turning: speeds differ but average is maintained
+# 3. Extract torques from flanges
+# 4. Torque split (equal for open differential):
+# - tau_left = -tau_in * ratio / 2
+# - tau_right = -tau_in * ratio / 2
+# 5. Verify power conservation: tau_in*omega_in = tau_left*omega_left + tau_right*omega_right
+#
+# Remember:
+# - Open differential: equal torque regardless of speed difference
+# - Check signs carefully (power flow direction)
+# - One wheel on ice: speeds differ but torques equal (wheel spins!)
+# - Final drive ratio amplifies torque, reduces speed
 # ============================================================================
-
 component Differential
   # One input, two outputs
-  flange_input = RotationalComponents.Flange()
-  flange_left = RotationalComponents.Flange()
-  flange_right = RotationalComponents.Flange()
-  
-  # TODO: Add parameters
-  # Example:
-  # parameter ratio::Real = 3.5          # Final drive ratio [-] (typical: 3.0-5.0)
-  
-  # TODO: Add variables
-  # Example:
-  # variable omega_in::AngularVelocity   # Input speed [rad/s]
-  # variable omega_left::AngularVelocity # Left output speed [rad/s]
-  # variable omega_right::AngularVelocity # Right output speed [rad/s]
-  # variable tau_in::Torque              # Input torque [N⋅m]
-  # variable tau_left::Torque            # Left output torque [N⋅m]
-  # variable tau_right::Torque           # Right output torque [N⋅m]
-  
+  flange_input = Dyad.Spline()
+  flange_left = Dyad.Spline()
+  flange_right = Dyad.Spline()
 relations
-  # TODO: Implement physics
-  #
-  # Hints:
-  # 1. Extract speeds: omega_in = der(flange_input.phi), etc.
-  # 2. Kinematic constraint: omega_in = (omega_left + omega_right) / 2 * ratio
-  #    - Input speed is average of output speeds times ratio
-  #    - Straight line: omega_left = omega_right = omega_in / ratio
-  #    - Turning: speeds differ but average is maintained
-  # 3. Extract torques from flanges
-  # 4. Torque split (equal for open differential):
-  #    - tau_left = -tau_in * ratio / 2
-  #    - tau_right = -tau_in * ratio / 2
-  # 5. Verify power conservation: tau_in*omega_in = tau_left*omega_left + tau_right*omega_right
-  #
-  # Remember:
-  # - Open differential: equal torque regardless of speed difference
-  # - Check signs carefully (power flow direction)
-  # - One wheel on ice: speeds differ but torques equal (wheel spins!)
-  # - Final drive ratio amplifies torque, reduces speed
-  
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_input.tau = 0.0
   flange_left.tau = 0.0

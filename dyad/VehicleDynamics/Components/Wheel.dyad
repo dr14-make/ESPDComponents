@@ -6,54 +6,50 @@
 # Domain: Mixed (Rotational + Translational)
 #
 # Physics to Model:
-#   - Rolling without slip: v = ω × r
-#   - Force-torque relationship: F = τ / r
-#   - Power conservation: P_rot = P_trans
-#   - Optional: Wheel inertia J × α = τ_net
+# - Rolling without slip: v = ω × r
+# - Force-torque relationship: F = τ / r
+# - Power conservation: P_rot = P_trans
+# - Optional: Wheel inertia J × α = τ_net
 #
 # Interface:
-#   - flange_rot: RotationalComponents.Flange (connects to driveline)
-#   - flange_trans: TranslationalComponents.Flange (connects to vehicle body)
+# - flange_rot: RotationalComponents.Flange (connects to driveline)
+# - flange_trans: TranslationalComponents.Flange (connects to vehicle body)
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/Wheel.md
+#
+# TODO: Add parameters
+# Example:
+# parameter radius::Length = 0.3       # Rolling radius [m] (typical: 0.25-0.40)
+# parameter J::Inertia = 1.0           # Rotational inertia [kg⋅m²] (optional)
+#
+# TODO: Add variables
+# Example:
+# variable omega::AngularVelocity      # Wheel angular velocity [rad/s]
+# variable v::Velocity                 # Linear velocity [m/s]
+# variable tau::Torque                 # Drive torque [N⋅m]
+# variable F::Force                    # Traction force [N]
+#
+# TODO: Implement physics
+# Hints:
+# 1. Extract velocities: omega = der(flange_rot.phi), v = der(flange_trans.s)
+# 2. Kinematic constraint: v = omega * radius (rolling without slip)
+# 3. Extract torque and force from flanges
+# 4. Force-torque relationship: F = tau / radius
+# 5. Verify power conservation: tau*omega = F*v
+# 6. Optional: Add inertia dynamics
+#
+# Remember:
+# - Check sign conventions on both flanges!
+# - Power should be conserved (no losses in ideal wheel)
+# - If adding inertia, need angular acceleration equation
 # ============================================================================
-
 component Wheel
   # Rotational side (driveline)
-  flange_rot = RotationalComponents.Flange()
-  
+  flange_rot = Dyad.Spline()
   # Translational side (vehicle body)
-  flange_trans = TranslationalComponents.Flange()
-  
-  # TODO: Add parameters
-  # Example:
-  # parameter radius::Length = 0.3       # Rolling radius [m] (typical: 0.25-0.40)
-  # parameter J::Inertia = 1.0           # Rotational inertia [kg⋅m²] (optional)
-  
-  # TODO: Add variables
-  # Example:
-  # variable omega::AngularVelocity      # Wheel angular velocity [rad/s]
-  # variable v::Velocity                 # Linear velocity [m/s]
-  # variable tau::Torque                 # Drive torque [N⋅m]
-  # variable F::Force                    # Traction force [N]
-  
+  flange_trans = Dyad.Flange()
 relations
-  # TODO: Implement physics
-  #
-  # Hints:
-  # 1. Extract velocities: omega = der(flange_rot.phi), v = der(flange_trans.s)
-  # 2. Kinematic constraint: v = omega * radius (rolling without slip)
-  # 3. Extract torque and force from flanges
-  # 4. Force-torque relationship: F = tau / radius
-  # 5. Verify power conservation: tau*omega = F*v
-  # 6. Optional: Add inertia dynamics
-  #
-  # Remember:
-  # - Check sign conventions on both flanges!
-  # - Power should be conserved (no losses in ideal wheel)
-  # - If adding inertia, need angular acceleration equation
-  
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_rot.tau = 0.0
   flange_trans.f = 0.0

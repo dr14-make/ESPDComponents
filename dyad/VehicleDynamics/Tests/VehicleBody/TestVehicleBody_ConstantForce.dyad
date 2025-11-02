@@ -1,0 +1,60 @@
+# ============================================================================
+# VehicleBody Test: Constant Force Acceleration
+# ============================================================================
+#
+# Objective: Verify Newton's second law with no resistance forces
+# Expected: Linear velocity increase, quadratic position increase
+#
+# Reference: Documentation/VehicleBody.md
+#
+# TODO: Instantiate your VehicleBody component
+# Example:
+# vehicle = VehicleBody(
+# m = 1000.0,
+# Cd = 0.0,    # No drag
+# Crr = 0.0    # No rolling resistance
+# )
+#
+# TODO: Add force source
+# Example:
+# force_source = TranslationalComponents.Force()
+# force_cmd = BlockComponents.Constant(k = 1000.0)  # 1000 N constant force
+#
+# TODO: Add ground reference
+# Example:
+# ground = TranslationalComponents.Fixed()
+#
+# TODO: Connect components
+# Example:
+# connect(force_cmd.y, force_source.f_input)
+# connect(force_source.flange, vehicle.flange)
+# connect(vehicle.flange, ground.flange)
+#
+# TODO: Set initial conditions
+# Example:
+# initial vehicle.flange.s = 0.0
+# initial vehicle.v = 0.0
+#
+# TODO: Add analysis
+# Example:
+# analysis TestVehicleBody_ConstantForce_Analysis
+# extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+# model = TestVehicleBody_ConstantForce()
+# end
+#
+# VALIDATION (calculate BEFORE running):
+# - With m=1000kg, F=1000N:
+# - Expected acceleration: a = F/m = ? m/s²
+# - Expected velocity at t=10s: v = ? m/s
+# - Expected position at t=10s: s = ? m
+#
+# VALIDATION CHECKLIST:
+# [ ] Compiles without errors
+# [ ] Runs to completion (sol.retcode == Success)
+# [ ] No NaN or Inf values
+# [ ] Results match hand calculations (< 1% error)
+# [ ] Force balance verified numerically
+# ============================================================================
+# TODO: Implement test harness following header instructions
+test component TestVehicleBody_ConstantForce
+end

@@ -1,0 +1,55 @@
+# ============================================================================
+# Battery Test: Constant Discharge
+# ============================================================================
+#
+# Objective: Verify SOC decreases linearly with constant current
+# Expected: SOC = SOC_initial - (I * t) / Q_capacity
+#
+# Reference: Documentation/Battery.md
+#
+# TODO: Instantiate your Battery component
+# Example:
+# battery = Battery(
+# V_nominal = 400.0,
+# Q_capacity = 75.0,  # 75 A⋅h
+# R_internal = 0.05,
+# SOC_initial = 1.0    # Start fully charged
+# )
+#
+# TODO: Add constant current load
+# Example:
+# load = ElectricalComponents.Resistor(R = 10.0)  # Or use current source
+# ground = ElectricalComponents.Ground()
+#
+# TODO: Connect components
+# Example:
+# connect(battery.p, load.p)
+# connect(load.n, ground.g)
+# connect(battery.n, ground.g)
+#
+# TODO: Set initial conditions
+# Example:
+# initial battery.SOC = 1.0
+#
+# TODO: Add analysis
+# Example:
+# analysis TestBattery_ConstantDischarge_Analysis
+# extends TransientAnalysis(stop = 3600.0, alg = "Rodas5P")
+# model = TestBattery_ConstantDischarge()
+# end
+#
+# VALIDATION (calculate BEFORE running):
+# - With constant current I:
+# - Expected SOC(t) = SOC_initial - (I * t) / Q_capacity
+# - Terminal voltage drop: V_terminal = V_oc - I * R_internal
+# - Energy balance: ∫(V*I)dt = SOC_loss * Q_capacity * V_avg
+#
+# VALIDATION CHECKLIST:
+# [ ] SOC decreases linearly with time
+# [ ] SOC rate matches -I / Q_capacity
+# [ ] Voltage drop matches I * R_internal
+# [ ] Energy balance verified
+# ============================================================================
+# TODO: Implement test harness following header instructions
+test component TestBattery_ConstantDischarge
+end

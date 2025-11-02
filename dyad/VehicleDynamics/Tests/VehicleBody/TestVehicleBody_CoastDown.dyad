@@ -1,0 +1,56 @@
+# ============================================================================
+# VehicleBody Test: Coast-Down
+# ============================================================================
+#
+# Objective: Verify combined drag and rolling resistance
+# Expected: Vehicle decelerates to stop
+#
+# Reference: Documentation/VehicleBody.md
+#
+# TODO: Instantiate your VehicleBody component
+# Example:
+# vehicle = VehicleBody(
+# m = 1000.0,
+# Cd = 0.32,
+# A = 2.2,
+# rho = 1.225,
+# Crr = 0.015,
+# g = 9.81
+# )
+#
+# TODO: Add ground reference
+# Example:
+# ground = TranslationalComponents.Fixed()
+#
+# TODO: Connect components
+# Example:
+# connect(vehicle.flange, ground.flange)
+#
+# TODO: Set initial conditions (coasting from speed)
+# Example:
+# initial vehicle.v = 30.0  # Start at 30 m/s
+# initial vehicle.flange.s = 0.0
+#
+# TODO: Add analysis
+# Example:
+# analysis TestVehicleBody_CoastDown_Analysis
+# extends TransientAnalysis(stop = 100.0, alg = "Rodas5P")
+# model = TestVehicleBody_CoastDown()
+# end
+#
+# VALIDATION (calculate BEFORE running):
+# - Initial deceleration at v=30 m/s
+# - Drag dominates at high speed (quadratic with v)
+# - Rolling resistance dominates at low speed (constant)
+# - Calculate expected time and distance to stop
+# - Energy balance: initial kinetic energy = work done by drag + work done by rolling resistance
+#
+# VALIDATION CHECKLIST:
+# [ ] Vehicle decelerates continuously
+# [ ] Velocity reaches zero
+# [ ] Energy dissipated matches initial kinetic energy (< 1% error)
+# [ ] Deceleration profile matches physics
+# ============================================================================
+# TODO: Implement test harness following header instructions
+test component TestVehicleBody_CoastDown
+end

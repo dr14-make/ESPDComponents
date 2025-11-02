@@ -249,7 +249,12 @@ Build and validate individual components in isolation before integration.
 
 #### Tasks
 
-- [ ] **Task 4.1:** Clutch component with slip
+- [ ] **Task 4.1:** Implement `Clutch` component with slip dynamics
+  - File: `dyad/VehicleDynamics/Components/Clutch.dyad`
+  - Physics: Friction clutch with three modes (disengaged, slipping, locked)
+  - Test: Engagement under load → slip → lock-up
+  - Success: Smooth transitions between modes, positive power dissipation
+  - [Details](./Components/Clutch.md)
 - [ ] **Task 4.2:** Engine thermal model integration
 - [ ] **Task 4.3:** Regenerative braking for hybrid vehicles
 - [ ] **Task 4.4:** Advanced tire models (slip, saturation)

@@ -1,0 +1,101 @@
+# ============================================================================
+# Clutch Component
+# ============================================================================
+#
+# Description: Friction clutch for coupling/decoupling engine and transmission
+# Domain: Rotational mechanics
+#
+# Physics to Model:
+# - Engagement control (0 = disengaged, 1 = fully engaged)
+# - Three operating modes: disengaged, slipping, locked
+# - Friction torque during slip
+# - Energy dissipation as heat
+# - Lock-up when fully engaged with minimal slip
+#
+# Interface:
+# - flange_in: Spline (engine side)
+# - flange_out: Spline (gearbox side)
+# - clutch_input: RealInput (engagement command 0-1)
+#
+# Status: Empty skeleton - students implement physics
+# Reference: Documentation/Components/Clutch.md
+#
+# TODO: Add parameters
+# Example:
+# parameter tau_max::Torque = 500.0       # Maximum transmissible torque [N⋅m]
+# parameter omega_lock::AngularVelocity = 0.1  # Lock-up threshold [rad/s]
+# parameter omega_eps::AngularVelocity = 0.01  # Smoothing parameter [rad/s]
+#
+# TODO: Add variables
+# Example:
+# variable clutch_cmd::Real               # Clutch engagement command [0-1]
+# variable omega_in::AngularVelocity      # Input shaft speed [rad/s]
+# variable omega_out::AngularVelocity     # Output shaft speed [rad/s]
+# variable omega_slip::AngularVelocity    # Relative velocity [rad/s]
+# variable tau_friction::Torque           # Friction torque [N⋅m]
+# variable P_dissipated::Power            # Dissipated power [W]
+# variable is_locked::Bool                # Lock-up state flag
+#
+# TODO: Implement physics
+# Hints:
+# 1. Read engagement command: clutch_cmd = clutch_input
+# 2. Extract speeds: omega_in = der(flange_in.phi), omega_out = der(flange_out.phi)
+# 3. Calculate slip: omega_slip = omega_in - omega_out
+# 4. Determine operating mode:
+#    - If clutch_cmd ≈ 0: Disengaged (tau_friction = 0)
+#    - If |omega_slip| < omega_lock AND clutch_cmd ≈ 1: Locked (flange_in.phi = flange_out.phi)
+#    - Otherwise: Slipping (tau_friction = clutch_cmd * tau_max * tanh(omega_slip / omega_eps))
+# 5. Apply friction torque:
+#    - Disengaged/Slipping: flange_in.tau = -tau_friction, flange_out.tau = tau_friction
+#    - Locked: flange_in.tau + flange_out.tau = 0, flange_in.phi = flange_out.phi
+# 6. Calculate power dissipation: P_dissipated = tau_friction * omega_slip (must be ≥ 0)
+#
+# Implementation Strategy:
+# - START SIMPLE: Begin with only slip mode (ignore lock-up initially)
+# - Use smooth friction: tanh(omega_slip / omega_eps) instead of sign(omega_slip)
+# - PHASE 2: Add disengaged mode (when clutch_cmd < threshold)
+# - PHASE 3: Add lock-up mode (conditional equations or algebraic constraint)
+#
+# Remember:
+# - Friction torque must oppose relative motion
+# - Power dissipation must always be positive (energy dissipated, not created)
+# - Smooth functions prevent solver issues (avoid if/else initially)
+# - Lock-up mode requires careful handling (algebraic constraint)
+# - Through component in slip mode, rigid constraint in locked mode
+# ============================================================================
+component Clutch
+  # Input side (engine)
+  flange_in = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -50, "y1": 450, "x2": 50, "y2": 550, "rot": 0}
+      }
+    }
+  }]
+  
+  # Output side (gearbox)
+  flange_out = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
+      }
+    }
+  }]
+  
+  # Control input (engagement command 0-1)
+  clutch_input = RealInput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 450, "y1": -40, "x2": 550, "y2": 60, "rot": 90}
+      }
+    }
+  }]
+  
+relations
+  # Placeholder to prevent compilation error (REMOVE when implementing):
+  # Simple pass-through with zero torque (clutch fully disengaged)
+  flange_in.tau = 0.0
+  flange_out.tau = 0.0
+  
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Clutch.svg"}}}
+end

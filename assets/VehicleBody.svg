@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Vehicle body/chassis -->
+  <path d="M 10 40 L 10 30 L 14 26 L 22 22 L 42 22 L 50 26 L 54 30 L 54 40 Z" fill="#4a7ba7" stroke="#333" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Windshield -->
+  <path d="M 22 22 L 26 16 L 38 16 L 42 22" fill="#87ceeb" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Roof -->
+  <path d="M 26 16 L 26 12 L 38 12 L 38 16" fill="#4a7ba7" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Side windows -->
+  <path d="M 14 28 L 18 24 L 22 24 L 22 28 Z" fill="#87ceeb" stroke="#333" stroke-width="1"/>
+  <path d="M 50 28 L 46 24 L 42 24 L 42 28 Z" fill="#87ceeb" stroke="#333" stroke-width="1"/>
+  <!-- Wheels -->
+  <circle cx="18" cy="42" r="6" fill="#333" stroke="#222" stroke-width="2"/>
+  <circle cx="18" cy="42" r="3" fill="#555"/>
+  <circle cx="46" cy="42" r="6" fill="#333" stroke="#222" stroke-width="2"/>
+  <circle cx="46" cy="42" r="3" fill="#555"/>
+  <!-- Ground line -->
+  <line x1="0" y1="50" x2="64" y2="50" stroke="#666" stroke-width="1" stroke-dasharray="4,2"/>
+  <!-- Headlight -->
+  <circle cx="8" cy="34" r="1.5" fill="#ffd700"/>
+  <!-- Center of mass marker -->
+  <circle cx="32" cy="32" r="2" fill="#c33" stroke="#333" stroke-width="1"/>
+  <line x1="28" y1="32" x2="36" y2="32" stroke="#c33" stroke-width="1"/>
+  <line x1="32" y1="28" x2="32" y2="36" stroke="#c33" stroke-width="1"/>
+</svg>

@@ -79,4 +79,5 @@ relations
   flange_input.tau = 0.0
   flange_left.tau = 0.0
   flange_right.tau = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Differential.svg"}}}
 end

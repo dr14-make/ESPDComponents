@@ -62,4 +62,5 @@ component VehicleBody
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange.f = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/VehicleBody.svg"}}}
 end

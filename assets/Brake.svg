@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Brake disc (rotor) -->
+  <circle cx="32" cy="32" r="22" fill="#888" stroke="#333" stroke-width="2"/>
+  <!-- Disc center hole -->
+  <circle cx="32" cy="32" r="8" fill="#fff" stroke="#333" stroke-width="1.5"/>
+  <!-- Disc cooling slots -->
+  <path d="M 32 14 L 32 10" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 32 54 L 32 50" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 50 32 L 54 32" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 14 32 L 10 32" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 45.3 18.7 L 48 16" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 18.7 45.3 L 16 48" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 45.3 45.3 L 48 48" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 18.7 18.7 L 16 16" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <!-- Brake caliper -->
+  <rect x="42" y="24" width="12" height="16" rx="2" fill="#c33" stroke="#333" stroke-width="2"/>
+  <!-- Caliper piston indication -->
+  <circle cx="46" cy="32" r="2" fill="#555"/>
+  <!-- Friction pad -->
+  <rect x="38" y="26" width="6" height="12" fill="#964" stroke="#333" stroke-width="1"/>
+</svg>

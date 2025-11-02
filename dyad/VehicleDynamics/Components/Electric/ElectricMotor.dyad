@@ -98,4 +98,5 @@ relations
   p.i + n.i = 0.0
   # Mechanical side placeholder
   flange.tau = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/ElectricMotor.svg"}}}
 end

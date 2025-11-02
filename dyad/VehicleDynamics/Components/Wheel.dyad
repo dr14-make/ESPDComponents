@@ -65,4 +65,5 @@ relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_rot.tau = 0.0
   flange_trans.f = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Wheel.svg"}}}
 end

@@ -76,4 +76,5 @@ relations
   p.v - n.v = 400.0
   # Current conservation
   p.i + n.i = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Battery.svg"}}}
 end

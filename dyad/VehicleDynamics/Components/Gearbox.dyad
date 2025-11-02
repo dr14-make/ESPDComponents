@@ -80,7 +80,7 @@ component Gearbox
   gear_input = RealInput() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 460, "y1": -50, "x2": 560, "y2": 50, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 460, "y1": 780, "x2": 560, "y2": 880, "rot": 0}
       }
     }
   }]
@@ -88,4 +88,5 @@ relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_in.tau = 0.0
   flange_out.tau = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Gearbox.svg"}}}
 end

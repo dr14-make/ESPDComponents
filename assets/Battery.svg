@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Battery cell outline -->
+  <rect x="16" y="18" width="32" height="36" rx="2" fill="#2d5f2d" stroke="#333" stroke-width="2"/>
+  <!-- Positive terminal -->
+  <rect x="26" y="12" width="5" height="6" rx="1" fill="#c44" stroke="#333" stroke-width="1.5"/>
+  <text x="28.5" y="17" font-family="Arial, sans-serif" font-size="10" fill="#fff" font-weight="bold">+</text>
+  <!-- Negative terminal -->
+  <rect x="33" y="12" width="5" height="6" rx="1" fill="#333" stroke="#333" stroke-width="1.5"/>
+  <text x="35.5" y="17" font-family="Arial, sans-serif" font-size="10" fill="#fff" font-weight="bold">−</text>
+  <!-- Battery charge indicator bars -->
+  <rect x="20" y="24" width="24" height="5" rx="1" fill="#4a4" stroke="#333" stroke-width="1"/>
+  <rect x="20" y="31" width="24" height="5" rx="1" fill="#4a4" stroke="#333" stroke-width="1"/>
+  <rect x="20" y="38" width="24" height="5" rx="1" fill="#4a4" stroke="#333" stroke-width="1"/>
+  <rect x="20" y="45" width="24" height="5" rx="1" fill="#4a4" stroke="#333" stroke-width="1"/>
+  <!-- SOC indicator outline -->
+  <rect x="19" y="23" width="26" height="28" rx="2" fill="none" stroke="#555" stroke-width="1"/>
+  <!-- Internal resistance indicator -->
+  <circle cx="32" cy="37" r="8" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="32" y="40" font-family="Arial, sans-serif" font-size="7" fill="#ccc" text-anchor="middle">Ri</text>
+  <!-- Label -->
+  <text x="32" y="61" font-family="Arial, sans-serif" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold">BATT</text>
+</svg>

@@ -72,4 +72,5 @@ component Engine
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange.tau = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Engine.svg"}}}
 end

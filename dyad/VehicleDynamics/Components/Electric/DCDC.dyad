@@ -92,4 +92,5 @@ relations
   # Current relationship (simplified)
   n_in.i = -p_in.i
   n_out.i = -p_out.i
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/DCDC.svg"}}}
 end

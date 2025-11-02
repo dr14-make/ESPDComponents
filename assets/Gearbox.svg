@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Gearbox housing -->
+  <rect x="8" y="18" width="48" height="28" rx="3" fill="#666" stroke="#333" stroke-width="2"/>
+  <!-- Input shaft -->
+  <line x1="2" y1="32" x2="12" y2="32" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="12" cy="32" r="2" fill="#555"/>
+  <!-- Output shaft -->
+  <line x1="52" y1="32" x2="62" y2="32" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="52" cy="32" r="2" fill="#555"/>
+  <!-- Large gear (input) -->
+  <circle cx="22" cy="32" r="10" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="22" cy="32" r="4" fill="#888" stroke="#333" stroke-width="1.5"/>
+  <!-- Gear teeth representation -->
+  <circle cx="22" cy="22" r="1.5" fill="#333"/>
+  <circle cx="22" cy="42" r="1.5" fill="#333"/>
+  <circle cx="32" cy="32" r="1.5" fill="#333"/>
+  <circle cx="12" cy="32" r="1.5" fill="#333"/>
+  <!-- Small gear (output) -->
+  <circle cx="42" cy="32" r="6" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="42" cy="32" r="3" fill="#888" stroke="#333" stroke-width="1.5"/>
+  <!-- Gear teeth on small gear -->
+  <circle cx="42" cy="26" r="1.2" fill="#333"/>
+  <circle cx="42" cy="38" r="1.2" fill="#333"/>
+  <circle cx="48" cy="32" r="1.2" fill="#333"/>
+  <circle cx="36" cy="32" r="1.2" fill="#333"/>
+  <!-- Gear ratio indicator -->
+  <text x="32" y="13" font-family="Arial, sans-serif" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">GEAR</text>
+  <!-- Shift lever suggestion -->
+  <path d="M 32 46 L 32 54 L 28 50 M 32 54 L 36 50" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

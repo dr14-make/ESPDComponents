@@ -95,4 +95,5 @@ relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   # No torque command placeholder
   torque_output = 0.0
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/MotorController.svg"}}}
 end

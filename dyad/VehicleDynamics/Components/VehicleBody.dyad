@@ -14,10 +14,8 @@
 # - Normal force distribution (front/rear axles)
 #
 # Interface:
-# - flange_front: TranslationalComponents.Flange (front axle traction)
-# - flange_rear: TranslationalComponents.Flange (rear axle traction)
-# - flange_normal_front: TranslationalComponents.Flange (front normal force)
-# - flange_normal_rear: TranslationalComponents.Flange (rear normal force)
+# - contact_front: WheelContact (front axle - traction + normal force)
+# - contact_rear: WheelContact (rear axle - traction + normal force)
 #
 # Status: Empty skeleton - students implement physics
 # Reference: Documentation/Components/VehicleBody.md
@@ -80,48 +78,32 @@
 # - Verify force balance and moment balance (about CG)
 # ============================================================================
 component VehicleBody
-  # Front axle traction
-  flange_front = Dyad.Flange() [{
+  # Front axle contact (traction + normal force combined)
+  contact_front = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 740, "y1": 960, "x2": 840, "y2": 1060, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 200, "y1": 450, "x2": 300, "y2": 550, "rot": 0}
       }
     }
   }]
-  # Rear axle traction
-  flange_rear = Dyad.Flange() [{
+  # Rear axle contact (traction + normal force combined)
+  contact_rear = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 30, "y1": 960, "x2": 130, "y2": 1060, "rot": 0}
-      }
-    }
-  }]
-  # Front axle normal force (output from vehicle body)
-  flange_normal_front = Dyad.Flange() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "flange_b", "x1": 190, "y1": 960, "x2": 290, "y2": 1060, "rot": 90}
-      }
-    }
-  }]
-  # Rear axle normal force (output from vehicle body)
-  flange_normal_rear = Dyad.Flange() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "flange_b", "x1": 870, "y1": 960, "x2": 970, "y2": 1060, "rot": 90}
+        "diagram": {"iconName": "default", "x1": 700, "y1": 450, "x2": 800, "y2": 550, "rot": 0}
       }
     }
   }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
-  flange_front.f = 0.0
-  flange_rear.f = 0.0
-  flange_normal_front.f = 0.0
-  flange_normal_rear.f = 0.0
+  contact_front.f_traction = 0.0
+  contact_rear.f_traction = 0.0
+  contact_front.f_normal = 0.0
+  contact_rear.f_normal = 0.0
   # Kinematic constraint: both axles move together
-  flange_front.s = flange_rear.s
-  flange_normal_front.s = 0.0
-  # Normal forces act at fixed positions
-  flange_normal_rear.s = 0.0
+  contact_front.s_traction = contact_rear.s_traction
+  # Normal positions fixed at ground level
+  contact_front.s_normal = 0.0
+  contact_rear.s_normal = 0.0
 metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/VehicleBody.svg"}}}
 end

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" fill="#9370db" rx="4"/>
+  
+  <!-- Ground line (bold) -->
+  <line x1="4" y1="48" x2="60" y2="48" stroke="#333" stroke-width="4"/>
+  
+  <!-- Contact point (large dot) -->
+  <circle cx="32" cy="48" r="6" fill="#333"/>
+  
+  <!-- Normal force arrow (vertical - blue, very bold) -->
+  <line x1="32" y1="42" x2="32" y2="12" stroke="#0066ff" stroke-width="4"/>
+  <polygon points="32,8 26,16 38,16" fill="#0066ff"/>
+  <text x="38" y="28" font-family="Arial, sans-serif" font-size="14" fill="#0066ff" font-weight="bold">N</text>
+  
+  <!-- Traction force arrow (horizontal - orange, very bold) -->
+  <line x1="26" y1="48" x2="6" y2="48" stroke="#ff6600" stroke-width="4"/>
+  <polygon points="4,48 12,42 12,54" fill="#ff6600"/>
+  <text x="10" y="42" font-family="Arial, sans-serif" font-size="14" fill="#ff6600" font-weight="bold">F</text>
+</svg>

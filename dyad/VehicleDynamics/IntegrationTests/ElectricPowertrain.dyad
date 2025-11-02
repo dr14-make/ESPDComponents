@@ -137,17 +137,14 @@
 # connect(differential.flange_right, brake_right.flange_a)
 # connect(brake_right.flange_b, wheel_right.flange_rot)
 # ========== WHEELS TO VEHICLE BODY ==========
-# TODO: Connect wheels to vehicle (rear-wheel drive)
-# connect(wheel_left.flange_trans, vehicle.flange_rear)
-# connect(wheel_right.flange_trans, vehicle.flange_rear)
-# ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-# TODO: Connect normal forces from vehicle to wheels
-# connect(vehicle.flange_normal_rear, wheel_left.flange_normal)
-# connect(vehicle.flange_normal_rear, wheel_right.flange_normal)
+# TODO: Connect wheels to vehicle (rear-wheel drive) using new WheelContact connector
+# New pattern: Single connection per wheel handles both traction and normal forces
+# connect(wheel_left.contact, vehicle.contact_rear)
+# connect(wheel_right.contact, vehicle.contact_rear)
 # ========== VEHICLE TO GROUND ==========
-# TODO: Connect vehicle axles to ground
-# connect(vehicle.flange_front, ground_mech.flange)
-# connect(vehicle.flange_rear, ground_mech.flange)
+# TODO: Connect vehicle axles to ground using the traction position from WheelContact
+# connect(vehicle.contact_front.s_traction, ground_mech.flange.s)
+# connect(vehicle.contact_rear.s_traction, ground_mech.flange.s)
 # ========== INITIAL CONDITIONS ==========
 # TODO: Set initial conditions for all differential states
 # Battery:
@@ -381,14 +378,15 @@ relations
     }
   }]
   # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
-  connect(wheel_left.flange_trans, vehicle.flange_rear) [{
+  # New WheelContact connector: single connection handles both traction and normal forces
+  connect(wheel_left.contact, vehicle.contact_rear) [{
     "Dyad": {
       "edges": [{"S": 1, "M": [{"x": 899, "y": 522}], "E": -1}, {"S": -1, "M": [], "E": 2}],
       "junctions": [{"x": 899, "y": 216}],
       "renderStyle": "standard"
     }
   }]
-  connect(wheel_right.flange_trans, vehicle.flange_rear) [{
+  connect(wheel_right.contact, vehicle.contact_rear) [{
     "Dyad": {
       "edges": [
         {
@@ -399,44 +397,6 @@ relations
         {"S": -1, "M": [{"x": 899, "y": 91}, {"x": 899, "y": 216}], "E": 2}
       ],
       "junctions": [{"x": 1025, "y": 91}],
-      "renderStyle": "standard"
-    }
-  }]
-  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-  connect(vehicle.flange_normal_rear, wheel_left.flange_normal) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [], "E": -1}, {"S": -1, "M": [{"x": 818, "y": 416}], "E": 2}],
-      "junctions": [{"x": 990, "y": 416}],
-      "renderStyle": "standard"
-    }
-  }]
-  connect(vehicle.flange_normal_rear, wheel_right.flange_normal) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [], "E": -1}, {"S": -1, "M": [{"x": 1069, "y": 416}], "E": 2}],
-      "junctions": [{"x": 990, "y": 416}],
-      "renderStyle": "standard"
-    }
-  }]
-  # ========== VEHICLE TO GROUND ==========
-  connect(vehicle.flange_front, ground_mech.flange) [{
-    "Dyad": {
-      "edges": [
-        {"S": 1, "M": [], "E": -1},
-        {"S": -1, "M": [{"x": 899, "y": 91}, {"x": 1087.5, "y": 91}], "E": 2}
-      ],
-      "junctions": [{"x": 899, "y": 176}],
-      "renderStyle": "standard"
-    }
-  }]
-  connect(vehicle.flange_rear, ground_mech.flange) [{
-    "Dyad": {
-      "edges": [
-        {
-          "S": 1,
-          "M": [{"x": 899, "y": 216}, {"x": 899, "y": 91}, {"x": 1087.5, "y": 91}],
-          "E": 2
-        }
-      ],
       "renderStyle": "standard"
     }
   }]

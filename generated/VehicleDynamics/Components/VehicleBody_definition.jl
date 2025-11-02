@@ -23,10 +23,8 @@ Physics to Model:
 - Normal force distribution (front/rear axles)
 
 Interface:
-- flange_front: TranslationalComponents.Flange (front axle traction)
-- flange_rear: TranslationalComponents.Flange (rear axle traction)
-- flange_normal_front: TranslationalComponents.Flange (front normal force)
-- flange_normal_rear: TranslationalComponents.Flange (rear normal force)
+- contact_front: WheelContact (front axle - traction + normal force)
+- contact_rear: WheelContact (rear axle - traction + normal force)
 
 Status: Empty skeleton - students implement physics
 Reference: Documentation/Components/VehicleBody.md
@@ -91,10 +89,78 @@ Remember:
 
 ## Connectors
 
- * `flange_front` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
- * `flange_rear` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
- * `flange_normal_front` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
- * `flange_normal_rear` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `contact_front` - ============================================================================
+WheelContact Connector
+============================================================================
+
+This connector represents the mechanical interface between a wheel and
+vehicle body, combining both traction (tangential) and normal (vertical)
+forces along with their corresponding positions.
+
+Physical Interpretation:
+- s_traction: Longitudinal position of the contact point [m]
+- f_traction: Traction force (tangential to road, propels vehicle) [N]
+- s_normal: Vertical position of the contact point [m] (typically fixed)
+- f_normal: Normal force (perpendicular to road, load on wheel) [N]
+
+Sign Conventions:
+- f_traction > 0: Force pushing vehicle forward (from wheel perspective)
+- f_normal > 0: Force pushing wheel down (weight on wheel)
+
+Usage Example:
+In Wheel component:
+contact = WheelContact()  # Connect to vehicle body
+# Wheel receives: N = -contact.f_normal (normal force from body)
+# Wheel provides: F_traction via contact.f_traction
+
+In VehicleBody component:
+contact_rear = WheelContact()  # Connect to rear wheels
+# Body provides: N via contact_rear.f_normal
+# Body receives: F_traction from wheels via contact_rear.f_traction
+
+Connection Pattern:
+connect(wheel_left.contact, vehicle.contact_rear)
+connect(wheel_right.contact, vehicle.contact_rear)
+
+This single connection handles BOTH traction and normal forces automatically!
+
+============================================================================ ([`WheelContact`](@ref))
+ * `contact_rear` - ============================================================================
+WheelContact Connector
+============================================================================
+
+This connector represents the mechanical interface between a wheel and
+vehicle body, combining both traction (tangential) and normal (vertical)
+forces along with their corresponding positions.
+
+Physical Interpretation:
+- s_traction: Longitudinal position of the contact point [m]
+- f_traction: Traction force (tangential to road, propels vehicle) [N]
+- s_normal: Vertical position of the contact point [m] (typically fixed)
+- f_normal: Normal force (perpendicular to road, load on wheel) [N]
+
+Sign Conventions:
+- f_traction > 0: Force pushing vehicle forward (from wheel perspective)
+- f_normal > 0: Force pushing wheel down (weight on wheel)
+
+Usage Example:
+In Wheel component:
+contact = WheelContact()  # Connect to vehicle body
+# Wheel receives: N = -contact.f_normal (normal force from body)
+# Wheel provides: F_traction via contact.f_traction
+
+In VehicleBody component:
+contact_rear = WheelContact()  # Connect to rear wheels
+# Body provides: N via contact_rear.f_normal
+# Body receives: F_traction from wheels via contact_rear.f_traction
+
+Connection Pattern:
+connect(wheel_left.contact, vehicle.contact_rear)
+connect(wheel_right.contact, vehicle.contact_rear)
+
+This single connection handles BOTH traction and normal forces automatically!
+
+============================================================================ ([`WheelContact`](@ref))
 """
 @component function VehicleBody(; name)
   __params = Any[]
@@ -113,10 +179,8 @@ Remember:
   __constants = Any[]
 
   ### Components
-  push!(__systems, @named flange_front = __Dyad__Flange())
-  push!(__systems, @named flange_rear = __Dyad__Flange())
-  push!(__systems, @named flange_normal_front = __Dyad__Flange())
-  push!(__systems, @named flange_normal_rear = __Dyad__Flange())
+  push!(__systems, @named contact_front = ESPDComponents.VehicleDynamics.Connectors.WheelContact())
+  push!(__systems, @named contact_rear = ESPDComponents.VehicleDynamics.Connectors.WheelContact())
 
   ### Guesses
 
@@ -129,15 +193,15 @@ Remember:
 
   ### Equations
   # Placeholder to prevent compilation error (REMOVE when implementing):
-  push!(__eqs, flange_front.f ~ 0)
-  push!(__eqs, flange_rear.f ~ 0)
-  push!(__eqs, flange_normal_front.f ~ 0)
-  push!(__eqs, flange_normal_rear.f ~ 0)
+  push!(__eqs, contact_front.f_traction ~ 0)
+  push!(__eqs, contact_rear.f_traction ~ 0)
+  push!(__eqs, contact_front.f_normal ~ 0)
+  push!(__eqs, contact_rear.f_normal ~ 0)
   # Kinematic constraint: both axles move together
-  push!(__eqs, flange_front.s ~ flange_rear.s)
-  push!(__eqs, flange_normal_front.s ~ 0)
-  # Normal forces act at fixed positions
-  push!(__eqs, flange_normal_rear.s ~ 0)
+  push!(__eqs, contact_front.s_traction ~ contact_rear.s_traction)
+  # Normal positions fixed at ground level
+  push!(__eqs, contact_front.s_normal ~ 0)
+  push!(__eqs, contact_rear.s_normal ~ 0)
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

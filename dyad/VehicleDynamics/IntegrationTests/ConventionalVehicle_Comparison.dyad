@@ -191,8 +191,9 @@ relations
     }
   }]
   # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
-  connect(wheel_left.flange_trans, vehicle.flange_rear) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
-  connect(wheel_right.flange_trans, vehicle.flange_rear) [{
+  # New WheelContact connector: single connection handles both traction and normal forces
+  connect(wheel_left.contact, vehicle.contact_rear) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(wheel_right.contact, vehicle.contact_rear) [{
     "Dyad": {
       "edges": [
         {
@@ -206,49 +207,6 @@ relations
           "E": 2
         }
       ],
-      "renderStyle": "standard"
-    }
-  }]
-  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-  connect(vehicle.flange_normal_rear, wheel_left.flange_normal) [{
-    "Dyad": {
-      "edges": [
-        {"S": 1, "M": [], "E": -1},
-        {
-          "S": -1,
-          "M": [{"x": 775, "y": 366}, {"x": 775, "y": 165}, {"x": 694, "y": 165}],
-          "E": 2
-        }
-      ],
-      "junctions": [{"x": 876, "y": 366}],
-      "renderStyle": "standard"
-    }
-  }]
-  connect(vehicle.flange_normal_rear, wheel_right.flange_normal) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [], "E": -1}, {"S": -1, "M": [{"x": 955, "y": 366}], "E": 2}],
-      "junctions": [{"x": 876, "y": 366}],
-      "renderStyle": "standard"
-    }
-  }]
-  # ========== VEHICLE TO GROUND ==========
-  connect(vehicle.flange_front, ground.flange) [{
-    "Dyad": {
-      "edges": [
-        {"S": 1, "M": [], "E": -1},
-        {"S": -1, "M": [{"x": 785, "y": 156}, {"x": 973.5, "y": 156}], "E": 2}
-      ],
-      "junctions": [{"x": 785, "y": 241}],
-      "renderStyle": "standard"
-    }
-  }]
-  connect(vehicle.flange_rear, ground.flange) [{
-    "Dyad": {
-      "edges": [
-        {"S": 1, "M": [], "E": -1},
-        {"S": -1, "M": [{"x": 785, "y": 156}, {"x": 973.5, "y": 156}], "E": 2}
-      ],
-      "junctions": [{"x": 785, "y": 281}],
       "renderStyle": "standard"
     }
   }]

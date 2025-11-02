@@ -146,17 +146,14 @@ TODO: Connect right side
 connect(differential.flange_right, brake_right.flange_a)
 connect(brake_right.flange_b, wheel_right.flange_rot)
 ========== WHEELS TO VEHICLE BODY ==========
-TODO: Connect wheels to vehicle (rear-wheel drive)
-connect(wheel_left.flange_trans, vehicle.flange_rear)
-connect(wheel_right.flange_trans, vehicle.flange_rear)
-========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-TODO: Connect normal forces from vehicle to wheels
-connect(vehicle.flange_normal_rear, wheel_left.flange_normal)
-connect(vehicle.flange_normal_rear, wheel_right.flange_normal)
+TODO: Connect wheels to vehicle (rear-wheel drive) using new WheelContact connector
+New pattern: Single connection per wheel handles both traction and normal forces
+connect(wheel_left.contact, vehicle.contact_rear)
+connect(wheel_right.contact, vehicle.contact_rear)
 ========== VEHICLE TO GROUND ==========
-TODO: Connect vehicle axles to ground
-connect(vehicle.flange_front, ground_mech.flange)
-connect(vehicle.flange_rear, ground_mech.flange)
+TODO: Connect vehicle axles to ground using the traction position from WheelContact
+connect(vehicle.contact_front.s_traction, ground_mech.flange.s)
+connect(vehicle.contact_rear.s_traction, ground_mech.flange.s)
 ========== INITIAL CONDITIONS ==========
 TODO: Set initial conditions for all differential states
 Battery:
@@ -282,14 +279,9 @@ EV-Specific Metrics:
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
   push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))
   # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
-  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange_rear))
-  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange_rear))
-  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_left.flange_normal))
-  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_right.flange_normal))
-  # ========== VEHICLE TO GROUND ==========
-  push!(__eqs, connect(vehicle.flange_front, ground_mech.flange))
-  push!(__eqs, connect(vehicle.flange_rear, ground_mech.flange))
+  # New WheelContact connector: single connection handles both traction and normal forces
+  push!(__eqs, connect(wheel_left.contact, vehicle.contact_rear))
+  push!(__eqs, connect(wheel_right.contact, vehicle.contact_rear))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

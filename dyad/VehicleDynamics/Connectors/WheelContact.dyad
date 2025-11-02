@@ -1,0 +1,51 @@
+# ============================================================================
+# WheelContact Connector
+# ============================================================================
+#
+# This connector represents the mechanical interface between a wheel and
+# vehicle body, combining both traction (tangential) and normal (vertical)
+# forces along with their corresponding positions.
+#
+# Physical Interpretation:
+# - s_traction: Longitudinal position of the contact point [m]
+# - f_traction: Traction force (tangential to road, propels vehicle) [N]
+# - s_normal: Vertical position of the contact point [m] (typically fixed)
+# - f_normal: Normal force (perpendicular to road, load on wheel) [N]
+#
+# Sign Conventions:
+# - f_traction > 0: Force pushing vehicle forward (from wheel perspective)
+# - f_normal > 0: Force pushing wheel down (weight on wheel)
+#
+# Usage Example:
+# In Wheel component:
+# contact = WheelContact()  # Connect to vehicle body
+# # Wheel receives: N = -contact.f_normal (normal force from body)
+# # Wheel provides: F_traction via contact.f_traction
+#
+# In VehicleBody component:
+# contact_rear = WheelContact()  # Connect to rear wheels
+# # Body provides: N via contact_rear.f_normal
+# # Body receives: F_traction from wheels via contact_rear.f_traction
+#
+# Connection Pattern:
+# connect(wheel_left.contact, vehicle.contact_rear)
+# connect(wheel_right.contact, vehicle.contact_rear)
+#
+# This single connection handles BOTH traction and normal forces automatically!
+#
+# ============================================================================
+connector WheelContact
+  # Traction force (longitudinal/tangential direction)
+  potential s_traction::Position
+  # Longitudinal position [m]
+  flow f_traction::Force
+  # Traction force [N]
+  # Normal force (vertical direction)
+  # Vertical position [m] (usually zero - fixed height)
+  potential s_normal::Position
+  # Normal force [N]
+  flow f_normal::Force
+metadata {
+  "Dyad": {"icons": {"default": "dyad://ESPDComponents/WheelContact.svg"}}
+}
+end

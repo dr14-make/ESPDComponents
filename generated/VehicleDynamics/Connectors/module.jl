@@ -3,7 +3,7 @@
 ### If you edit this code it is likely to get overwritten.
 ### Instead, update the Dyad source code and regenerate this file
 
-module VehicleDynamics
+module Connectors
 
 using ..ESPDComponents
 
@@ -12,9 +12,5 @@ include("experiments.jl")
 include("types.jl")
 include("precompilation.jl")
 # submodules:
-include("Components/module.jl")
-include("IntegrationTests/module.jl")
-include("Tests/module.jl")
-include("Connectors/module.jl")
 
-end # module VehicleDynamics
+end # module Connectors

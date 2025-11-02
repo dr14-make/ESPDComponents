@@ -73,8 +73,42 @@ Remember:
 ## Connectors
 
  * `flange_rot` - This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively. ([`Spline`](@ref))
- * `flange_trans` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
- * `flange_normal` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `contact` - ============================================================================
+WheelContact Connector
+============================================================================
+
+This connector represents the mechanical interface between a wheel and
+vehicle body, combining both traction (tangential) and normal (vertical)
+forces along with their corresponding positions.
+
+Physical Interpretation:
+- s_traction: Longitudinal position of the contact point [m]
+- f_traction: Traction force (tangential to road, propels vehicle) [N]
+- s_normal: Vertical position of the contact point [m] (typically fixed)
+- f_normal: Normal force (perpendicular to road, load on wheel) [N]
+
+Sign Conventions:
+- f_traction > 0: Force pushing vehicle forward (from wheel perspective)
+- f_normal > 0: Force pushing wheel down (weight on wheel)
+
+Usage Example:
+In Wheel component:
+contact = WheelContact()  # Connect to vehicle body
+# Wheel receives: N = -contact.f_normal (normal force from body)
+# Wheel provides: F_traction via contact.f_traction
+
+In VehicleBody component:
+contact_rear = WheelContact()  # Connect to rear wheels
+# Body provides: N via contact_rear.f_normal
+# Body receives: F_traction from wheels via contact_rear.f_traction
+
+Connection Pattern:
+connect(wheel_left.contact, vehicle.contact_rear)
+connect(wheel_right.contact, vehicle.contact_rear)
+
+This single connection handles BOTH traction and normal forces automatically!
+
+============================================================================ ([`WheelContact`](@ref))
 """
 @component function Wheel(; name)
   __params = Any[]
@@ -94,8 +128,7 @@ Remember:
 
   ### Components
   push!(__systems, @named flange_rot = __Dyad__Spline())
-  push!(__systems, @named flange_trans = __Dyad__Flange())
-  push!(__systems, @named flange_normal = __Dyad__Flange())
+  push!(__systems, @named contact = ESPDComponents.VehicleDynamics.Connectors.WheelContact())
 
   ### Guesses
 
@@ -109,10 +142,10 @@ Remember:
   ### Equations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   push!(__eqs, flange_rot.tau ~ 0)
-  push!(__eqs, flange_trans.f ~ 0)
-  push!(__eqs, flange_normal.f ~ 0)
-  # Normal force acts at fixed position
-  push!(__eqs, flange_normal.s ~ 0)
+  push!(__eqs, contact.f_traction ~ 0)
+  push!(__eqs, contact.f_normal ~ 0)
+  # Normal position fixed at ground level
+  push!(__eqs, contact.s_normal ~ 0)
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

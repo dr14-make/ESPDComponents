@@ -56,19 +56,16 @@ using DyadInterface
   # connect(differential.flange_right, brake_right.flange_a)
   # connect(brake_right.flange_b, wheel_right.flange_rot)
   # ========== WHEELS TO VEHICLE BODY ==========
-  # TODO: Connect wheels to vehicle traction flanges
+  # TODO: Connect wheels to vehicle using new WheelContact connector
+  # New pattern: Single connection per wheel handles both traction and normal forces
   # Note: For rear-wheel drive, connect to rear axle
-  # connect(wheel_left.flange_trans, vehicle.flange_rear)
-  # connect(wheel_right.flange_trans, vehicle.flange_rear)
-  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
-  # TODO: Connect normal forces from vehicle to wheels
-  # connect(vehicle.flange_normal_rear, wheel_left.flange_normal)
-  # connect(vehicle.flange_normal_rear, wheel_right.flange_normal)
-  # Note: If front wheels also driven, connect similarly to flange_front and flange_normal_front
+  # connect(wheel_left.contact, vehicle.contact_rear)
+  # connect(wheel_right.contact, vehicle.contact_rear)
+  # Note: If front wheels also driven, connect similarly to vehicle.contact_front
   # ========== VEHICLE TO GROUND ==========
-  # TODO: Connect vehicle axles to ground
-  # connect(vehicle.flange_front, ground.flange)
-  # connect(vehicle.flange_rear, ground.flange)
+  # TODO: Connect vehicle axles to ground using the traction position from WheelContact
+  # connect(vehicle.contact_front.s_traction, ground.flange.s)
+  # connect(vehicle.contact_rear.s_traction, ground.flange.s)
   # ========== INITIAL CONDITIONS ==========
   # TODO: Set initial conditions for all differential states
   # Engine:

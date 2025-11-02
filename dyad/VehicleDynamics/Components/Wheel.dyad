@@ -65,32 +65,24 @@ component Wheel
   flange_rot = Dyad.Spline() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": -60, "y1": 470, "x2": 40, "y2": 570, "rot": 0}
+        "diagram": {"iconName": "default", "x1": -60, "y1": 450, "x2": 40, "y2": 550, "rot": 0}
       }
     }
   }]
-  # Translational side (vehicle body traction)
-  flange_trans = Dyad.Flange() [{
+  # Contact with vehicle body (traction + normal force combined)
+  contact = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 350, "y1": -60, "x2": 450, "y2": 40, "rot": 0}
-      }
-    }
-  }]
-  # Normal force input from vehicle body
-  flange_normal = Dyad.Flange() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "flange_b", "x1": 550, "y1": -60, "x2": 650, "y2": 40, "rot": 90}
+        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
       }
     }
   }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_rot.tau = 0.0
-  flange_trans.f = 0.0
-  flange_normal.f = 0.0
-  # Normal force acts at fixed position
-  flange_normal.s = 0.0
+  contact.f_traction = 0.0
+  contact.f_normal = 0.0
+  # Normal position fixed at ground level
+  contact.s_normal = 0.0
 metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Wheel.svg"}}}
 end

@@ -2,47 +2,53 @@
 
 ## Overview
 
-The ElectricMotor component models a DC brushless motor with electrical-mechanical power conversion, back-EMF, and torque-current relationship.
+The ElectricMotor component models a DC/BLDC motor with electrical-mechanical power conversion, back-EMF, and torque-current relationship.
 
 ---
 
 ## Physical Model
 
-### Governing Equations
+### Your Task
 
-**Electrical Side:**
-```
-V_applied = K_e × ω + I × R_motor
-```
-- `V_applied` = terminal voltage [V]
-- `K_e` = back-EMF constant [V/(rad/s)]
-- `ω` = angular velocity [rad/s]
-- `I` = motor current [A]
-- `R_motor` = winding resistance [Ω]
+Model an electric motor that:
+- Converts electrical power to mechanical torque (and vice versa)
+- Has back-EMF proportional to rotational speed
+- Has torque proportional to current
+- Has electrical resistance causing losses
+- Includes rotor inertia
+- Operates bidirectionally (motor and generator modes)
 
-**Mechanical Side:**
-```
-τ_motor = K_t × I
-J_motor × α = τ_motor + τ_load
-```
-- `τ_motor` = motor torque [N⋅m]
-- `K_t` = torque constant [N⋅m/A]
-- `J_motor` = rotor inertia [kg⋅m²]
-- `α` = angular acceleration [rad/s²]
-- `τ_load` = load torque [N⋅m]
+### Key Physical Phenomena
 
-**Power Balance:**
-```
-P_electrical = V × I
-P_mechanical = τ × ω
-P_loss = I² × R_motor
-```
+1. **Back-EMF (Electromotive Force):**
+   - Rotating motor generates voltage that opposes applied voltage
+   - Proportional to angular velocity
+   - Motor constant relates speed to back-EMF voltage
+   - Limits no-load speed for given voltage
 
-**Note:** For ideal DC motor: K_t = K_e (SI units)
+2. **Torque Generation:**
+   - Current through windings creates torque
+   - Torque constant relates current to torque
+   - For ideal DC motor: torque constant = back-EMF constant (in SI units)
 
-### Motor Modes
-- **Motoring:** I > 0, τ > 0 (power flows electrical → mechanical)
-- **Generating (Regen):** I < 0, τ < 0 (power flows mechanical → electrical)
+3. **Electrical-Mechanical Coupling:**
+   - Applied voltage = back-EMF + resistive voltage drop
+   - Electrical power in = mechanical power out + resistive losses
+   - Bidirectional: can motor (drive) or generate (brake/regen)
+
+4. **Rotational Dynamics:**
+   - Motor has rotor inertia
+   - Net torque (motor torque + load torque) causes angular acceleration
+
+5. **Operating Modes:**
+   - **Motoring:** Positive current → positive torque (driving vehicle)
+   - **Regeneration:** Motor spins faster than no-load speed → negative current → charging battery
+
+### Simplifications for Phase 2B
+- **Ideal motor constants:** K_t = K_e
+- **No saturation:** Linear torque-current relationship
+- **No cogging or ripple:** Smooth torque
+- **Constant parameters:** No temperature dependence
 
 ---
 
@@ -51,33 +57,68 @@ P_loss = I² × R_motor
 ### Interface Requirements
 
 **Connectors:**
-- `ElectricalComponents.Pin()` × 2 for electrical side (or use positive + ground)
-- `RotationalComponents.Flange()` for mechanical output shaft
+- Two `ElectricalComponents.Pin()` for electrical side
+- `RotationalComponents.Flange()` for mechanical shaft
 
-**Parameters:**
-- Back-EMF constant K_e [V/(rad/s)]
-- Torque constant K_t [N⋅m/A]
-- Motor resistance R [Ω]
-- Motor inertia J [kg⋅m²]
+**Suggested Parameters:**
+- Back-EMF constant K_e [V/(rad/s)] or [V·s/rad]
+- Torque constant K_t [N·m/A]
+- Winding resistance [Ω]
+- Rotor inertia [kg·m²]
 
-**Variables:**
-- Voltage, current (electrical)
-- Angular velocity, torque (mechanical)
-- Power (electrical and mechanical)
+### Important Considerations
 
-### Implementation Tasks
-
-1. Implement back-EMF equation
-2. Implement torque-current relationship
-3. Couple electrical and mechanical domains
-4. Include rotational inertia dynamics
-5. Ensure bidirectional power flow (regeneration)
+- **Bidirectional operation:** Must work in both motor and generator modes
+- **Power conservation:** Verify P_elec = P_mech + P_loss
+- **Sign conventions:** Current and torque signs must be consistent
 
 ---
 
 ## Test Harness Requirements
 
 ### Test 1: No-Load Speed
+
+**Objective:** Verify back-EMF limits no-load speed
+
+**Suggested Test Configuration:**
+- Apply constant voltage to motor
+- No mechanical load (free spinning)
+- Observe acceleration to steady-state speed
+
+**What to Validate:**
+- Motor accelerates from rest
+- Reaches steady-state speed where back-EMF ≈ applied voltage
+- Calculate expected no-load speed
+- Verify current is small at steady state (only overcoming friction/resistance)
+
+### Test 2: Load Torque
+
+**Objective:** Verify torque-current relationship
+
+**Suggested Test Configuration:**
+- Motor connected to mechanical load (inertia or damper)
+- Apply voltage
+- Measure steady-state current and torque
+
+**What to Validate:**
+- Torque proportional to current
+- Power balance: electrical power in = mechanical power out + resistive losses
+- Calculate expected current for given load
+
+### Test 3: Regenerative Braking
+
+**Objective:** Verify generator mode operation
+
+**Suggested Test Configuration:**
+- Motor initially spinning at high speed
+- Reduce applied voltage or reverse polarity
+- Motor acts as generator, slowing down
+
+**What to Validate:**
+- Current reverses (negative = generating)
+- Motor decelerates
+- Power flows from mechanical to electrical
+- Verify energy is returned (would charge battery in full system)
 
 **Configuration:**
 - Apply constant voltage (e.g., 400 V)

@@ -8,146 +8,100 @@ The Differential component splits input torque equally between two output shafts
 
 ## Physical Model
 
-### Kinematic Constraints
+### Your Task
 
-**Open Differential (Equal Torque Split):**
-```
-ω_input = (ω_left + ω_right)/2 × ratio
+Model an open differential that:
+- Has one input shaft (from transmission/propshaft)
+- Has two output shafts (to left and right wheels)
+- Splits torque equally between outputs
+- Allows outputs to rotate at different speeds (enables turning)
+- Includes a final drive gear ratio
+- Maintains kinematic relationship between input and output speeds
 
-τ_left = τ_right = -τ_input × ratio/2
-```
+### Key Physical Phenomena
 
-Where:
-- `ω_input` = input shaft (propshaft) speed [rad/s]
-- `ω_left, ω_right` = output shaft (axle) speeds [rad/s]
-- `ratio` = final drive ratio (typical: 3.0-5.0)
-- `τ_input` = input torque [N⋅m]
-- `τ_left, τ_right` = output torques [N⋅m]
+1. **Torque Distribution:**
+   - Input torque is split equally to left and right outputs
+   - Gear ratio amplifies torque at outputs
+   - Equal torque split regardless of speed difference
 
-**Power Conservation:**
-```
-P_in = P_out
-τ_input × ω_input = τ_left × ω_left + τ_right × ω_right
-```
+2. **Speed Averaging:**
+   - Input speed is related to average of output speeds
+   - Final drive ratio relates input speed to output speed
+   - During straight line motion: both outputs same speed
+   - During turning: speeds differ but average is maintained
 
-### Differential Action Example
-- Straight line: ω_left = ω_right = ω_input/ratio
-- Turning: ω_left ≠ ω_right, but average maintained
-- One wheel lifted: ω_lifted = 2×ω_input/ratio, ω_ground = 0
+3. **Differential Action:**
+   - **Straight line:** Both wheels turn at same speed
+   - **Cornering:** Outer wheel faster than inner wheel
+   - **One wheel lifted:** Lifted wheel spins at double speed, grounded wheel stops
 
----
+4. **Power Conservation:**
+   - Power in = Power out (ideal differential, no losses)
+   - Input power = sum of left and right output powers
 
-## Dyad Implementation
-
-```dyad
-component Differential
-  # Mechanical interfaces
-  flange_input = RotationalComponents.Flange()     # Propshaft input
-  flange_left = RotationalComponents.Flange()      # Left axle output
-  flange_right = RotationalComponents.Flange()     # Right axle output
-  
-  # Parameters
-  parameter ratio::Real = 3.5               # Final drive ratio [-]
-  
-  # Variables
-  variable omega_in::AngularVelocity        # Input speed
-  variable omega_left::AngularVelocity      # Left output speed
-  variable omega_right::AngularVelocity     # Right output speed
-  variable tau_in::Torque                   # Input torque
-  variable tau_left::Torque                 # Left output torque
-  variable tau_right::Torque                # Right output torque
-  
-relations
-  # Extract speeds
-  omega_in = der(flange_input.phi)
-  omega_left = der(flange_left.phi)
-  omega_right = der(flange_right.phi)
-  
-  # Kinematic constraint (speed averaging)
-  omega_in = (omega_left + omega_right) / 2 * ratio
-  
-  # Extract torques
-  tau_in = flange_input.tau
-  tau_left = flange_left.tau
-  tau_right = flange_right.tau
-  
-  # Torque split (equal distribution)
-  tau_left = -tau_in * ratio / 2
-  tau_right = -tau_in * ratio / 2
-  
-end
-```
+### Simplifications for Phase 1
+- **Open differential:** Equal torque split (no limited-slip or locking)
+- **No efficiency losses:** Ideal gearing
+- **No inertia:** Massless gears
+- **No backlash:** Instant torque transmission
 
 ---
 
-## Test Harness
+## Implementation Guidelines
 
-### Test 1: Symmetric Load (Straight Line)
+### Interface Requirements
 
-```dyad
-test component TestDifferential_Symmetric
-  diff = Differential(ratio = 3.5)
-  
-  # Input torque
-  input_torque = RotationalComponents.TorqueSource()
-  torque_cmd = BlockComponents.Constant(k = 200.0)  # 200 N⋅m
-  
-  # Symmetric loads (both wheels same)
-  load_left = RotationalComponents.Inertia(J = 1.0)
-  load_right = RotationalComponents.Inertia(J = 1.0)
-  
-relations
-  connect(torque_cmd.y, input_torque.tau)
-  connect(input_torque.flange, diff.flange_input)
-  connect(diff.flange_left, load_left.flange)
-  connect(diff.flange_right, load_right.flange)
-  
-  initial diff.flange_input.phi = 0.0
-  initial der(diff.flange_input.phi) = 0.0
-  initial load_left.phi = 0.0
-  initial der(load_left.phi) = 0.0
-  initial load_right.phi = 0.0
-  initial der(load_right.phi) = 0.0
-end
-```
+**Required Connectors:**
+- One `RotationalComponents.Flange()` for input (propshaft)
+- Two `RotationalComponents.Flange()` for outputs (left and right axles)
 
-**Expected Results:**
-- Torque split: τ_left = τ_right = 200×3.5/2 = 350 N⋅m
-- Symmetric acceleration: α_left = α_right = 350/1.0 = 350 rad/s²
-- Input speed: ω_in = (ω_left + ω_right)/2 × 3.5 = ω_left × 3.5
-- Speed ratio verified: ω_out/ω_in = 1/3.5
+**Suggested Parameters:**
+- Final drive ratio [-] (typical: 3.0-5.0 for cars)
 
-**Validation:**
-```julia
-@assert abs(sol(0.1, idxs=sys.diff.tau_left) - 350.0) < 1.0
-@assert abs(sol(0.1, idxs=sys.diff.tau_right) - 350.0) < 1.0
-@assert abs(sol(1.0, idxs=sys.load_left.omega) - sol(1.0, idxs=sys.load_right.omega)) < 0.1
-@assert abs(sol(1.0, idxs=sys.diff.omega_in) * 3.5 - sol(1.0, idxs=sys.load_left.omega)) < 1.0
-```
+### Important Considerations
 
-### Test 2: Asymmetric Load (Cornering Simulation)
+- **Kinematic constraint:** Input speed must be related to average output speed by ratio
+- **Torque signs:** Pay attention to sign conventions for power flow
+- **Power conservation:** Verify input power equals sum of output powers
+- **Symmetric vs asymmetric loads:** Should handle both cases
 
-```dyad
-test component TestDifferential_Asymmetric
-  diff = Differential(ratio = 3.5)
-  
-  input_torque = RotationalComponents.TorqueSource()
-  torque_cmd = BlockComponents.Constant(k = 200.0)
-  
-  # Different loads (inside wheel lighter load in turn)
-  load_left = RotationalComponents.Damper(d = 0.5)   # Outside wheel
-  load_right = RotationalComponents.Damper(d = 0.3)  # Inside wheel
-  fixed = RotationalComponents.Fixed()
-  
-relations
-  connect(torque_cmd.y, input_torque.tau)
-  connect(input_torque.flange, diff.flange_input)
-  connect(diff.flange_left, load_left.flange_a)
-  connect(diff.flange_right, load_right.flange_a)
-  connect(load_left.flange_b, fixed.flange)
-  connect(load_right.flange_b, fixed.flange)
-  
-  initial diff.flange_input.phi = 0.0
+---
+
+## Test Harness Requirements
+
+### Test 1: Symmetric Load (Straight Line Driving)
+
+**Objective:** Verify torque split and speed ratio with equal loads
+
+**Suggested Test Configuration:**
+- Differential with known ratio
+- Apply input torque
+- Connect identical inertias to both outputs
+- Observe accelerations and speeds
+
+**What to Validate:**
+- Both outputs have equal torque (measure or infer from equal accelerations)
+- Both outputs have equal speed
+- Input-output speed ratio matches final drive ratio
+- Power conservation holds
+
+### Test 2: Asymmetric Load (Turning or One Wheel on Ice)
+
+**Objective:** Verify differential action with unequal loads
+
+**Suggested Test Configuration:**
+- Differential with known ratio
+- Apply input torque
+- Connect different loads to left and right outputs (e.g., one inertia, one damper)
+- Observe speed difference
+
+**What to Validate:**
+- Torques remain equal on both sides despite different loads
+- Speeds differ between left and right
+- Average of output speeds maintains kinematic relationship with input
+- Lower resistance side spins faster (differential behavior)
+- Power conservation still holds
   initial der(diff.flange_input.phi) = 0.0
 end
 ```

@@ -8,100 +8,59 @@ The Brake component models friction braking by applying a torque that opposes ro
 
 ## Physical Model
 
-### Governing Equations
+### Your Task
 
-**Brake Torque:**
-```
-τ_brake = brake_signal × τ_max × sign(ω)
-```
+Model a brake that:
+- Connects between two rotational flanges (through component, not blocking)
+- Receives a control signal (0 = no braking, 1 = full braking)
+- Applies torque that opposes the direction of rotation
+- Dissipates energy as heat (power = torque × angular velocity)
 
-Where:
-- `brake_signal` ∈ [0, 1] = brake pedal position (0=released, 1=full)
-- `τ_max` = maximum brake torque [N⋅m]
-- `ω` = angular velocity [rad/s]
-- `sign(ω)` = ensures torque opposes rotation
+### Key Physical Phenomena
 
-**Power Dissipation:**
-```
-P_brake = τ_brake × ω
-```
-All power converted to heat (not modeled in Phase 1).
+1. **Friction Torque:**
+   - Proportional to brake command signal
+   - Always opposes motion (acts as resistive torque)
+   - Maximum torque when fully applied
 
----
+2. **Energy Dissipation:**
+   - All kinetic energy converted to heat
+   - Power dissipation depends on torque and speed
 
-## Dyad Implementation
+### Important Considerations
 
-```dyad
-component Brake
-  # Rotational interfaces
-  flange_a = RotationalComponents.Flange()  # Input (from driveline)
-  flange_b = RotationalComponents.Flange()  # Output (to wheel)
-  
-  # Control input
-  brake_input = BlockComponents.RealInput()  # Brake signal [0, 1]
-  
-  # Parameters
-  parameter tau_max::Torque = 2000.0        # Maximum brake torque [N⋅m]
-  parameter omega_cutoff::AngularVelocity = 0.1  # Smooth sign cutoff [rad/s]
-  
-  # Variables
-  variable omega::AngularVelocity           # Shaft speed
-  variable tau_brake::Torque                # Applied brake torque
-  variable brake_signal::Real               # Brake command [0, 1]
-  variable P_dissipated::Power              # Dissipated power
-  
-relations
-  # Get brake command
-  brake_signal = brake_input.u
-  
-  # Compute speed (same on both sides - rigid connection)
-  omega = der(flange_a.phi)
-  flange_a.phi = flange_b.phi
-  
-  # Brake torque with smooth sign
-  tau_brake = brake_signal * tau_max * tanh(omega / omega_cutoff)
-  
-  # Torque balance
-  flange_a.tau + tau_brake + flange_b.tau = 0
-  
-  # Power dissipation
-  P_dissipated = tau_brake * omega
-  
-end
-```
+- **Sign handling:** Brake torque must oppose rotation direction
+- **Smooth behavior at zero velocity:** Avoid discontinuities
+- **Through component:** Both flanges must have consistent kinematics
 
 ---
 
-## Test Harness
+## Implementation Guidelines
 
-### Test: Spinning Wheel Brake Application
+### Interface Requirements
 
-```dyad
-test component TestBrake
-  brake = Brake(tau_max = 1000.0)
-  inertia = RotationalComponents.Inertia(J = 2.0)
-  brake_cmd = BlockComponents.Step(
-    height = 1.0,          # Full brake
-    offset = 0.0,
-    startTime = 2.0        # Apply at t=2s
-  )
-  fixed = RotationalComponents.Fixed()
-  
-relations
-  connect(brake_cmd.y, brake.brake_input)
-  connect(inertia.flange_a, brake.flange_a)
-  connect(brake.flange_b, fixed.flange)
-  
-  # Start spinning
-  initial inertia.flange_a.phi = 0.0
-  initial der(inertia.flange_a.phi) = 50.0  # 50 rad/s
-end
+**Required Connectors:**
+- Two `RotationalComponents.Flange()` connections (input and output - through component)
+- `BlockComponents.RealInput()` for brake command signal [0, 1]
 
-analysis TestBrake_Analysis
-  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
-  model = TestBrake()
-end
-```
+**Suggested Parameters:**
+- Maximum brake torque [N⋅m]
+
+### Test Harness Requirements
+
+**Objective:** Verify brake can decelerate a spinning mass
+
+**Suggested Test Configuration:**
+- Spinning inertia (use `RotationalComponents.Inertia()`)
+- Brake component
+- Step input for brake command (0 → 1 at some time)
+- Fixed reference
+
+**What to Validate:**
+- Initial spin-down with no braking
+- Application of brake causes deceleration
+- Calculate expected deceleration from torque and inertia
+- Verify energy dissipation matches kinetic energy loss
 
 **Expected Results:**
 - 0 < t < 2s: Free spinning at ω = 50 rad/s

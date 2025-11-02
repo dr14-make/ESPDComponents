@@ -8,150 +8,99 @@ The Engine component models an internal combustion engine as a torque source wit
 
 ## Physical Model
 
-### Governing Equations
+### Your Task
 
-**Torque Production:**
-```
-τ_engine = throttle × τ_max(ω)
-```
+Model an internal combustion engine that:
+- Produces torque based on throttle input (0-1 range)
+- Has a characteristic torque curve that varies with engine speed
+- Includes rotational inertia of the crankshaft and moving parts
+- Has friction losses that oppose rotation
+- Can accelerate/decelerate based on net torque
 
-Where:
-- `throttle` ∈ [0, 1] = throttle position
-- `τ_max(ω)` = maximum torque envelope as function of speed
+### Key Physical Phenomena
 
-**Typical Torque Curve (gasoline engine):**
-```
-τ_max(ω) = τ_peak × f(ω/ω_rated)
+1. **Speed-Dependent Torque:**
+   - Maximum available torque varies with engine speed
+   - Typical curve: low at idle, peaks at mid-range RPM, drops at high RPM
+   - Throttle position scales the torque (0% = no torque, 100% = max available)
 
-f(x) = 4x(1-x)  for 0 < x < 1  (simplified parabolic)
-```
+2. **Rotational Inertia:**
+   - Engine has rotational mass (flywheel, crankshaft, pistons)
+   - Resists changes in angular velocity
+   - Net torque causes angular acceleration
 
-**Rotational Dynamics:**
-```
-J_engine × α = τ_engine - τ_load - τ_friction
-```
+3. **Friction Losses:**
+   - Internal friction opposes rotation
+   - Can be constant or speed-dependent
+   - Reduces net output torque
 
-**Friction Losses:**
-```
-τ_friction = c₀ + c₁×ω + c₂×ω²
-```
+4. **Power Characteristics:**
+   - Power = Torque × Speed
+   - Power curve typically peaks at higher RPM than torque curve
 
----
-
-## Dyad Implementation (Simplified - Phase 1)
-
-```dyad
-component EngineSimple
-  # Mechanical interface
-  flange = RotationalComponents.Flange()
-  
-  # Control input
-  throttle_input = BlockComponents.RealInput()  # [0, 1]
-  
-  # Parameters
-  parameter J::Inertia = 0.15               # Engine inertia [kg⋅m²]
-  parameter tau_peak::Torque = 200.0        # Peak torque [N⋅m]
-  parameter omega_peak::AngularVelocity = 420.0  # Speed at peak (≈4000 rpm)
-  parameter omega_max::AngularVelocity = 630.0   # Max speed (≈6000 rpm)
-  parameter tau_friction::Torque = 15.0     # Friction torque [N⋅m]
-  
-  # Variables
-  variable omega::AngularVelocity
-  variable alpha::AngularAcceleration
-  variable throttle::Real
-  variable tau_max::Torque                  # Max available torque at current speed
-  variable tau_produced::Torque             # Actual torque produced
-  variable tau_net::Torque                  # Net torque to shaft
-  
-relations
-  # Speed
-  omega = der(flange.phi)
-  alpha = der(omega)
-  
-  # Throttle
-  throttle = throttle_input.u
-  
-  # Torque curve (parabolic approximation)
-  tau_max = if omega < omega_max then
-    tau_peak * 4 * (omega/omega_max) * (1 - omega/omega_max)
-  else
-    0.0  # Fuel cut at redline
-  end
-  
-  # Produced torque
-  tau_produced = throttle * tau_max
-  
-  # Net torque (with friction)
-  tau_net = tau_produced - tau_friction * sign(omega)
-  
-  # Dynamics
-  J * alpha = tau_net + flange.tau
-  
-end
-```
+### Simplifications for Phase 1
+- **Simple torque curve:** Use analytical function (parabola, polynomial) instead of lookup table
+- **Simplified friction:** Constant friction torque
+- **No thermal effects:** Ignore temperature-dependent performance
+- **Instant response:** No combustion cycle dynamics
 
 ---
 
-## Test Harness
+## Implementation Guidelines
 
-### Test 1: No-Load Speed Sweep
+### Interface Requirements
 
-```dyad
-test component TestEngine_NoLoad
-  engine = EngineSimple(
-    tau_peak = 200.0,
-    omega_peak = 420.0,  # 4000 rpm
-    omega_max = 630.0    # 6000 rpm
-  )
-  
-  throttle_cmd = BlockComponents.Ramp(
-    height = 1.0,
-    duration = 10.0,
-    offset = 0.0,
-    startTime = 1.0
-  )
-  
-  # No load - just engine inertia
-  
-relations
-  connect(throttle_cmd.y, engine.throttle_input)
-  
-  initial engine.flange.phi = 0.0
-  initial der(engine.flange.phi) = 10.0  # Start at idle
-end
-```
+**Required Connectors:**
+- `RotationalComponents.Flange()` for mechanical output to driveline
+- `BlockComponents.RealInput()` for throttle command [0, 1]
 
-**Expected Results:**
-- Engine accelerates as throttle increases
-- Peak torque at ω = ω_peak
-- Speed plateaus near ω_max at full throttle
-- Friction limits final speed
+**Suggested Parameters:**
+- Engine inertia [kg⋅m²]
+- Peak torque [N⋅m]
+- Engine speed at peak torque [rad/s or rpm]
+- Maximum engine speed [rad/s or rpm]
+- Friction torque [N⋅m]
 
-### Test 2: Load Torque Characteristic
+### Important Considerations
 
-```dyad
-test component TestEngine_Load
-  engine = EngineSimple()
-  load = RotationalComponents.Damper(d = 0.5)  # Load torque = 0.5×ω
-  fixed = RotationalComponents.Fixed()
-  throttle_cmd = BlockComponents.Constant(k = 0.5)  # 50% throttle
-  
-relations
-  connect(throttle_cmd.y, engine.throttle_input)
-  connect(engine.flange, load.flange_a)
-  connect(load.flange_b, fixed.flange)
-  
-  initial engine.flange.phi = 0.0
-  initial der(engine.flange.phi) = 0.0
-end
-```
+- **Torque curve shape:** Research typical gasoline/diesel engine characteristics
+- **Speed limits:** Engine should not exceed maximum speed (fuel cut, rev limiter)
+- **Sign conventions:** Positive torque accelerates engine
+- **Initialization:** Need initial engine speed (idle RPM)
 
-**Expected Results:**
-- Equilibrium when τ_produced = τ_load + τ_friction
-- At 50% throttle and some speed ω_eq:
-  - τ_produced = 0.5 × τ_max(ω_eq)
-  - τ_load = 0.5 × ω_eq
-  - Solve numerically for ω_eq
+---
+
+## Test Harness Requirements
+
+### Test 1: No-Load Acceleration
+
+**Objective:** Verify torque curve shape and speed-dependent behavior
+
+**Suggested Test Configuration:**
+- Engine with no load (free to spin)
+- Ramp throttle from 0 to 100%
+- Observe acceleration profile and final speed
+
+**What to Validate:**
+- Engine accelerates when throttle applied
+- Speed increases follow expected torque curve behavior
+- Friction limits maximum no-load speed
+- Plot torque vs. speed and compare to intended curve shape
+
+### Test 2: Steady-State with Load
+
+**Objective:** Verify equilibrium between engine torque and load
+
+**Suggested Test Configuration:**
+- Engine with resistive load (damper or constant torque)
+- Apply constant throttle
+- Wait for steady-state speed
+
+**What to Validate:**
+- System reaches equilibrium (constant speed)
+- Calculate expected equilibrium speed where engine torque = load + friction
+- Verify simulation matches calculation
+- Power balance: power produced = power dissipated
 
 ---
 

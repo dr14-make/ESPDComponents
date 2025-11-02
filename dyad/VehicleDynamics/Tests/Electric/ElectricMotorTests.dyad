@@ -1,0 +1,115 @@
+# ============================================================================
+# Electric Motor Component Tests
+# ============================================================================
+#
+# This file contains test harnesses for the ElectricMotor component.
+#
+# Required Tests:
+#   1. No-load speed (verify back-EMF limits speed)
+#   2. Load torque (verify torque-current relationship)
+#   3. Regenerative braking (verify generator mode)
+#
+# Reference: Documentation/ElectricMotor.md
+# ============================================================================
+
+# ============================================================================
+# TEST 1: No-Load Speed
+# ============================================================================
+# Objective: Verify back-EMF limits no-load speed
+# Expected: Motor accelerates to speed where V_bemf ≈ V_applied
+
+test component TestElectricMotor_NoLoad
+  # TODO: Instantiate your ElectricMotor component
+  # motor = ElectricMotor(
+  #   K_e = 0.1,
+  #   K_t = 0.1,
+  #   R = 0.5,
+  #   J = 0.01
+  # )
+  
+  # TODO: Add voltage source
+  # voltage_source = ElectricalComponents.VoltageSource()
+  # voltage_cmd = BlockComponents.Constant(k = 48.0)  # 48V applied
+  # ground = ElectricalComponents.Ground()
+  
+relations
+  # TODO: Connect components
+  # connect(voltage_cmd.y, voltage_source.V_input)
+  # connect(voltage_source.p, motor.p)
+  # connect(voltage_source.n, ground.g)
+  # connect(motor.n, ground.g)
+  
+  # TODO: Set initial conditions
+  # initial motor.flange.phi = 0.0
+  # initial der(motor.flange.phi) = 0.0
+  
+  # VALIDATION (calculate BEFORE running):
+  # At steady state: V_bemf = K_e * omega_ss ≈ V_applied
+  # Expected no-load speed: omega_ss = V_applied / K_e
+  # Current at steady state: small (only overcoming resistance)
+end
+
+# TODO: Add analysis
+
+# ============================================================================
+# TEST 2: Load Torque
+# ============================================================================
+# Objective: Verify torque-current relationship
+# Expected: tau = K_t * I
+
+test component TestElectricMotor_Load
+  # TODO: Implement test with mechanical load
+  # Connect motor to inertia and damper
+  # Measure steady-state current and torque
+  # Verify tau = K_t * I
+  # Verify power balance
+  
+relations
+  # TODO: Implement
+  
+  # VALIDATION:
+  # Torque proportional to current
+  # P_elec = P_mech + P_loss
+  # Steady-state speed where motor torque = load torque
+end
+
+# TODO: Add analysis
+
+# ============================================================================
+# TEST 3: Regenerative Braking
+# ============================================================================
+# Objective: Verify generator mode operation
+# Expected: Negative current, motor decelerates, power flows back
+
+test component TestElectricMotor_Regeneration
+  # TODO: Implement test for generator mode
+  # Start motor spinning at high speed
+  # Reduce applied voltage
+  # Motor acts as generator (I < 0)
+  # Verify power flows from mechanical to electrical
+  
+relations
+  # TODO: Implement
+  
+  # VALIDATION:
+  # Current becomes negative (generating)
+  # Motor decelerates
+  # Power flows mechanical → electrical
+  # Energy recovered
+end
+
+# TODO: Add analysis
+
+# ============================================================================
+# VALIDATION CHECKLIST
+# ============================================================================
+#
+# [ ] Back-EMF equation correct (V_bemf = K_e * omega)
+# [ ] Torque equation correct (tau = K_t * I)
+# [ ] Voltage equation satisfied (V = V_bemf + I*R)
+# [ ] Rotational dynamics correct (J*alpha = tau + tau_load)
+# [ ] Power conservation verified (P_elec = P_mech + I²*R)
+# [ ] Motor mode works (driving)
+# [ ] Generator mode works (regeneration)
+#
+# ============================================================================

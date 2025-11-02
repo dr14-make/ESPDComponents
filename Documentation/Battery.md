@@ -8,58 +8,45 @@ The Battery component models an electrical energy storage system with voltage-cu
 
 ## Physical Model
 
-### Governing Equations
+### Your Task
 
-**Terminal Voltage:**
+Model a battery that:
+- Provides electrical energy with voltage that depends on state of charge
+- Has internal resistance causing voltage drop under load
+- Tracks state of charge (SOC) as energy is drawn
+- Can both discharge (motor mode) and charge (regeneration mode)
+- Has power losses in internal resistance
 
-```
-V_terminal = V_oc - I × R_internal
-```
+### Key Physical Phenomena
 
-Where:
+1. **Terminal Voltage:**
+   - Voltage at terminals differs from open-circuit voltage
+   - Internal resistance causes voltage drop proportional to current
+   - Discharge: terminal voltage < open-circuit voltage
+   - Charge: terminal voltage > open-circuit voltage
 
-- `V_terminal` = voltage at battery terminals [V]
-- `V_oc` = open-circuit voltage (function of SOC) [V]
-- `I` = current (positive = discharge, negative = charge) [A]
-- `R_internal` = internal resistance [Ω]
+2. **State of Charge (SOC):**
+   - Represents fraction of energy remaining (0 = empty, 1 = full)
+   - Decreases during discharge, increases during charge
+   - Rate of change depends on current and capacity
+   - SOC is a differential state (integral of current)
 
-**State of Charge Dynamics:**
+3. **Open-Circuit Voltage:**
+   - Voltage when no current flows
+   - Depends on SOC (typically decreases as battery depletes)
+   - Can use simple linear relationship or more complex curve
 
-```
-dSOC/dt = -I / Q_capacity
-```
-
-Where:
-
-- `SOC` ∈ [0, 1] = state of charge (1 = full, 0 = empty)
-- `Q_capacity` = battery capacity [A⋅s] or [A⋅h]
-- Negative sign: discharge (I > 0) decreases SOC
-
-**Open-Circuit Voltage:**
-
-```
-V_oc(SOC) = V_nominal + k × (SOC - 0.5)
-```
-
-Simple linear approximation:
-
-- `V_nominal` = nominal voltage at SOC=0.5
-- `k` = voltage sensitivity to SOC
-
-**Power:**
-
-```
-P_electrical = V_terminal × I
-P_loss = I² × R_internal
-P_stored = -d(Energy)/dt = -V_oc × I
-```
+4. **Power and Energy:**
+   - Electrical power = voltage × current
+   - Internal losses = current² × resistance
+   - Stored energy decreases during discharge
 
 ### Simplifications for Phase 2B
 
-- **Linear V_oc(SOC):** Simple approximation (realistic curves in Phase 4)
-- **Constant R_internal:** No temperature or SOC dependence
-- **No thermal effects:** Assume constant temperature
-- **Ideal charge/discharge:** No coulombic efficiency loss
+- **Linear voltage-SOC relationship:** Use simple approximation
+- **Constant internal resistance:** No temperature or SOC dependence
+- **No thermal modeling:** Ignore temperature effects
+- **Perfect coulombic efficiency:** No charge/discharge losses beyond resistive
 
 ---
 
@@ -69,16 +56,57 @@ P_stored = -d(Energy)/dt = -V_oc × I
 
 **Required Connectors:**
 
-- Use `ElectricalComponents.Pin()` for positive terminal
-- Use `ElectricalComponents.Pin()` for negative terminal (or ground)
+- `ElectricalComponents.Pin()` for positive terminal
+- `ElectricalComponents.Pin()` for negative terminal (or reference/ground)
 
-**Required Parameters:**
+**Suggested Parameters:**
 
 - Nominal voltage [V]
-- Capacity [A⋅h] or [A⋅s]
+- Total capacity [A·h or A·s]
 - Internal resistance [Ω]
-- Voltage sensitivity to SOC [V]
+- Voltage range or sensitivity to SOC [V]
 - Initial SOC [-]
+
+### Important Considerations
+
+- **Sign convention:** Current direction (discharge vs. charge)
+- **SOC limits:** Prevent SOC from going below 0 or above 1
+- **Initialization:** Need initial SOC value
+- **Units:** Be careful with A·h vs A·s for capacity
+
+---
+
+## Test Harness Requirements
+
+### Test 1: Constant Discharge
+
+**Objective:** Verify SOC dynamics and voltage drop
+
+**Suggested Test Configuration:**
+- Battery connected to resistive load
+- Constant current discharge
+- Monitor voltage and SOC over time
+
+**What to Validate:**
+- SOC decreases linearly with constant current
+- Terminal voltage drops due to internal resistance
+- Calculate expected SOC after discharge time
+- Verify voltage drop matches current × resistance
+- Check energy balance
+
+### Test 2: Regeneration (Charging)
+
+**Objective:** Verify charging behavior
+
+**Suggested Test Configuration:**
+- Battery connected to current source (negative current = charging)
+- Monitor SOC increase
+- Verify voltage rise due to charging current
+
+**What to Validate:**
+- SOC increases during charge
+- Terminal voltage > open-circuit voltage during charge
+- Power balance: electrical power in = stored energy rate + resistive losses
 
 **Required Variables:**
 

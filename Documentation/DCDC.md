@@ -8,36 +8,38 @@ The DC-DC converter transforms voltage between battery and motor with efficiency
 
 ## Physical Model
 
-### Governing Equations
+### Your Task
 
-**Voltage Transformation:**
-```
-V_out = V_in × ratio × η
-```
-- `ratio` = voltage transformation ratio
-- `η` = efficiency (< 1.0)
+Model a DC-DC converter that:
+- Transforms voltage level (buck/step-down or boost/step-up)
+- Maintains power balance with efficiency losses
+- Has input and output electrical ports
+- Current relationship follows from power conservation
+- Dissipates power as heat
 
-**Power Balance (Ideal):**
-```
-P_in = P_out / η
-V_in × I_in = V_out × I_out / η
-```
+### Key Physical Phenomena
 
-**Current Relationship:**
-```
-I_in = I_out × ratio / η
-```
+1. **Voltage Transformation:**
+   - Output voltage related to input voltage by a ratio
+   - Buck converter: lowers voltage (ratio < 1)
+   - Boost converter: raises voltage (ratio > 1)
+   - Efficiency reduces ideal transformation
 
-**Power Loss:**
-```
-P_loss = P_in - P_out = P_out × (1/η - 1)
-```
+2. **Power Conservation:**
+   - Input power = output power / efficiency
+   - Power loss = input power - output power
+   - Current and voltage inversely related through transformation
+
+3. **Bidirectional Operation:**
+   - Forward mode: battery to motor (power flow one direction)
+   - Reverse mode: motor to battery during regeneration (power flow reversed)
+   - Efficiency may differ by direction
 
 ### Simplifications for Phase 2B
-- **Fixed ratio:** Buck (step-down) or boost (step-up)
-- **Constant efficiency:** No load dependence
-- **Instantaneous:** No switching dynamics
-- **Ideal regulation:** Output voltage maintained perfectly
+- **Fixed ratio:** No pulse-width modulation control
+- **Constant efficiency:** Independent of load
+- **Instantaneous response:** No switching dynamics
+- **Ideal regulation:** Perfect voltage control
 
 ---
 
@@ -46,17 +48,51 @@ P_loss = P_in - P_out = P_out × (1/η - 1)
 ### Interface Requirements
 
 **Connectors:**
-- `ElectricalComponents.Pin()` × 2 for input side
-- `ElectricalComponents.Pin()` × 2 for output side
+- Two `ElectricalComponents.Pin()` for input side (battery)
+- Two `ElectricalComponents.Pin()` for output side (motor)
 
-**Parameters:**
-- Voltage ratio (e.g., 0.5 for buck, 2.0 for boost)
-- Efficiency η [0-1] (typical: 0.90-0.98)
+**Suggested Parameters:**
+- Voltage transformation ratio
+- Efficiency [0-1] (typical: 0.90-0.98)
 
-**Variables:**
-- Input voltage, current, power
-- Output voltage, current, power
-- Power loss
+### Important Considerations
+
+- **Power balance:** Input power must equal output power plus losses
+- **Current direction:** Handle bidirectional power flow
+- **Sign conventions:** Voltage and current signs must be consistent
+
+---
+
+## Test Harness Requirements
+
+### Test 1: Steady-State Power Conversion
+
+**Objective:** Verify voltage transformation and power balance
+
+**Suggested Test Configuration:**
+- DC-DC converter with known ratio and efficiency
+- Voltage source on input
+- Resistive load on output
+- Measure steady-state voltages, currents, powers
+
+**What to Validate:**
+- Output voltage = input voltage × ratio (accounting for efficiency)
+- Power balance: P_in = P_out / efficiency
+- Calculate expected output power from input and efficiency
+- Verify power loss = P_in - P_out
+
+### Test 2: Variable Load
+
+**Objective:** Verify converter maintains voltage ratio under changing load
+
+**Suggested Test Configuration:**
+- Step change in load resistance
+- Observe voltage and power response
+
+**What to Validate:**
+- Voltage ratio maintained despite load change
+- Power scales with load
+- Efficiency remains constant
 
 ### Implementation Tasks
 

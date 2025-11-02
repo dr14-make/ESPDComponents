@@ -8,23 +8,45 @@ The MotorController translates driver demand (throttle/brake) into motor torque 
 
 ## Physical Model
 
-### Control Logic
+### Your Task
 
-**Torque Command:**
-```
-τ_cmd = throttle × τ_max_motor    (if throttle > 0)
-τ_cmd = brake × τ_max_regen × (-1) (if brake > 0 and ω > ω_min_regen)
-```
+Model a motor controller that:
+- Receives throttle input (0-1) from driver
+- Receives brake input (0-1) from driver
+- Receives motor speed feedback
+- Outputs torque command to motor
+- Implements regenerative braking logic
+- Handles mode transitions (drive, coast, regen brake)
 
-**Regenerative Braking Conditions:**
-- Motor speed above minimum threshold (ω > ω_min)
-- Brake pedal pressed
-- Battery not fully charged (SOC < SOC_max)
+### Key Physical Phenomena
 
-**Current Command:**
-```
-I_cmd = τ_cmd / K_t
-```
+1. **Throttle Mapping:**
+   - Throttle input (0-1) maps to motor torque command
+   - 0 = no torque, 1 = maximum motor torque
+   - Linear or nonlinear mapping
+
+2. **Regenerative Braking:**
+   - When brake is pressed and motor is spinning, use motor as generator
+   - Negative torque command slows vehicle while generating electrical power
+   - Only works above minimum speed threshold
+   - Limited by maximum regen torque (battery charge rate, motor limits)
+
+3. **Mode Logic:**
+   - **Accelerate:** Throttle > 0, brake = 0 → positive torque
+   - **Coast:** Throttle = 0, brake = 0 → zero torque (or small drag)
+   - **Regen:** Brake > 0, speed sufficient → negative torque
+   - **Mechanical brake:** Brake > 0, speed too low for regen → mechanical brakes (separate system)
+
+4. **Speed Threshold:**
+   - Regen ineffective at very low speeds
+   - Below threshold, rely on mechanical brakes
+   - Smooth transition between regen and mechanical
+
+### Simplifications for Phase 2B
+- **Simple logic:** No PID control, direct mapping
+- **No blending:** Regenerative vs mechanical braking not blended (just threshold)
+- **No battery feedback:** Don't check SOC for regen limiting
+- **No thermal limits:** Assume motor can sustain torque
 
 ---
 
@@ -35,42 +57,64 @@ I_cmd = τ_cmd / K_t
 **Connectors:**
 - `BlockComponents.RealInput()` for throttle [0-1]
 - `BlockComponents.RealInput()` for brake [0-1]
-- `BlockComponents.RealInput()` for motor speed (feedback)
-- `BlockComponents.RealOutput()` for torque command [N⋅m]
+- `BlockComponents.RealInput()` for motor speed feedback [rad/s]
+- `BlockComponents.RealOutput()` for torque command [N·m]
 
-**Parameters:**
-- Maximum motor torque [N⋅m]
-- Maximum regen torque [N⋅m]
-- Minimum regen speed [rad/s]
-- Torque constant K_t [N⋅m/A]
+**Suggested Parameters:**
+- Maximum motor torque (positive) [N·m]
+- Maximum regen torque (magnitude) [N·m]
+- Minimum speed for regen [rad/s]
 
-### Implementation Tasks
+### Important Considerations
 
-1. Read throttle and brake inputs
-2. Calculate torque command based on mode
-3. Implement regeneration logic with speed threshold
-4. Output torque command (or current command)
-5. Handle mode transitions smoothly
+- **Priority logic:** What if throttle AND brake both pressed?
+- **Sign conventions:** Positive torque = forward acceleration, negative = braking
+- **Smooth transitions:** Avoid discontinuous torque commands
 
 ---
 
 ## Test Harness Requirements
 
-### Test 1: Acceleration
+### Test 1: Acceleration Mode
 
-**Configuration:**
-- Throttle: 0.5 (50%)
-- Brake: 0
-- Motor speed: increasing from 0
+**Objective:** Verify throttle to torque mapping
 
-**Expected:** τ_cmd = 0.5 × τ_max
+**Suggested Test Configuration:**
+- Provide various throttle inputs (0, 0.5, 1.0)
+- Brake = 0
+- Motor speed > 0
+
+**What to Validate:**
+- Torque output scales with throttle
+- Torque = throttle × max_torque
+- No regen torque when throttle active
 
 ### Test 2: Regenerative Braking
 
-**Configuration:**
-- Throttle: 0
-- Brake: 0.3 (30%)
-- Motor speed: 100 rad/s (above threshold)
+**Objective:** Verify regen mode activation and torque
+
+**Suggested Test Configuration:**
+- Throttle = 0
+- Brake input (0.5, then 1.0)
+- Motor speed above regen threshold
+
+**What to Validate:**
+- Torque command becomes negative
+- Magnitude proportional to brake input
+- Only activates above speed threshold
+
+### Test 3: Low-Speed Transition
+
+**Objective:** Verify regen disables below speed threshold
+
+**Suggested Test Configuration:**
+- Brake pressed
+- Motor speed ramping down through threshold
+
+**What to Validate:**
+- Regen torque active above threshold
+- Regen torque goes to zero below threshold
+- Smooth transition (no discontinuity)
 
 **Expected:** τ_cmd < 0 (negative torque for braking)
 

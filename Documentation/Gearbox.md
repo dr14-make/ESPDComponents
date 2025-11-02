@@ -2,101 +2,106 @@
 
 ## Overview
 
-The Gearbox component models a multi-ratio transmission with discrete gear ratios, mechanical efficiency losses, and smooth gear shifting transitions.
+The Gearbox component models a multi-ratio transmission with discrete gear ratios and mechanical efficiency losses.
 
 ---
 
 ## Physical Model
 
-### Kinematic Relationships
+### Your Task
 
-**Gear Ratio:**
-```
-ω_out = ω_in / ratio[gear]
-```
+Model a multi-speed gearbox that:
+- Has input and output rotational flanges
+- Receives a gear selection command (integer: 1, 2, 3, etc.)
+- Implements different speed ratios for each gear
+- Multiplies torque inversely to speed ratio
+- Includes efficiency losses
+- Maintains power conservation (with losses)
 
-**Torque Multiplication:**
-```
-τ_out = -τ_in × ratio[gear] × η
-```
+### Key Physical Phenomena
 
-Where:
-- `ratio[gear]` = speed ratio for selected gear
-  - Example: [3.5, 2.0, 1.3, 1.0, 0.8] for 5-speed
-  - 1st gear: highest ratio (low speed, high torque)
-  - 5th gear: lowest ratio (high speed, low torque, overdrive)
-- `η` = mechanical efficiency (typical: 0.95-0.98)
+1. **Gear Ratios:**
+   - Each gear has a different speed ratio
+   - **Low gears (1st, 2nd):** High ratio = low output speed, high output torque (acceleration)
+   - **High gears (4th, 5th):** Low ratio = high output speed, low output torque (cruising)
+   - Typical 5-speed: [3.5, 2.0, 1.3, 1.0, 0.8]
 
-**Efficiency Direction Dependence:**
-```
-Forward power flow (engine driving):
-  τ_out = -τ_in × ratio × η
+2. **Speed-Torque Trade-off:**
+   - Output speed inversely proportional to ratio
+   - Output torque proportional to ratio
+   - Power ideally conserved (torque × speed in = torque × speed out, minus losses)
 
-Reverse power flow (engine braking):
-  τ_out = -τ_in × ratio / η
-```
+3. **Mechanical Losses:**
+   - Efficiency factor (typically 95-98%)
+   - Reduces output power relative to input
+   - Losses converted to heat
+
+4. **Discrete Gear Selection:**
+   - Gear number is an integer input
+   - Instant switching between ratios (Phase 1 simplification)
+   - No clutch slip or synchromesh dynamics
+
+### Simplifications for Phase 1
+- **Instant shifting:** No transition dynamics between gears
+- **No clutch:** Direct connection assumed
+- **Constant efficiency:** Not load or speed dependent
+- **No neutral/reverse:** Only forward gears
 
 ---
 
-## Dyad Implementation (Simplified - Phase 1)
+## Implementation Guidelines
 
-```dyad
-component GearboxSimple
-  # Mechanical interfaces
-  flange_in = RotationalComponents.Flange()    # Input (from engine/clutch)
-  flange_out = RotationalComponents.Flange()   # Output (to driveline)
-  
-  # Control input
-  gear_cmd = BlockComponents.IntegerInput()    # Gear number: 1, 2, 3, ...
-  
-  # Parameters
-  parameter ratios::Vector{Real} = [3.5, 2.0, 1.3, 1.0, 0.8]  # Gear ratios
-  parameter efficiencies::Vector{Real} = [0.96, 0.97, 0.97, 0.97, 0.97]
-  parameter J_in::Inertia = 0.05               # Input shaft inertia [kg⋅m²]
-  parameter tau_loss::Torque = 5.0             # Constant loss torque [N⋅m]
-  
-  # Variables
-  variable gear::Integer                        # Current gear number
-  variable ratio::Real                          # Current ratio
-  variable eta::Real                            # Current efficiency
-  variable omega_in::AngularVelocity
-  variable omega_out::AngularVelocity
-  variable tau_in::Torque
-  variable tau_out::Torque
-  variable tau_loss_actual::Torque
-  
-relations
-  # Gear selection
-  gear = gear_cmd.u
-  
-  # Lookup ratio and efficiency (with bounds checking)
-  ratio = if 1 <= gear <= length(ratios) then ratios[gear] else ratios[1]
-  eta = if 1 <= gear <= length(efficiencies) then efficiencies[gear] else efficiencies[1]
-  
-  # Speeds
-  omega_in = der(flange_in.phi)
-  omega_out = der(flange_out.phi)
-  
-  # Kinematic constraint
-  omega_out = omega_in / ratio
-  
-  # Torques
-  tau_in = flange_in.tau
-  tau_out = flange_out.tau
-  
-  # Loss torque (opposes motion)
-  tau_loss_actual = tau_loss * sign(omega_in)
-  
-  # Torque balance with efficiency
-  tau_out = -(tau_in - tau_loss_actual) * ratio * eta
-  
-  # Input inertia dynamics (optional)
-  J_in * der(omega_in) = tau_in - tau_loss_actual - (-tau_out / (ratio * eta))
-  
-end
-```
+### Interface Requirements
 
-**Note:** Smooth gear shifting (non-integer gear values) is Phase 4 feature.
+**Required Connectors:**
+- Two `RotationalComponents.Flange()` connections (input from engine, output to driveline)
+- Control input for gear selection (integer signal)
+
+**Suggested Parameters:**
+- Array/vector of gear ratios (one per gear)
+- Efficiency value(s)
+- Optional: Input shaft inertia
+
+### Important Considerations
+
+- **Array/vector parameters:** May need to use Dyad array syntax or multiple parameters
+- **Gear selection logic:** Handle bounds (what if gear command is 0 or > max?)
+- **Power conservation:** Check that P_out ≈ P_in × efficiency
+- **Sign conventions:** Torque direction through transformation
+
+---
+
+## Test Harness Requirements
+
+### Test 1: Fixed Gear Ratio Verification
+
+**Objective:** Verify speed ratio and torque multiplication for a single gear
+
+**Suggested Test Configuration:**
+- Gearbox set to specific gear (e.g., 2nd gear, ratio = 2.0)
+- Apply input torque
+- Connect load to output
+- Verify relationships
+
+**What to Validate:**
+- Output speed = input speed / ratio
+- Output torque ≈ input torque × ratio × efficiency
+- Power conservation with losses
+
+### Test 2: Gear Shifting
+
+**Objective:** Verify behavior when changing gears
+
+**Suggested Test Configuration:**
+- Start in one gear
+- Change gear command during simulation
+- Observe speed and torque changes
+
+**What to Validate:**
+- Speed ratio changes instantly (Phase 1)
+- Torque multiplication changes accordingly
+- No discontinuities that break solver
+- System remains stable through shifts
 
 ---
 

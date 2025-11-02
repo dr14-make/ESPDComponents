@@ -1,0 +1,133 @@
+# ============================================================================
+# VehicleBody Component Tests
+# ============================================================================
+#
+# This file contains test harnesses for the VehicleBody component.
+# Students should create multiple tests to validate different aspects.
+#
+# Required Tests:
+#   1. Constant force acceleration (verify F=ma)
+#   2. Aerodynamic drag (verify terminal velocity)
+#   3. Coast-down (verify combined resistance)
+#
+# Reference: Documentation/VehicleBody.md
+# ============================================================================
+
+# ============================================================================
+# TEST 1: Constant Force Acceleration
+# ============================================================================
+# Objective: Verify Newton's second law with no resistance forces
+# Expected: Linear velocity increase, quadratic position increase
+
+test component TestVehicleBody_ConstantForce
+  # TODO: Instantiate your VehicleBody component
+  # vehicle = VehicleBody(
+  #   m = 1000.0,
+  #   Cd = 0.0,    # No drag
+  #   Crr = 0.0    # No rolling resistance
+  # )
+  
+  # TODO: Add force source
+  # force_source = TranslationalComponents.Force()
+  # force_cmd = BlockComponents.Constant(k = 1000.0)  # 1000 N constant force
+  
+  # TODO: Add ground reference
+  # ground = TranslationalComponents.Fixed()
+  
+relations
+  # TODO: Connect components
+  # connect(force_cmd.y, force_source.f_input)
+  # connect(force_source.flange, vehicle.flange)
+  # connect(vehicle.flange, ground.flange)
+  
+  # TODO: Set initial conditions
+  # initial vehicle.flange.s = 0.0
+  # initial vehicle.v = 0.0
+  
+  # VALIDATION (calculate BEFORE running):
+  # With m=1000kg, F=1000N:
+  # - Expected acceleration: a = F/m = ? m/s²
+  # - Expected velocity at t=10s: v = ? m/s
+  # - Expected position at t=10s: s = ? m
+end
+
+# TODO: Add analysis
+# analysis TestVehicleBody_ConstantForce_Analysis
+#   extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+#   model = TestVehicleBody_ConstantForce()
+# end
+
+# ============================================================================
+# TEST 2: Aerodynamic Drag
+# ============================================================================
+# Objective: Verify drag force and terminal velocity
+# Expected: Velocity approaches terminal velocity asymptotically
+
+test component TestVehicleBody_AeroDrag
+  # TODO: Implement test with drag enabled
+  # Use realistic parameters: m=1000kg, Cd=0.4, A=2.0m², rho=1.225
+  # Apply constant thrust force
+  # Calculate terminal velocity where F_thrust = F_drag
+  
+relations
+  # TODO: Implement
+  
+  # VALIDATION (calculate BEFORE running):
+  # Terminal velocity where thrust = drag
+  # At steady state: acceleration should be zero
+  # Power balance: P_thrust = P_drag
+end
+
+# TODO: Add analysis
+
+# ============================================================================
+# TEST 3: Coast-Down
+# ============================================================================
+# Objective: Verify combined drag and rolling resistance
+# Expected: Vehicle decelerates to stop
+
+test component TestVehicleBody_CoastDown
+  # TODO: Implement test with both drag and rolling resistance
+  # Use realistic parameters
+  # Start with initial velocity (e.g., 30 m/s)
+  # No applied force (coasting)
+  # Vehicle should slow down and stop
+  
+relations
+  # TODO: Implement
+  
+  # VALIDATION (calculate BEFORE running):
+  # Initial deceleration at v=30 m/s
+  # Drag dominates at high speed
+  # Rolling resistance dominates at low speed
+  # Time and distance to stop
+end
+
+# TODO: Add analysis
+
+# ============================================================================
+# ADDITIONAL TESTS (Optional but recommended)
+# ============================================================================
+
+# test component TestVehicleBody_GradeResistance
+#   # Test on incline/decline
+# end
+
+# test component TestVehicleBody_PowerBalance
+#   # Verify energy conservation
+# end
+
+# ============================================================================
+# VALIDATION CHECKLIST
+# ============================================================================
+#
+# For each test, verify:
+# [ ] Compiles without errors
+# [ ] Runs to completion (sol.retcode == Success)
+# [ ] No NaN or Inf values
+# [ ] Results match hand calculations (< 1% error)
+# [ ] Energy is conserved
+# [ ] Force balance verified numerically
+# [ ] Boundary conditions tested
+#
+# ============================================================================

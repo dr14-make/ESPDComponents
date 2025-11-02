@@ -62,11 +62,35 @@
 # ============================================================================
 component MotorController
   # Control inputs
-  throttle_input = RealInput()
-  brake_input = RealInput()
-  speed_input = RealInput()
+  throttle_input = RealInput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -40, "y1": 160, "x2": 60, "y2": 260, "rot": 0}
+      }
+    }
+  }]
+  brake_input = RealInput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -40, "y1": 450, "x2": 60, "y2": 550, "rot": 0}
+      }
+    }
+  }]
+  speed_input = RealInput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -40, "y1": 780, "x2": 60, "y2": 880, "rot": 0}
+      }
+    }
+  }]
   # Control output
-  torque_output = RealOutput()
+  torque_output = RealOutput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   # No torque command placeholder

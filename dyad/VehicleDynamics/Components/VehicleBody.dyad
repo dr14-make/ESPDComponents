@@ -52,7 +52,13 @@
 # ============================================================================
 component VehicleBody
   # Mechanical connection to wheels
-  flange = Dyad.Flange()
+  flange = Dyad.Flange() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -60, "y1": 450, "x2": 40, "y2": 550, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange.f = 0.0

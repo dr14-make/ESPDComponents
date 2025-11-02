@@ -53,9 +53,27 @@
 # ============================================================================
 component Differential
   # One input, two outputs
-  flange_input = Dyad.Spline()
-  flange_left = Dyad.Spline()
-  flange_right = Dyad.Spline()
+  flange_input = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 450, "y1": -50, "x2": 550, "y2": 50, "rot": 0}
+      }
+    }
+  }]
+  flange_left = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -50, "y1": 450, "x2": 50, "y2": 550, "rot": 0}
+      }
+    }
+  }]
+  flange_right = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_input.tau = 0.0

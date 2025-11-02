@@ -56,8 +56,20 @@
 # ============================================================================
 component Battery
   # Electrical terminals
-  p = Dyad.Pin()
-  n = Dyad.Pin()
+  p = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "pos", "x1": 780, "y1": -60, "x2": 880, "y2": 40, "rot": 0}
+      }
+    }
+  }]
+  n = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "neg", "x1": 140, "y1": -60, "x2": 240, "y2": 40, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   # Constant voltage placeholder

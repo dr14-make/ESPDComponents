@@ -55,11 +55,35 @@
 # ============================================================================
 component DCDC
   # Input side (battery)
-  p_in = Dyad.Pin()
-  n_in = Dyad.Pin()
+  p_in = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "pos", "x1": -50, "y1": 280, "x2": 50, "y2": 380, "rot": 0}
+      }
+    }
+  }]
+  n_in = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "neg", "x1": -50, "y1": 640, "x2": 50, "y2": 740, "rot": 0}
+      }
+    }
+  }]
   # Output side (motor)
-  p_out = Dyad.Pin()
-  n_out = Dyad.Pin()
+  p_out = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "pos", "x1": 950, "y1": 270, "x2": 1050, "y2": 370, "rot": 0}
+      }
+    }
+  }]
+  n_out = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "neg", "x1": 950, "y1": 660, "x2": 1050, "y2": 760, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   p_out.v - n_out.v = (p_in.v - n_in.v) * 0.5

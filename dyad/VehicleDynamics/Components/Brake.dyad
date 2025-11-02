@@ -47,10 +47,28 @@
 # ============================================================================
 component Brake
   # Through component (two rotational flanges)
-  flange_a = Dyad.Spline()
-  flange_b = Dyad.Spline()
+  flange_a = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 950, "y1": 440, "x2": 1050, "y2": 540, "rot": 0}
+      }
+    }
+  }]
+  flange_b = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -60, "y1": 450, "x2": 40, "y2": 550, "rot": 0}
+      }
+    }
+  }]
   # Control input
-  brake_input = RealInput()
+  brake_input = RealInput() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 450, "y1": -40, "x2": 550, "y2": 60, "rot": 90}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_a.phi = flange_b.phi

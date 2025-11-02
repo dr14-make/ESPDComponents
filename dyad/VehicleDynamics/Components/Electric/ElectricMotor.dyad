@@ -70,10 +70,28 @@
 # ============================================================================
 component ElectricMotor
   # Electrical side
-  p = Dyad.Pin()
-  n = Dyad.Pin()
+  p = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "pos", "x1": -50, "y1": 640, "x2": 50, "y2": 740, "rot": 0}
+      }
+    }
+  }]
+  n = Dyad.Pin() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "neg", "x1": -50, "y1": 230, "x2": 50, "y2": 330, "rot": 0}
+      }
+    }
+  }]
   # Mechanical side
-  flange = Dyad.Spline()
+  flange = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 940, "y1": 450, "x2": 1040, "y2": 550, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   # Current conservation

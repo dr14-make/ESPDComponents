@@ -46,9 +46,21 @@
 # ============================================================================
 component Wheel
   # Rotational side (driveline)
-  flange_rot = Dyad.Spline()
+  flange_rot = Dyad.Spline() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -60, "y1": 450, "x2": 40, "y2": 550, "rot": 0}
+      }
+    }
+  }]
   # Translational side (vehicle body)
-  flange_trans = Dyad.Flange()
+  flange_trans = Dyad.Flange() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
+      }
+    }
+  }]
 relations
   # Placeholder to prevent compilation error (REMOVE when implementing):
   flange_rot.tau = 0.0

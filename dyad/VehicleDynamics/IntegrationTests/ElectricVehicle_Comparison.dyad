@@ -207,22 +207,47 @@ relations
       "renderStyle": "standard"
     }
   }]
-  # ========== WHEELS TO VEHICLE BODY ==========
-  connect(wheel_left.flange_trans, vehicle.flange) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
-  connect(wheel_right.flange_trans, vehicle.flange) [{
+  # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
+  connect(wheel_left.flange_trans, vehicle.flange_rear) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(wheel_right.flange_trans, vehicle.flange_rear) [{
     "Dyad": {
       "edges": [{"S": 1, "M": [{"x": 901, "y": 504}], "E": -1}, {"S": -1, "M": [], "E": 2}],
       "junctions": [{"x": 901, "y": 624}],
       "renderStyle": "standard"
     }
   }]
+  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+  connect(vehicle.flange_normal_rear, wheel_left.flange_normal) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 850, "y": 650}, {"x": 639, "y": 750}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(vehicle.flange_normal_rear, wheel_right.flange_normal) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 850, "y": 650}, {"x": 639, "y": 550}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
   # ========== VEHICLE TO GROUND ==========
-  connect(vehicle.flange, ground_mech.flange) [{
+  connect(vehicle.flange_front, ground_mech.flange) [{
     "Dyad": {
       "edges": [
         {
           "S": 1,
-          "M": [{"x": 901, "y": 624}, {"x": 901, "y": 694}, {"x": 1087, "y": 694}],
+          "M": [{"x": 901, "y": 300}, {"x": 901, "y": 694}, {"x": 1087, "y": 694}],
+          "E": 2
+        }
+      ],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(vehicle.flange_rear, ground_mech.flange) [{
+    "Dyad": {
+      "edges": [
+        {
+          "S": 1,
+          "M": [{"x": 901, "y": 624}, {"x": 1087, "y": 694}],
           "E": 2
         }
       ],

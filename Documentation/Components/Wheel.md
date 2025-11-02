@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Wheel component models the coupling between rotational (driveline) and translational (vehicle body) domains. It represents a rigid wheel with rolling radius that converts torque to traction force under a zero-slip assumption.
+The Wheel component models the coupling between rotational (driveline) and translational (vehicle body) domains, with explicit consideration of normal force for traction limits. This is critical for modeling realistic acceleration, braking, and the effects of load transfer.
 
 ---
 
@@ -17,8 +17,10 @@ The Wheel component models the coupling between rotational (driveline) and trans
     [Driveline] → ⊕ Wheel ⊕ → [Vehicle Body]
                    radius r
                       ↓
-                   N (normal force)
+                   N (normal force from body)
                    ═══ (road surface)
+                   
+    Traction Limit: F_max = μ × N
 ```
 
 ### Your Task
@@ -27,32 +29,49 @@ Model a wheel that:
 
 - Connects the **rotational driveline** (torque, angular velocity) to the **translational vehicle body** (force, linear velocity)
 - Converts between domains using the wheel's rolling radius
-- Enforces a kinematic constraint (rolling without slipping)
+- **Receives normal force from vehicle body** (critical for load transfer effects!)
+- **Enforces traction limits** based on normal force: F_max = μ·N
+- Enforces a kinematic constraint (rolling without slipping, up to traction limit)
 - Optionally includes rotational inertia effects
 
 ### Key Physical Phenomena
 
-1. **Rolling Without Slip:**
+1. **Rolling Without Slip (up to friction limit):**
    - The linear velocity of the contact patch equals the tangential velocity of the wheel
-   - Relationship involves angular velocity and rolling radius
+   - v = ω·r (kinematic constraint)
+   - This holds AS LONG AS traction is not exceeded
 
 2. **Force-Torque Coupling:**
    - Torque from driveline creates traction force on ground
+   - Desired force: F_desired = τ / r
    - Relationship involves rolling radius as a lever arm
 
-3. **Power Conservation:**
-   - Power in rotational domain equals power in translational domain (for ideal wheel)
-   - Verify: rotational power = translational power
+3. **Traction Limit (NEW - Critical!):**
+   - Maximum traction depends on: F_max = μ·N
+   - μ = tire-road friction coefficient (dry: 0.8-1.0, wet: 0.5-0.7)
+   - N = normal force (from vehicle body, varies with load transfer!)
+   - Actual traction: F = min(F_desired, F_max)
+   - If F_desired > F_max → wheel spins (slip occurs)
 
-4. **Optional Inertia:**
+4. **Power Conservation:**
+   - Power in rotational domain equals power in translational domain (for ideal wheel)
+   - Verify: τ·ω = F·v
+
+5. **Load Transfer Interaction:**
+   - During acceleration: rear wheels gain normal force → more traction!
+   - During braking: front wheels gain normal force → more braking!
+   - This is feedback coupling between VehicleBody and Wheel
+
+6. **Optional Inertia:**
    - Wheel has rotational inertia that resists angular acceleration
    - May include rolling resistance as a resistive torque
 
 ### Simplifications for Phase 1
 
-- **Zero slip:** Perfect traction, no wheel spin or lock-up
+- **Zero slip (below limit):** Perfect traction when F < F_max
+- **Instant saturation:** Abrupt transition at traction limit (can smooth later)
 - **Rigid wheel:** No tire deflection or compliance
-- **No vertical dynamics:** Normal force is constant
+- **No slip dynamics:** Advanced slip models (Pacejka) for Phase 4
 - **Start simple:** Begin with massless wheel, add inertia if desired
 
 ---
@@ -63,83 +82,137 @@ Model a wheel that:
 
 **Required Connectors:**
 
-- `RotationalComponents.Flange()` for driveline connection (torque input)
-- `TranslationalComponents.Flange()` for vehicle body connection (force output)
-- **ACTION:** Read both Flange sources to understand sign conventions!
+- `flange_rot`: RotationalComponents.Flange (driveline connection - torque input)
+- `flange_trans`: TranslationalComponents.Flange (vehicle body connection - traction force)
+- `flange_normal`: TranslationalComponents.Flange (normal force input from vehicle body)
+- **ACTION:** Read all Flange sources to understand sign conventions!
 
 **Suggested Parameters:**
 
 - Rolling radius [m] (typical: 0.25-0.40 m)
+- Friction coefficient μ [-] (dry: 0.8-1.0, wet: 0.5-0.7, ice: 0.1-0.3)
 - Optional: Rotational inertia [kg⋅m²] if including wheel mass effects
 
 ### Important Considerations
 
-- **Sign conventions:** Torque and force must have consistent signs through the transformation
-- **Power conservation:** Rotational power must equal translational power
-- **Kinematic constraint:** The no-slip condition is a constraint equation
+- **Sign conventions:** Torque, forces, and velocities must have consistent signs
+- **Normal force direction:** N comes FROM vehicle body (check sign!)
+- **Traction saturation:** Must handle F_desired > F_max smoothly
+- **Power conservation:** Rotational power must equal translational power (when not slipping)
+- **Kinematic constraint:** v = ω·r holds when no slip occurs
 - **Initialization:** If including inertia, need initial angular velocity
+- **Smooth saturation:** Use tanh() for smooth transition, not hard clamp
 
 ---
 
 ## Test Harness Requirements
 
-### Test 1: Kinematic Verification
+### Test 1: Traction Limit Verification
 
-**Objective:** Verify the rolling-without-slip relationship
+**Objective:** Verify that wheel respects traction limit F_max = μ·N
 
 **Suggested Test Configuration:**
 
-- Wheel with known radius
-- Apply constant angular velocity (use `RotationalComponents.Speed()`)
-- Connect to vehicle body mass
-- Measure resulting linear velocity
+- Wheel with known radius r = 0.3 m, friction μ = 0.8
+- Apply constant normal force N = 5000 N (use `TranslationalComponents.Force()`)
+- Apply varying torque (ramp or step)
+- Observe traction force saturation
 
 **Components You'll Need:**
 
 - Your Wheel component
-- `RotationalComponents.Speed()` for angular velocity source
-- `BlockComponents.Constant()` for the velocity value
-- `TranslationalComponents.Mass()` for the vehicle body
+- `TranslationalComponents.Force()` for normal force input
+- `RotationalComponents.Torque()` for drive torque
+- `TranslationalComponents.Mass()` for vehicle body
+- `BlockComponents.Constant()` or `BlockComponents.Ramp()` for signals
 
 **What to Validate:**
 
-- Calculate expected linear velocity from angular velocity and radius **before** running
-- Verify linear velocity matches prediction
-- Check power conservation: τ·ω = F·v
+- Calculate F_max = μ·N = 0.8 × 5000 = 4000 N **before** running
+- At low torque: F_traction = τ/r (linear relationship)
+- At high torque: F_traction saturates at F_max = 4000 N
+- Verify wheel doesn't produce more force than physically possible
+- Example: τ = 2000 N·m → F_desired = 2000/0.3 = 6667 N → F_actual = 4000 N (limited!)
 
-### Test 2: Force-Torque Relationship
+### Test 2: Load Transfer Effect on Traction
 
-**Objective:** Verify torque-to-force conversion
+**Objective:** Verify that increasing normal force increases traction capacity
+
+**Suggested Test Configuration:**
+
+- Wheel with known parameters
+- Vary normal force (simulate load transfer)
+- Apply constant high torque (exceeds initial traction limit)
+- Observe how traction force increases with normal force
+
+**What to Validate:**
+
+- At N = 3000 N: F_max = 0.8 × 3000 = 2400 N
+- At N = 5000 N: F_max = 0.8 × 5000 = 4000 N
+- At N = 7000 N: F_max = 0.8 × 7000 = 5600 N
+- With same torque, traction force should scale with normal force
+- This demonstrates why load transfer matters!
+
+### Test 3: Kinematic Verification (No Slip)
+
+**Objective:** Verify the rolling-without-slip relationship below traction limit
 
 **Suggested Test Configuration:**
 
 - Wheel with known radius
-- Apply constant torque (use `RotationalComponents.TorqueSource()`)
-- Connect to vehicle body with some resistance (damper)
-- Verify steady-state force and velocity
+- Apply moderate torque (below traction limit)
+- Apply adequate normal force
+- Measure resulting linear and angular velocities
 
 **What to Validate:**
 
-- Calculate expected traction force from torque and radius **before** running
-- Verify force matches prediction
-- Check steady-state velocity makes sense with load
-- Verify power balance
+- Calculate expected relationship: v = ω·r
+- Verify v/ω = r (error < 0.1%)
+- Check power conservation: τ·ω = F·v (when not saturated)
+- Verify no slip occurs when within traction limit
 
-### Test 3: Inertia Response (If Implemented)
+### Test 4: Wheel Spin Scenario
 
-**Objective:** Verify rotational dynamics if wheel has inertia
+**Objective:** Verify behavior when traction limit is exceeded
 
 **Suggested Test Configuration:**
 
-- Wheel with specified inertia
-- Apply step torque input
-- Observe angular acceleration response
+- Rear-wheel-drive scenario
+- Low normal force (e.g., lightweight vehicle or ice)
+- High torque demand (aggressive acceleration)
+- Observe traction saturation and reduced acceleration
 
 **What to Validate:**
 
-- Calculate expected angular acceleration from τ = J·α
-- Verify acceleration matches prediction
-- Check transient response is physically reasonable
+- Calculate available traction: F_max = μ·N
+- Calculate desired traction: F_desired = τ/r
+- If F_desired > F_max: vehicle acceleration limited by F_max, not τ
+- Acceleration: a = F_max / m (not F_desired / m)
+- Energy consideration: excess torque "wasted" in wheel spin
+
+### Test 5: Integration with VehicleBody (Advanced)
+
+**Objective:** Verify complete load transfer feedback loop
+
+**Suggested Test Configuration:**
+
+- Connect Wheel to VehicleBody with normal force coupling
+- Apply high torque to rear wheels
+- Observe:
+  1. Initial traction attempt
+  2. Acceleration begins
+  3. Load transfers to rear
+  4. N_rear increases → F_max increases
+  5. More traction available → more acceleration
+  6. This is self-reinforcing (up to a limit)
+
+**What to Validate:**
+
+- Calculate initial F_max with static weight distribution
+- As vehicle accelerates, rear N increases
+- Traction capacity increases dynamically
+- Final acceleration higher than would be possible without load transfer
+- This is realistic vehicle dynamics!
 
 ---
 
@@ -151,8 +224,23 @@ Model a wheel that:
 |-----------|-----------|--------------|-----------|
 | Radius (m) | 0.25-0.28 | 0.30-0.34 | 0.35-0.42 |
 | Tire Size | 175/65R14 | 205/55R16 | 265/70R17 |
+| Friction μ [-] | See table below | See table below | See table below |
 | Inertia (kg⋅m²) | 0.5-1.0 | 1.0-1.5 | 2.0-3.0 |
 | Mass (kg) | 8-12 | 12-18 | 20-30 |
+
+### Tire-Road Friction Coefficients (μ)
+
+| Surface Condition | Longitudinal μ | Braking μ | Lateral μ | Notes |
+|-------------------|----------------|-----------|-----------|-------|
+| **Dry asphalt** | 0.8 - 1.0 | 0.9 - 1.1 | 0.7 - 0.9 | Best grip |
+| **Wet asphalt** | 0.5 - 0.7 | 0.6 - 0.8 | 0.4 - 0.6 | Reduced ~30% |
+| **Dry concrete** | 0.7 - 0.9 | 0.8 - 1.0 | 0.6 - 0.8 | Slightly lower |
+| **Wet concrete** | 0.4 - 0.6 | 0.5 - 0.7 | 0.3 - 0.5 | Slippery |
+| **Gravel** | 0.4 - 0.6 | 0.5 - 0.7 | 0.3 - 0.5 | Loose surface |
+| **Snow (packed)** | 0.2 - 0.4 | 0.3 - 0.5 | 0.2 - 0.3 | Very low |
+| **Ice** | 0.1 - 0.2 | 0.15 - 0.25 | 0.1 - 0.15 | Critical! |
+
+**For Phase 1 simplicity:** Use single μ value (dry asphalt, μ = 0.8)
 
 ### Calculating Radius from Tire Size
 

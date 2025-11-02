@@ -98,11 +98,15 @@ end
   # ========== RIGHT SIDE ==========
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
   push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))
-  # ========== WHEELS TO VEHICLE BODY ==========
-  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange))
-  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange))
+  # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
+  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange_rear))
+  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange_rear))
+  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_left.flange_normal))
+  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_right.flange_normal))
   # ========== VEHICLE TO GROUND ==========
-  push!(__eqs, connect(vehicle.flange, ground.flange))
+  push!(__eqs, connect(vehicle.flange_front, ground.flange))
+  push!(__eqs, connect(vehicle.flange_rear, ground.flange))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

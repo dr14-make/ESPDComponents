@@ -11,58 +11,90 @@
 VehicleBody Component
 ============================================================================
 
-Description: Translational dynamics of vehicle mass with resistance forces
-Domain: Translational mechanics
+Description: Longitudinal and pitch dynamics of vehicle with front/rear axles
+Domain: Translational mechanics with pitch dynamics
 
 Physics to Model:
-- Newton's second law (F = ma)
+- Longitudinal: Newton's second law (F = ma)
+- Pitch dynamics: Load transfer during acceleration/braking
 - Aerodynamic drag (quadratic with velocity)
-- Rolling resistance (proportional to weight)
+- Rolling resistance (proportional to normal forces)
 - Grade resistance (weight component on slope)
+- Normal force distribution (front/rear axles)
 
 Interface:
-- flange: TranslationalComponents.Flange (connects to wheels)
+- flange_front: TranslationalComponents.Flange (front axle traction)
+- flange_rear: TranslationalComponents.Flange (rear axle traction)
+- flange_normal_front: TranslationalComponents.Flange (front normal force)
+- flange_normal_rear: TranslationalComponents.Flange (rear normal force)
 
 Status: Empty skeleton - students implement physics
-Reference: Documentation/VehicleBody.md
+Reference: Documentation/Components/VehicleBody.md
 
 TODO: Add parameters
 Example:
-parameter m::Mass = 1500.0           # Vehicle mass [kg]
-parameter Cd::Real = 0.32            # Drag coefficient [-]
-parameter A::Area = 2.2              # Frontal area [m²]
-parameter rho::Density = 1.225       # Air density [kg/m³]
-parameter Crr::Real = 0.015          # Rolling resistance coefficient [-]
-parameter g::Acceleration = 9.81     # Gravitational acceleration [m/s²]
-parameter theta::Angle = 0.0         # Road grade angle [rad]
+parameter m::Mass = 1500.0               # Vehicle mass [kg]
+parameter L::Length = 2.7                # Wheelbase [m]
+parameter h_cg::Length = 0.5             # CG height above ground [m]
+parameter a::Length = 1.2                # Distance CG to front axle [m]
+parameter b::Length = 1.5                # Distance CG to rear axle [m]
+parameter Cd::Real = 0.32                # Drag coefficient [-]
+parameter A::Area = 2.2                  # Frontal area [m²]
+parameter rho::Density = 1.225           # Air density [kg/m³]
+parameter Crr::Real = 0.015              # Rolling resistance coefficient [-]
+parameter g::Acceleration = 9.81         # Gravitational acceleration [m/s²]
+parameter theta::Angle = 0.0             # Road grade angle [rad]
 
 TODO: Add variables
 Example:
-variable v::Velocity                 # Velocity [m/s]
-variable a::Acceleration             # Acceleration [m/s²]
-variable F_drag::Force               # Aerodynamic drag force [N]
-variable F_roll::Force               # Rolling resistance force [N]
-variable F_grade::Force              # Grade resistance force [N]
-variable F_traction::Force           # Traction force from wheels [N]
+variable v::Velocity                     # Longitudinal velocity [m/s]
+variable a::Acceleration                 # Longitudinal acceleration [m/s²]
+variable F_drag::Force                   # Aerodynamic drag force [N]
+variable F_roll_front::Force             # Front rolling resistance [N]
+variable F_roll_rear::Force              # Rear rolling resistance [N]
+variable F_grade::Force                  # Grade resistance force [N]
+variable F_traction_front::Force         # Front traction force [N]
+variable F_traction_rear::Force          # Rear traction force [N]
+variable N_front::Force                  # Front axle normal force [N]
+variable N_rear::Force                   # Rear axle normal force [N]
+variable N_static_front::Force           # Static front normal (no accel) [N]
+variable N_static_rear::Force            # Static rear normal (no accel) [N]
+variable delta_N::Force                  # Load transfer magnitude [N]
 
 TODO: Implement physics
 Hints:
-1. Extract velocity from flange: v = der(flange.s)
-2. Calculate drag force (depends on v²)
-3. Calculate rolling resistance (depends on weight and grade)
-4. Calculate grade resistance (weight component)
-5. Apply Newton's second law: m*a = F_traction - F_drag - F_roll - F_grade
-6. Connect force to flange with correct sign
+1. Extract velocity: v = der(flange_front.s) = der(flange_rear.s) (same velocity)
+2. Extract traction forces: F_traction_front = -flange_front.f, F_traction_rear = -flange_rear.f
+3. Calculate static normal forces (no acceleration):
+- N_static_front = m*g*cos(theta) * b/L  (weight on front, using rear moment arm)
+- N_static_rear = m*g*cos(theta) * a/L   (weight on rear, using front moment arm)
+4. Calculate load transfer due to longitudinal acceleration:
+- delta_N = m*a*h_cg/L  (positive during accel = weight shifts rear)
+- N_front = N_static_front - delta_N
+- N_rear = N_static_rear + delta_N
+5. Calculate drag: F_drag = 0.5*rho*Cd*A*v^2 * sign(v)
+6. Calculate rolling resistance per axle: F_roll = Crr * N * sign(v)
+7. Calculate grade resistance: F_grade = m*g*sin(theta)
+8. Longitudinal dynamics: m*a = F_traction_front + F_traction_rear - F_drag - F_roll_front - F_roll_rear - F_grade
+9. Connect normal forces to flanges: flange_normal_front.f = -N_front, flange_normal_rear.f = -N_rear
+10. Enforce kinematic constraints: flange_front.s = flange_rear.s (same position)
 
 Remember:
+- Load transfer during acceleration: weight shifts to rear (N_rear increases)
+- Load transfer during braking: weight shifts to front (N_front increases)
+- Normal forces must sum to total weight: N_front + N_rear = m*g*cos(theta)
 - Drag and rolling resistance oppose motion (check signs!)
 - Handle v=0 smoothly (avoid discontinuities)
-- Verify energy conservation: P_in = P_drag + P_roll + dE_kinetic/dt
+- Wheelbase: L = a + b
+- Verify force balance and moment balance (about CG)
 ============================================================================
 
 ## Connectors
 
- * `flange` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `flange_front` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `flange_rear` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `flange_normal_front` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `flange_normal_rear` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
 """
 @component function VehicleBody(; name)
   __params = Any[]
@@ -81,7 +113,10 @@ Remember:
   __constants = Any[]
 
   ### Components
-  push!(__systems, @named flange = __Dyad__Flange())
+  push!(__systems, @named flange_front = __Dyad__Flange())
+  push!(__systems, @named flange_rear = __Dyad__Flange())
+  push!(__systems, @named flange_normal_front = __Dyad__Flange())
+  push!(__systems, @named flange_normal_rear = __Dyad__Flange())
 
   ### Guesses
 
@@ -94,7 +129,15 @@ Remember:
 
   ### Equations
   # Placeholder to prevent compilation error (REMOVE when implementing):
-  push!(__eqs, flange.f ~ 0)
+  push!(__eqs, flange_front.f ~ 0)
+  push!(__eqs, flange_rear.f ~ 0)
+  push!(__eqs, flange_normal_front.f ~ 0)
+  push!(__eqs, flange_normal_rear.f ~ 0)
+  # Kinematic constraint: both axles move together
+  push!(__eqs, flange_front.s ~ flange_rear.s)
+  push!(__eqs, flange_normal_front.s ~ 0)
+  # Normal forces act at fixed positions
+  push!(__eqs, flange_normal_rear.s ~ 0)
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

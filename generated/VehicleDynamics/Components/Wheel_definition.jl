@@ -11,53 +11,70 @@
 Wheel Component
 ============================================================================
 
-Description: Rotational-translational coupling with rolling constraint
+Description: Rotational-translational coupling with normal force dependency
 Domain: Mixed (Rotational + Translational)
 
 Physics to Model:
 - Rolling without slip: v = ω × r
 - Force-torque relationship: F = τ / r
 - Power conservation: P_rot = P_trans
+- Traction limit: F_max depends on normal force (μ × N)
 - Optional: Wheel inertia J × α = τ_net
 
 Interface:
 - flange_rot: RotationalComponents.Flange (connects to driveline)
-- flange_trans: TranslationalComponents.Flange (connects to vehicle body)
+- flange_trans: TranslationalComponents.Flange (connects to vehicle body for traction)
+- flange_normal: TranslationalComponents.Flange (receives normal force from vehicle body)
 
 Status: Empty skeleton - students implement physics
-Reference: Documentation/Wheel.md
+Reference: Documentation/Components/Wheel.md
 
 TODO: Add parameters
 Example:
-parameter radius::Length = 0.3       # Rolling radius [m] (typical: 0.25-0.40)
-parameter J::Inertia = 1.0           # Rotational inertia [kg⋅m²] (optional)
+parameter radius::Length = 0.3           # Rolling radius [m] (typical: 0.25-0.40)
+parameter J::Inertia = 1.0               # Rotational inertia [kg⋅m²] (optional)
+parameter mu::Real = 0.8                 # Tire-road friction coefficient [-] (typical: 0.7-1.0 dry)
 
 TODO: Add variables
 Example:
-variable omega::AngularVelocity      # Wheel angular velocity [rad/s]
-variable v::Velocity                 # Linear velocity [m/s]
-variable tau::Torque                 # Drive torque [N⋅m]
-variable F::Force                    # Traction force [N]
+variable omega::AngularVelocity          # Wheel angular velocity [rad/s]
+variable v::Velocity                     # Linear velocity [m/s]
+variable tau::Torque                     # Drive torque [N⋅m]
+variable F_traction::Force               # Actual traction force [N]
+variable F_max::Force                    # Maximum traction force [N]
+variable N::Force                        # Normal force on wheel [N]
+variable slip::Real                      # Slip indicator (optional advanced)
 
 TODO: Implement physics
 Hints:
 1. Extract velocities: omega = der(flange_rot.phi), v = der(flange_trans.s)
-2. Kinematic constraint: v = omega * radius (rolling without slip)
-3. Extract torque and force from flanges
-4. Force-torque relationship: F = tau / radius
-5. Verify power conservation: tau*omega = F*v
-6. Optional: Add inertia dynamics
+2. Kinematic constraint (no slip): v = omega * radius
+3. Extract normal force: N = -flange_normal.f (force from vehicle body)
+4. Calculate maximum traction: F_max = mu * N
+5. Extract torque: tau = flange_rot.tau
+6. Calculate desired traction: F_desired = tau / radius
+7. Apply traction limit: F_traction = saturate(F_desired, -F_max, F_max)
+- Use smooth saturation: F_traction = F_max * tanh(F_desired / F_max)
+- Or simple clamp if F_max is always positive
+8. Connect traction to flange: flange_trans.f = -F_traction
+9. Connect normal flange position: flange_normal.s = 0.0 (acts at fixed wheel position)
+10. Optional: Add inertia dynamics: J * der(omega) = tau - F_traction * radius
 
 Remember:
-- Check sign conventions on both flanges!
-- Power should be conserved (no losses in ideal wheel)
-- If adding inertia, need angular acceleration equation
+- Check sign conventions on all flanges!
+- Normal force must be positive for traction to work
+- During acceleration: rear wheels have higher N (more traction)
+- During braking: front wheels have higher N (more traction, risk of lockup)
+- Power should be conserved (no losses in ideal wheel): tau*omega = F*v
+- If slip occurs: kinematic constraint breaks, need slip model (advanced)
+- For Phase 1: assume no slip, saturate traction force
 ============================================================================
 
 ## Connectors
 
  * `flange_rot` - This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively. ([`Spline`](@ref))
  * `flange_trans` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
+ * `flange_normal` - This connector represents a mechanical flange with position and force as the potential and flow variables, respectively. ([`Flange`](@ref))
 """
 @component function Wheel(; name)
   __params = Any[]
@@ -78,6 +95,7 @@ Remember:
   ### Components
   push!(__systems, @named flange_rot = __Dyad__Spline())
   push!(__systems, @named flange_trans = __Dyad__Flange())
+  push!(__systems, @named flange_normal = __Dyad__Flange())
 
   ### Guesses
 
@@ -92,6 +110,9 @@ Remember:
   # Placeholder to prevent compilation error (REMOVE when implementing):
   push!(__eqs, flange_rot.tau ~ 0)
   push!(__eqs, flange_trans.f ~ 0)
+  push!(__eqs, flange_normal.f ~ 0)
+  # Normal force acts at fixed position
+  push!(__eqs, flange_normal.s ~ 0)
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

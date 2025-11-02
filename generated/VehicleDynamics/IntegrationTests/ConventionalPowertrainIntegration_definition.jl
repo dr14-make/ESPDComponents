@@ -47,13 +47,19 @@ TODO: Connect right side
 connect(differential.flange_right, brake_right.flange_a)
 connect(brake_right.flange_b, wheel_right.flange_rot)
 ========== WHEELS TO VEHICLE BODY ==========
-TODO: Connect wheels to vehicle
-Note: Both wheels push the same vehicle body
-connect(wheel_left.flange_trans, vehicle.flange)
-connect(wheel_right.flange_trans, vehicle.flange)
+TODO: Connect wheels to vehicle traction flanges
+Note: For rear-wheel drive, connect to rear axle
+connect(wheel_left.flange_trans, vehicle.flange_rear)
+connect(wheel_right.flange_trans, vehicle.flange_rear)
+========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+TODO: Connect normal forces from vehicle to wheels
+connect(vehicle.flange_normal_rear, wheel_left.flange_normal)
+connect(vehicle.flange_normal_rear, wheel_right.flange_normal)
+Note: If front wheels also driven, connect similarly to flange_front and flange_normal_front
 ========== VEHICLE TO GROUND ==========
-TODO: Connect vehicle to ground
-connect(vehicle.flange, ground.flange)
+TODO: Connect vehicle axles to ground
+connect(vehicle.flange_front, ground.flange)
+connect(vehicle.flange_rear, ground.flange)
 ========== INITIAL CONDITIONS ==========
 TODO: Set initial conditions for all differential states
 Engine:
@@ -132,8 +138,8 @@ ratio = 3.5
 )
 ========== WHEEL AND BRAKE ASSEMBLIES ==========
 TODO: Instantiate wheels
-wheel_left = Wheel(radius = 0.3)
-wheel_right = Wheel(radius = 0.3)
+wheel_left = Wheel(radius = 0.3, mu = 0.8)
+wheel_right = Wheel(radius = 0.3, mu = 0.8)
 TODO: Instantiate brakes
 brake_left = Brake(tau_max = 2000.0)
 brake_right = Brake(tau_max = 2000.0)
@@ -141,6 +147,10 @@ brake_right = Brake(tau_max = 2000.0)
 TODO: Instantiate vehicle body
 vehicle = VehicleBody(
 m = 1500.0,
+L = 2.7,
+h_cg = 0.55,
+a = 1.2,
+b = 1.5,
 Cd = 0.32,
 A = 2.2,
 rho = 1.225,
@@ -206,11 +216,15 @@ ground = TranslationalComponents.Fixed()
   push!(__eqs, connect(gear_cmd.y, gearbox.gear_input))
   # ========== POWERTRAIN CHAIN ==========
   push!(__eqs, connect(engine.flange, gearbox.flange_in))
-  # ========== WHEELS TO VEHICLE BODY ==========
-  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange))
-  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange))
+  # ========== WHEELS TO VEHICLE BODY (Rear-wheel drive) ==========
+  push!(__eqs, connect(wheel_left.flange_trans, vehicle.flange_rear))
+  push!(__eqs, connect(wheel_right.flange_trans, vehicle.flange_rear))
+  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_left.flange_normal))
+  push!(__eqs, connect(vehicle.flange_normal_rear, wheel_right.flange_normal))
   # ========== VEHICLE TO GROUND ==========
-  push!(__eqs, connect(vehicle.flange, ground.flange))
+  push!(__eqs, connect(vehicle.flange_front, ground.flange))
+  push!(__eqs, connect(vehicle.flange_rear, ground.flange))
   push!(__eqs, connect(gearbox.flange_out, differential.flange_input))
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
   push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))

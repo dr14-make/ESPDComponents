@@ -77,8 +77,8 @@ using DyadInterface
   # TODO: Instantiate differential
   # differential = Differential(ratio = 3.5)
   # TODO: Instantiate wheels
-  # wheel_left = Wheel(radius = 0.3)
-  # wheel_right = Wheel(radius = 0.3)
+  # wheel_left = Wheel(radius = 0.3, mu = 0.8)
+  # wheel_right = Wheel(radius = 0.3, mu = 0.8)
   # TODO: Instantiate brakes
   # brake_left = Brake(tau_max = 2000.0)
   # brake_right = Brake(tau_max = 2000.0)
@@ -86,6 +86,10 @@ using DyadInterface
   # TODO: Instantiate vehicle body
   # vehicle = VehicleBody(
   # m = 1500.0,
+  # L = 2.7,
+  # h_cg = 0.55,
+  # a = 1.2,
+  # b = 1.5,
   # Cd = 0.28,
   # A = 2.2,
   # rho = 1.225,
@@ -151,12 +155,17 @@ using DyadInterface
   # connect(differential.flange_right, brake_right.flange_a)
   # connect(brake_right.flange_b, wheel_right.flange_rot)
   # ========== WHEELS TO VEHICLE BODY ==========
-  # TODO: Connect wheels to vehicle
-  # connect(wheel_left.flange_trans, vehicle.flange)
-  # connect(wheel_right.flange_trans, vehicle.flange)
+  # TODO: Connect wheels to vehicle (rear-wheel drive)
+  # connect(wheel_left.flange_trans, vehicle.flange_rear)
+  # connect(wheel_right.flange_trans, vehicle.flange_rear)
+  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+  # TODO: Connect normal forces from vehicle to wheels
+  # connect(vehicle.flange_normal_rear, wheel_left.flange_normal)
+  # connect(vehicle.flange_normal_rear, wheel_right.flange_normal)
   # ========== VEHICLE TO GROUND ==========
-  # TODO: Connect vehicle to ground
-  # connect(vehicle.flange, ground_mech.flange)
+  # TODO: Connect vehicle axles to ground
+  # connect(vehicle.flange_front, ground_mech.flange)
+  # connect(vehicle.flange_rear, ground_mech.flange)
   # ========== INITIAL CONDITIONS ==========
   # TODO: Set initial conditions for all differential states
   # Battery:

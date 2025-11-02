@@ -9,24 +9,33 @@
 #
 # TODO: Instantiate your Wheel component
 # Example:
-# wheel = Wheel(radius = 0.3)
+# wheel = Wheel(radius = 0.3, mu = 0.8)
 #
 # TODO: Apply constant angular velocity
 # Example:
 # speed_source = RotationalComponents.Speed()
 # speed_cmd = BlockComponents.Constant(k = 10.0)  # 10 rad/s
 #
+# TODO: Apply constant normal force
+# Example:
+# normal_force = TranslationalComponents.Force()
+# normal_cmd = BlockComponents.Constant(k = 5000.0)  # 5000 N normal force
+#
 # TODO: Connect to vehicle body mass
 # Example:
 # body = TranslationalComponents.Mass(m = 1000.0)
-# ground = TranslationalComponents.Fixed()
+# ground_trans = TranslationalComponents.Fixed()
+# ground_normal = TranslationalComponents.Fixed()
 #
 # TODO: Connect components
 # Example:
 # connect(speed_cmd.y, speed_source.w_input)
 # connect(speed_source.flange, wheel.flange_rot)
 # connect(wheel.flange_trans, body.flange)
-# connect(body.flange, ground.flange)
+# connect(body.flange, ground_trans.flange)
+# connect(normal_cmd.y, normal_force.f_input)
+# connect(normal_force.flange, wheel.flange_normal)
+# connect(wheel.flange_normal, ground_normal.flange)
 #
 # TODO: Set initial conditions
 # Example:

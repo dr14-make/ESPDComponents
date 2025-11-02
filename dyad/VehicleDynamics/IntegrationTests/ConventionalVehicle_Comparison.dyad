@@ -39,21 +39,21 @@ test component ConventionalVehicle_Comparison
   engine = ESPDComponents.VehicleDynamics.Components.Engine() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 145, "y1": 193, "x2": 245, "y2": 293, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 145, "y1": 229, "x2": 245, "y2": 329, "rot": 0}
       }
     }
   }]
   gearbox = ESPDComponents.VehicleDynamics.Components.Gearbox() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 275, "y1": 194, "x2": 375, "y2": 294, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 275, "y1": 230, "x2": 375, "y2": 330, "rot": 0}
       }
     }
   }]
   differential = ESPDComponents.VehicleDynamics.Components.Differential() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 405, "y1": 288, "x2": 505, "y2": 388, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 405, "y1": 335, "x2": 505, "y2": 435, "rot": 0}
       }
     }
   }]
@@ -61,28 +61,28 @@ test component ConventionalVehicle_Comparison
   wheel_left = ESPDComponents.VehicleDynamics.Components.Wheel() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 677, "y1": 268, "x2": 777, "y2": 368, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 660, "y1": 231, "x2": 760, "y2": 331, "rot": 0}
       }
     }
   }]
   wheel_right = ESPDComponents.VehicleDynamics.Components.Wheel() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 677, "y1": 492, "x2": 777, "y2": 592, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 921, "y1": 442, "x2": 1021, "y2": 542, "rot": 0}
       }
     }
   }]
   brake_left = ESPDComponents.VehicleDynamics.Components.Brake() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 546, "y1": 198, "x2": 646, "y2": 298, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 535, "y1": 124, "x2": 635, "y2": 224, "rot": 0}
       }
     }
   }]
   brake_right = ESPDComponents.VehicleDynamics.Components.Brake() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 546, "y1": 392, "x2": 646, "y2": 492, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 535, "y1": 335, "x2": 635, "y2": 435, "rot": 0}
       }
     }
   }]
@@ -90,7 +90,7 @@ test component ConventionalVehicle_Comparison
   vehicle = ESPDComponents.VehicleDynamics.Components.VehicleBody() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 808, "y1": 268, "x2": 908, "y2": 368, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 801, "y1": 211, "x2": 901, "y2": 311, "rot": 0}
       }
     }
   }]
@@ -98,21 +98,21 @@ test component ConventionalVehicle_Comparison
   throttle_cmd = BlockComponents.Constant(k = 0.5) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 20, "y1": 120, "x2": 120, "y2": 220, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 20, "y1": 126, "x2": 120, "y2": 226, "rot": 0}
       }
     }
   }]
   gear_cmd = BlockComponents.Constant(k = 2.0) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 145, "y1": 20, "x2": 245, "y2": 120, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 145, "y1": 349, "x2": 245, "y2": 449, "rot": 0}
       }
     }
   }]
   brake_cmd = BlockComponents.Constant(k = 0.0) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 405, "y1": 94, "x2": 505, "y2": 194, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 405, "y1": 20, "x2": 505, "y2": 120, "rot": 0}
       }
     }
   }]
@@ -120,7 +120,14 @@ test component ConventionalVehicle_Comparison
   ground = TranslationalComponents.Fixed() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 928, "y1": 278, "x2": 1028, "y2": 378, "rot": 0}
+        "diagram": {
+          "iconName": "default",
+          "x1": 923.5,
+          "y1": 216,
+          "x2": 1023.5,
+          "y2": 316,
+          "rot": 0
+        }
       }
     }
   }]
@@ -128,19 +135,19 @@ relations
   # ========== CONTROL CONNECTIONS ==========
   connect(throttle_cmd.y, engine.throttle_input) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 195, "y": 170}], "E": 2}],
+      "edges": [{"S": 1, "M": [{"x": 195, "y": 176}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
   connect(gear_cmd.y, gearbox.gear_input) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 326, "y": 70}], "E": 2}],
+      "edges": [{"S": 1, "M": [{"x": 326, "y": 399}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
   connect(brake_cmd.y, brake_left.brake_input) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 596, "y": 144}], "E": 2}],
+      "edges": [{"S": 1, "M": [{"x": 585, "y": 70}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
@@ -148,9 +155,9 @@ relations
     "Dyad": {
       "edges": [
         {"S": 1, "M": [], "E": -1},
-        {"S": -1, "M": [{"x": 520, "y": 328}, {"x": 596, "y": 328}], "E": 2}
+        {"S": -1, "M": [{"x": 520, "y": 274}, {"x": 585, "y": 274}], "E": 2}
       ],
-      "junctions": [{"x": 520, "y": 144}],
+      "junctions": [{"x": 520, "y": 70}],
       "renderStyle": "standard"
     }
   }]
@@ -158,21 +165,43 @@ relations
   connect(engine.flange, gearbox.flange_in) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
   connect(gearbox.flange_out, differential.flange_input) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 455, "y": 244}], "E": 2}],
+      "edges": [{"S": 1, "M": [{"x": 455, "y": 280}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
   # ========== LEFT SIDE ==========
   connect(differential.flange_left, brake_left.flange_a) [{
     "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 390, "y": 385}, {"x": 390, "y": 174}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(brake_left.flange_b, wheel_left.flange_rot) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 725, "y": 175}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== RIGHT SIDE ==========
+  connect(differential.flange_right, brake_right.flange_a) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(brake_right.flange_b, wheel_right.flange_rot) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 986, "y": 386}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
+  connect(wheel_left.flange_trans, vehicle.flange_rear) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(wheel_right.flange_trans, vehicle.flange_rear) [{
+    "Dyad": {
       "edges": [
         {
           "S": 1,
           "M": [
-            {"x": 390, "y": 338},
-            {"x": 390, "y": 44},
-            {"x": 661, "y": 44},
-            {"x": 661, "y": 247}
+            {"x": 1036, "y": 492},
+            {"x": 1036, "y": 376},
+            {"x": 785, "y": 376},
+            {"x": 785, "y": 281}
           ],
           "E": 2
         }
@@ -180,41 +209,46 @@ relations
       "renderStyle": "standard"
     }
   }]
-  connect(brake_left.flange_b, wheel_left.flange_rot) [{
+  # ========== NORMAL FORCES: VEHICLE TO WHEELS ==========
+  connect(vehicle.flange_normal_rear, wheel_left.flange_normal) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 530, "y": 248}, {"x": 530, "y": 318}], "E": 2}],
+      "edges": [
+        {"S": 1, "M": [], "E": -1},
+        {
+          "S": -1,
+          "M": [{"x": 775, "y": 366}, {"x": 775, "y": 165}, {"x": 694, "y": 165}],
+          "E": 2
+        }
+      ],
+      "junctions": [{"x": 876, "y": 366}],
       "renderStyle": "standard"
     }
   }]
-  # ========== RIGHT SIDE ==========
-  connect(differential.flange_right, brake_right.flange_a) [{
+  connect(vehicle.flange_normal_rear, wheel_right.flange_normal) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 661, "y": 338}, {"x": 661, "y": 441}], "E": 2}],
-      "renderStyle": "standard"
-    }
-  }]
-  connect(brake_right.flange_b, wheel_right.flange_rot) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 530, "y": 442}, {"x": 530, "y": 542}], "E": 2}],
-      "renderStyle": "standard"
-    }
-  }]
-  # ========== WHEELS TO VEHICLE BODY ==========
-  connect(wheel_left.flange_trans, vehicle.flange) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
-  connect(wheel_right.flange_trans, vehicle.flange) [{
-    "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 792, "y": 542}, {"x": 792, "y": 318}], "E": 2}],
+      "edges": [{"S": 1, "M": [], "E": -1}, {"S": -1, "M": [{"x": 955, "y": 366}], "E": 2}],
+      "junctions": [{"x": 876, "y": 366}],
       "renderStyle": "standard"
     }
   }]
   # ========== VEHICLE TO GROUND ==========
-  connect(vehicle.flange, ground.flange) [{
+  connect(vehicle.flange_front, ground.flange) [{
     "Dyad": {
       "edges": [
         {"S": 1, "M": [], "E": -1},
-        {"S": -1, "M": [{"x": 792, "y": 218}, {"x": 978, "y": 218}], "E": 2}
+        {"S": -1, "M": [{"x": 785, "y": 156}, {"x": 973.5, "y": 156}], "E": 2}
       ],
-      "junctions": [{"x": 792, "y": 318}],
+      "junctions": [{"x": 785, "y": 241}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(vehicle.flange_rear, ground.flange) [{
+    "Dyad": {
+      "edges": [
+        {"S": 1, "M": [], "E": -1},
+        {"S": -1, "M": [{"x": 785, "y": 156}, {"x": 973.5, "y": 156}], "E": 2}
+      ],
+      "junctions": [{"x": 785, "y": 281}],
       "renderStyle": "standard"
     }
   }]

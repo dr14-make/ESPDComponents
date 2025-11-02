@@ -6,11 +6,15 @@
 
 @testset "Running test case1 for ActiveSuspension" begin
   using CSV, DataFrames, Plots
+  using DyadInterface: TransientAnalysis, rebuild_sol
+  using ModelingToolkit: toggle_namespacing, get_defaults, @named
 
-  @mtkcompile model = ActiveSuspension()
-  u0 = []
-  prob = ODEProblem(model, u0, (0, 10); abstol=1e-6, reltol=1e-6)
-  sol = solve(prob, DefaultODEAlgorithm())
+  @named model = ActiveSuspension()
+  model = toggle_namespacing(model, false)
+  
+  model = toggle_namespacing(model, true)
+  result = TransientAnalysis(; model = model, alg = "auto", start = 0e+0, stop = 1e+1, abstol=1e-6, reltol=1e-6)
+  sol = rebuild_sol(result)
   @test SciMLBase.successful_retcode(sol)
 # Signals selected for regression testing: ["wheel.mass.s","seat.mass.s","car_and_suspension.mass.s","wheel.mass.v","car_and_suspension.mass.v","seat.mass.v","pid.y"]
   ref_times = [sol(t, idxs=:t) for t in LinRange(sol[:t][1], sol[:t][end], 100)]

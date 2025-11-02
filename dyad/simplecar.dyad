@@ -56,7 +56,17 @@ component SimpleCar
       }
     }
   }]
+  fixed = RotationalComponents.Fixed() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 260, "y1": 780, "x2": 360, "y2": 880, "rot": 0}
+      }
+    }
+  }]
 relations
+  guess inertia.spline_b.phi = 0
+  initial inertia.spline_b.phi = 0
+  initial der(inertia.spline_b.phi) = 0
   connect(idealrollingwheel.flange, mass.flange_a) [{"Dyad": {"edges": [{"S": 1, "E": 2}]}}]
   connect(constant0.y, torquesource.tau) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}]}}]
   connect(constant1.y, force.f) [{"Dyad": {"edges": [{"S": 1, "E": 2, "M": [{"x": 830, "y": 250}]}]}}]
@@ -76,6 +86,12 @@ relations
         }
       ]
     }
+  }]
+  connect(idealrollingwheel.support_r, fixed.spline) [{
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 425, "y": 640}, {"x": 310, "y": 640}], "E": 2}]}
+  }]
+  connect(torquesource.support, fixed.spline) [{
+    "Dyad": {"edges": [{"S": 1, "M": [{"x": 210, "y": 640}, {"x": 310, "y": 640}], "E": 2}]}
   }]
 metadata {
   "Dyad": {

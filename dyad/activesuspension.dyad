@@ -56,7 +56,7 @@ component ActiveSuspension
       }
     }
   }]
-  gain = BlockComponents.Gain(k = Kp) [{
+  gain = BlockComponents.Gain(k = 1) [{
     "Dyad": {
       "placement": {
         "icon": {"iconName": "input", "x1": 300, "y1": 100, "x2": 400, "y2": 200, "rot": 0},
@@ -94,7 +94,7 @@ component ActiveSuspension
       }
     }
   }]
-  pid_on = BlockComponents.Gain(k = On ? 1 : 0) [{
+  pid_on = BlockComponents.Gain(k = On ? Kp : 0) [{
     "Dyad": {
       "placement": {
         "diagram": {"iconName": "default", "x1": 440, "y1": 330, "x2": 540, "y2": 430, "rot": 0}
@@ -156,7 +156,7 @@ relations
   connect(add.y, gain.u, derivative.u, integrator.u) [{
     "Dyad": {
       "edges": [
-        {"S": 1, "M": [{"x": -120, "y": 240}], "E": -1},
+        {"S": 1, "M": [{"x": -170, "y": 240}, {"x": -170, "y": 690}], "E": -1},
         {"S": -1, "M": [{"x": -120, "y": 690}], "E": 2},
         {"S": 3, "M": [{"x": -120, "y": 550}], "E": -1},
         {"S": 4, "M": [{"x": -120, "y": 820}], "E": -1}

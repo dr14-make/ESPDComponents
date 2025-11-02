@@ -59,8 +59,6 @@ This connector represents a rotational spline with angle and torque as the poten
 end
 
 include("ActiveSuspension_definition.jl")
-include("DerivativeTest_definition.jl")
-include("DerivativeTestAnalysis_definition.jl")
 include("Hello_definition.jl")
 include("World_definition.jl")
 include("PIDTest_definition.jl")

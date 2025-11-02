@@ -4,7 +4,7 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 3b3d54c7-1c0c-4e00-b496-e5a593044540
+# ╔═╡ 2bc53bfd-d283-42d3-ac98-b78905fb7d44
 # ╠═╡ show_logs = false
 # ╠═╡ disabled = false
 # ╠═╡ show_logs = false
@@ -13,9 +13,9 @@ begin
     import Pkg
     projectPath = "/home/dr14/Projects/CVUT/ESPDComponents"
     Pkg.activate(temp=true)
-    Pkg.add("Revise")
     Pkg.add("DyadInterface")
     Pkg.add("PlutoUI")
+    Pkg.add("Plots")
     Pkg.develop(path=projectPath)
     using DyadInterface
     using Plots
@@ -23,42 +23,33 @@ begin
     const Layout=PlutoUI.ExperimentalLayout;
 end
 
-# ╔═╡ 05d0065a-b435-48f3-bca7-4e03bf46e90f
+# ╔═╡ a11a86b6-7afa-436b-a3ec-f0793f3cbe12
 # ╠═╡ show_logs = false
 # ╠═╡ disabled = false
 # ╠═╡ show_logs = false
 # ╠═╡ skip_as_script = false
   begin
-      using Revise
       using ESPDComponents
   end
 
-# ╔═╡ 9a52a195-27d3-4538-ada8-8420e1fa1a51
+# ╔═╡ 11a4fde2-b749-401f-a60a-a9d19b80efc1
 # ╠═╡ show_logs = false
 # ╠═╡ disabled = false
 # ╠═╡ show_logs = false
 # ╠═╡ skip_as_script = false
-@doc SimpleCar
+result = World()
 
-# ╔═╡ 4bbe91b1-ea40-4303-a2ed-d4fb53edb378
+# ╔═╡ 64a825eb-03a5-4aed-af70-00815f674cb6
 # ╠═╡ show_logs = false
 # ╠═╡ disabled = false
 # ╠═╡ show_logs = false
 # ╠═╡ skip_as_script = false
-begin
-result = SimpleCarTest(stop=50)
+begin 
+    plot(result)
 end
 
-# ╔═╡ 406a7637-2fed-45d7-ae93-4d5f47c9e837
-# ╠═╡ show_logs = false
-# ╠═╡ disabled = false
-# ╠═╡ show_logs = false
-# ╠═╡ skip_as_script = false
-plot(result)
-
 # ╔═╡ Cell order:
-# ╠═3b3d54c7-1c0c-4e00-b496-e5a593044540
-# ╠═05d0065a-b435-48f3-bca7-4e03bf46e90f
-# ╠═9a52a195-27d3-4538-ada8-8420e1fa1a51
-# ╠═4bbe91b1-ea40-4303-a2ed-d4fb53edb378
-# ╠═406a7637-2fed-45d7-ae93-4d5f47c9e837
+# ╠═2bc53bfd-d283-42d3-ac98-b78905fb7d44
+# ╠═a11a86b6-7afa-436b-a3ec-f0793f3cbe12
+# ╠═11a4fde2-b749-401f-a60a-a9d19b80efc1
+# ╠═64a825eb-03a5-4aed-af70-00815f674cb6

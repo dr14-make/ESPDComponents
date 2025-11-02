@@ -6,11 +6,15 @@
 
 @testset "Running test case1 for Hello" begin
   using CSV, DataFrames, Plots
+  using DyadInterface: TransientAnalysis, rebuild_sol
+  using ModelingToolkit: toggle_namespacing, get_defaults, @named
 
-  @mtkcompile model = Hello()
-  u0 = []
-  prob = ODEProblem(model, u0, (0, 10); abstol=1e-6, reltol=1e-6)
-  sol = solve(prob, DefaultODEAlgorithm())
+  @named model = Hello()
+  model = toggle_namespacing(model, false)
+  
+  model = toggle_namespacing(model, true)
+  result = TransientAnalysis(; model = model, alg = "auto", start = 0e+0, stop = 1e+1, abstol=1e-6, reltol=1e-6)
+  sol = rebuild_sol(result)
   @test SciMLBase.successful_retcode(sol)
   @test sol[model.T][1] ≈ 320
 # Signals selected for regression testing: []

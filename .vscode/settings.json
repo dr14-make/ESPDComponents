@@ -1,4 +1,5 @@
 {
   "julia.NumThreads": "auto",
-  "files.autoSave": "off"
+  "files.autoSave": "off",
+  "dyad-studio.autoCompile": false
 }

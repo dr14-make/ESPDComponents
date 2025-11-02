@@ -73,12 +73,12 @@ This model was copied from the DyadExampleComponents
   push!(__systems, @named force = TranslationalComponents.Force())
   push!(__systems, @named set_point = BlockComponents.Constant(k=1.5))
   push!(__systems, @named seat_pos = TranslationalComponents.PositionSensor())
-  push!(__systems, @named gain = BlockComponents.Gain(k=Kp))
+  push!(__systems, @named gain = BlockComponents.Gain(k=1))
   push!(__systems, @named derivative = BlockComponents.Derivative(k=Td, T=max(Td / Nd, 1e-14)))
   push!(__systems, @named integrator = BlockComponents.Integrator(k=1 / Ti))
   push!(__systems, @named add = BlockComponents.Add(k1=-1))
   push!(__systems, @named add3 = BlockComponents.Add3())
-  push!(__systems, @named pid_on = BlockComponents.Gain(k=ifelse(On, 1, 0)))
+  push!(__systems, @named pid_on = BlockComponents.Gain(k=ifelse(On, Kp, 0)))
 
   ### Guesses
 

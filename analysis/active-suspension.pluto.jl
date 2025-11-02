@@ -142,6 +142,18 @@ $(ESPDComponents.plot_signals(result, [:seat_pos₊s,:road_data₊y,:set_point�
 $(ESPDComponents.plot_signals(result, [:force₊f]))
 """
 
+# ╔═╡ 0da737ee-7a39-42ad-8491-56ae1347f147
+# ╠═╡ show_logs = false
+# ╠═╡ disabled = false
+# ╠═╡ show_logs = false
+# ╠═╡ skip_as_script = false
+plot(x, y, 
+    label="label",
+    title="title",
+    xlabel="x",
+    ylabel="y"
+)
+
 # ╔═╡ Cell order:
 # ╠═b3f11681-1433-45bb-9543-4f9acab6e335
 # ╠═6c383bc5-5afc-4208-b05e-a9bd86b501ac
@@ -155,3 +167,4 @@ $(ESPDComponents.plot_signals(result, [:force₊f]))
 # ╠═59a1b955-db0f-49d5-8317-153433d03ff1
 # ╠═b15e8fae-b559-48e1-9a3a-ab7a4bf75a31
 # ╠═6e8aed34-f617-4158-a5f1-effeed6c6166
+# ╠═0da737ee-7a39-42ad-8491-56ae1347f147

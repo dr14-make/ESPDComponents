@@ -210,4 +210,201 @@
 #
 # ============================================================================
 test component ElectricPowertrainIntegration
+  # ========== ENERGY STORAGE ==========
+  battery = ESPDComponents.VehicleDynamics.Components.Electric.Battery() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 270, "y1": 300, "x2": 370, "y2": 400, "rot": 0}
+      }
+    }
+  }]
+  ground_elec = ElectricalComponents.Ground() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 524, "y1": 75, "x2": 624, "y2": 175, "rot": 0}
+      }
+    }
+  }]
+  # ========== ELECTRIC MOTOR ==========
+  motor = ESPDComponents.VehicleDynamics.Components.Electric.ElectricMotor() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 395, "y1": 175, "x2": 495, "y2": 275, "rot": 0}
+      }
+    }
+  }]
+  # ========== MECHANICAL DRIVETRAIN ==========
+  differential = ESPDComponents.VehicleDynamics.Components.Differential() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 524, "y1": 250, "x2": 624, "y2": 350, "rot": 0}
+      }
+    }
+  }]
+  wheel_left = ESPDComponents.VehicleDynamics.Components.Wheel() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 786, "y1": 574, "x2": 886, "y2": 674, "rot": 0}
+      }
+    }
+  }]
+  wheel_right = ESPDComponents.VehicleDynamics.Components.Wheel() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 786, "y1": 454, "x2": 886, "y2": 554, "rot": 0}
+      }
+    }
+  }]
+  brake_left = ESPDComponents.VehicleDynamics.Components.Brake() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 655, "y1": 678, "x2": 755, "y2": 778, "rot": 0}
+      }
+    }
+  }]
+  brake_right = ESPDComponents.VehicleDynamics.Components.Brake() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 655, "y1": 354, "x2": 755, "y2": 454, "rot": 0}
+      }
+    }
+  }]
+  # ========== VEHICLE BODY ==========
+  vehicle = ESPDComponents.VehicleDynamics.Components.VehicleBody() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 917, "y1": 574, "x2": 1017, "y2": 674, "rot": 0}
+      }
+    }
+  }]
+  # ========== CONTROL INPUTS ==========
+  throttle_cmd = BlockComponents.Constant(k = 0.5) [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 20, "y1": 20, "x2": 120, "y2": 120, "rot": 0}
+      }
+    }
+  }]
+  brake_cmd = BlockComponents.Constant(k = 0.0) [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 145, "y1": 20, "x2": 245, "y2": 120, "rot": 0}
+      }
+    }
+  }]
+  # ========== GROUND REFERENCE ==========
+  ground_mech = TranslationalComponents.Fixed() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 1037, "y1": 754, "x2": 1137, "y2": 854, "rot": 0}
+      }
+    }
+  }]
+relations
+  # ========== ELECTRICAL CONNECTIONS ==========
+  connect(battery.p, motor.p) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 353, "y": 244}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(battery.n, motor.n) [{
+    "Dyad": {
+      "edges": [
+        {"S": 1, "M": [{"x": 289, "y": 20}], "E": -1},
+        {"S": -1, "M": [{"x": 380, "y": 203}], "E": 2}
+      ],
+      "junctions": [{"x": 380, "y": 20}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(battery.n, ground_elec.g) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 289, "y": 20}, {"x": 574, "y": 20}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(motor.n, ground_elec.g) [{
+    "Dyad": {
+      "edges": [
+        {
+          "S": 1,
+          "M": [{"x": 380, "y": 203}, {"x": 380, "y": 20}, {"x": 574, "y": 20}],
+          "E": 2
+        }
+      ],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== MECHANICAL POWERTRAIN ==========
+  connect(motor.flange, differential.flange_input) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 574, "y": 225}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== LEFT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+  connect(differential.flange_left, brake_left.flange_a) [{
+    "Dyad": {
+      "edges": [
+        {
+          "S": 1,
+          "M": [
+            {"x": 509, "y": 300},
+            {"x": 509, "y": 828},
+            {"x": 770, "y": 828},
+            {"x": 770, "y": 727}
+          ],
+          "E": 2
+        }
+      ],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(brake_left.flange_b, wheel_left.flange_rot) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 639, "y": 728}, {"x": 639, "y": 624}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== RIGHT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+  connect(differential.flange_right, brake_right.flange_a) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 770, "y": 300}, {"x": 770, "y": 403}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(brake_right.flange_b, wheel_right.flange_rot) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 639, "y": 404}, {"x": 639, "y": 504}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== WHEELS TO VEHICLE BODY ==========
+  connect(wheel_left.flange_trans, vehicle.flange) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(wheel_right.flange_trans, vehicle.flange) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 901, "y": 504}], "E": -1}, {"S": -1, "M": [], "E": 2}],
+      "junctions": [{"x": 901, "y": 624}],
+      "renderStyle": "standard"
+    }
+  }]
+  # ========== VEHICLE TO GROUND ==========
+  connect(vehicle.flange, ground_mech.flange) [{
+    "Dyad": {
+      "edges": [
+        {
+          "S": 1,
+          "M": [{"x": 901, "y": 624}, {"x": 901, "y": 694}, {"x": 1087, "y": 694}],
+          "E": 2
+        }
+      ],
+      "renderStyle": "standard"
+    }
+  }]
+end
+
+analysis ElectricPowertrainIntegration_Analysis
+  extends TransientAnalysis(stop = 30.0, alg = "Rodas5P")
+  model = ElectricPowertrainIntegration()
 end

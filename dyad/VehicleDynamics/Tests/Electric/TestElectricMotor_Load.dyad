@@ -10,10 +10,10 @@
 # TODO: Instantiate your ElectricMotor component
 # Example:
 # motor = ElectricMotor(
-#   K_e = 0.1,
-#   K_t = 0.1,
-#   R = 0.5,
-#   J = 0.01
+# K_e = 0.1,
+# K_t = 0.1,
+# R = 0.5,
+# J = 0.01
 # )
 #
 # TODO: Add voltage source and mechanical load
@@ -43,8 +43,8 @@
 # TODO: Add analysis
 # Example:
 # analysis TestElectricMotor_Load_Analysis
-#   extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
-#   model = TestElectricMotor_Load()
+# extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
+# model = TestElectricMotor_Load()
 # end
 #
 # VALIDATION (calculate BEFORE running):
@@ -59,8 +59,5 @@
 # [ ] Power balance: P_elec = P_mech + P_loss (< 1% error)
 # [ ] Speed settles at expected value
 # ============================================================================
-
 test component TestElectricMotor_Load
-  # TODO: Implement test harness following header instructions
-  
 end

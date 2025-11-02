@@ -1,0 +1,6 @@
+analysis World
+  extends TransientAnalysis(stop = 10)
+  model = Hello(T_inf = T_inf, h = h)
+  parameter T_inf::Temperature = 300
+  parameter h::CoefficientOfHeatTransfer = 0.7
+end

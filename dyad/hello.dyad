@@ -20,10 +20,3 @@ relations
   m * c_p * der(T) = h * A * (T_inf - T)
 metadata {"Dyad": {"tests": {"case1": {"stop": 10, "expect": {"initial": {"T": 320}}}}}}
 end
-
-analysis World
-  extends TransientAnalysis(stop = 10)
-  model = Hello(T_inf = T_inf, h = h)
-  parameter T_inf::Temperature = 300
-  parameter h::CoefficientOfHeatTransfer = 0.7
-end

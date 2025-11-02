@@ -6,230 +6,179 @@
 # system to verify interfaces are compatible and the system runs.
 #
 # System Architecture:
-#   Battery → DCDC → ElectricMotor ←─ MotorController ← Throttle/Brake
-#                         ↓                    ↑
-#                    Differential          Speed Feedback
-#                         ├→ Brake_L → Wheel_L ─┐
-#                         │                      ├→ VehicleBody → Ground
-#                         └→ Brake_R → Wheel_R ─┘
+# Battery → DCDC → ElectricMotor ←─ MotorController ← Throttle/Brake
+# ↓                    ↑
+# Differential          Speed Feedback
+# ├→ Brake_L → Wheel_L ─┐
+# │                      ├→ VehicleBody → Ground
+# └→ Brake_R → Wheel_R ─┘
 #
 # Purpose:
-#   - Verify all electric component interfaces connect correctly
-#   - Validate system-level behavior including regenerative braking
-#   - Test complete power flow from battery through motor to wheels to vehicle
+# - Verify all electric component interfaces connect correctly
+# - Validate system-level behavior including regenerative braking
+# - Test complete power flow from battery through motor to wheels to vehicle
 #
 # Note: This test requires ALL components (shared + electric) to be implemented!
 #
 # Reference: Documentation/task.md (Phase 3)
 # ============================================================================
-
-test component ElectricPowertrainIntegration
-  # ========== ENERGY STORAGE ==========
-  
-  # TODO: Instantiate battery
-  # battery = Battery(
-  #   V_nominal = 400.0,
-  #   Q_capacity = 75.0,   # 75 A⋅h
-  #   R_internal = 0.05,
-  #   SOC_initial = 0.8
-  # )
-  
-  # TODO: Add electrical ground reference
-  # ground_elec = ElectricalComponents.Ground()
-  
-  # ========== POWER ELECTRONICS ==========
-  
-  # TODO: Instantiate DC-DC converter (optional - can connect battery directly to motor)
-  # dcdc = DCDC(
-  #   ratio = 1.0,         # 1:1 if battery voltage matches motor requirements
-  #   efficiency = 0.95
-  # )
-  
-  # ========== ELECTRIC MOTOR ==========
-  
-  # TODO: Instantiate electric motor
-  # motor = ElectricMotor(
-  #   K_e = 0.1,
-  #   K_t = 0.1,
-  #   R = 0.5,
-  #   J = 0.01
-  # )
-  
-  # ========== MOTOR CONTROLLER ==========
-  
-  # TODO: Instantiate motor controller
-  # motor_controller = MotorController(
-  #   tau_max_motor = 300.0,
-  #   tau_max_regen = 150.0,
-  #   omega_min_regen = 10.0
-  # )
-  
-  # TODO: Add speed sensor to provide feedback
-  # speed_sensor = RotationalComponents.VelocitySensor()
-  
-  # ========== MECHANICAL DRIVETRAIN ==========
-  
-  # TODO: Instantiate differential
-  # differential = Differential(ratio = 3.5)
-  
-  # TODO: Instantiate wheels
-  # wheel_left = Wheel(radius = 0.3)
-  # wheel_right = Wheel(radius = 0.3)
-  
-  # TODO: Instantiate brakes
-  # brake_left = Brake(tau_max = 2000.0)
-  # brake_right = Brake(tau_max = 2000.0)
-  
-  # ========== VEHICLE BODY ==========
-  
-  # TODO: Instantiate vehicle body
-  # vehicle = VehicleBody(
-  #   m = 1500.0,
-  #   Cd = 0.28,
-  #   A = 2.2,
-  #   rho = 1.225,
-  #   Crr = 0.012,
-  #   g = 9.81,
-  #   theta = 0.0
-  # )
-  
-  # ========== CONTROL INPUTS ==========
-  
-  # TODO: Add control signals for driving cycle
-  # Option A: Simple constant inputs
-  # throttle_cmd = BlockComponents.Constant(k = 0.5)   # 50% throttle
-  # brake_cmd = BlockComponents.Constant(k = 0.0)      # No braking
-  
-  # Option B: Drive cycle with acceleration and regeneration
-  # throttle_cmd = BlockComponents.Pulse(
-  #   width = 5.0,        # Accelerate for 5 seconds
-  #   period = 20.0,
-  #   amplitude = 0.7,
-  #   offset = 0.0,
-  #   startTime = 1.0
-  # )
-  # brake_cmd = BlockComponents.Step(
-  #   height = 0.5,       # Apply brake after acceleration
-  #   offset = 0.0,
-  #   startTime = 10.0
-  # )
-  
-  # ========== GROUND REFERENCE ==========
-  
-  # TODO: Add mechanical ground reference
-  # ground_mech = TranslationalComponents.Fixed()
-  
-relations
-  # ========== ELECTRICAL CONNECTIONS ==========
-  
-  # TODO: Connect battery to DCDC (or directly to motor if no DCDC)
-  # Option A: With DCDC
-  # connect(battery.p, dcdc.p_in)
-  # connect(battery.n, dcdc.n_in)
-  # connect(dcdc.p_out, motor.p)
-  # connect(dcdc.n_out, motor.n)
-  
-  # Option B: Direct connection (no DCDC)
-  # connect(battery.p, motor.p)
-  # connect(battery.n, motor.n)
-  
-  # TODO: Connect electrical grounds
-  # connect(battery.n, ground_elec.g)
-  # connect(motor.n, ground_elec.g)
-  
-  # ========== MOTOR CONTROL CONNECTIONS ==========
-  
-  # TODO: Connect control signals to motor controller
-  # connect(throttle_cmd.y, motor_controller.throttle_input)
-  # connect(brake_cmd.y, motor_controller.brake_input)
-  
-  # TODO: Connect speed feedback
-  # connect(motor.flange, speed_sensor.flange_a)
-  # connect(speed_sensor.w, motor_controller.speed_input)
-  
-  # TODO: Connect torque command to motor
-  # Note: Motor controller outputs torque command, but motor is voltage-driven
-  # Two approaches:
-  # 1. Use motor_controller output to control voltage source
-  # 2. Implement current controller in motor (students decide)
-  
-  # ========== MECHANICAL POWERTRAIN ==========
-  
-  # TODO: Connect motor to differential
-  # connect(motor.flange, differential.flange_input)
-  
-  # ========== LEFT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
-  
-  # TODO: Connect left side
-  # connect(differential.flange_left, brake_left.flange_a)
-  # connect(brake_left.flange_b, wheel_left.flange_rot)
-  
-  # ========== RIGHT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
-  
-  # TODO: Connect right side
-  # connect(differential.flange_right, brake_right.flange_a)
-  # connect(brake_right.flange_b, wheel_right.flange_rot)
-  
-  # ========== WHEELS TO VEHICLE BODY ==========
-  
-  # TODO: Connect wheels to vehicle
-  # connect(wheel_left.flange_trans, vehicle.flange)
-  # connect(wheel_right.flange_trans, vehicle.flange)
-  
-  # ========== VEHICLE TO GROUND ==========
-  
-  # TODO: Connect vehicle to ground
-  # connect(vehicle.flange, ground_mech.flange)
-  
-  # ========== INITIAL CONDITIONS ==========
-  
-  # TODO: Set initial conditions for all differential states
-  
-  # Battery:
-  # initial battery.SOC = 0.8  # Start at 80% charge
-  
-  # Motor:
-  # initial motor.flange.phi = 0.0
-  # initial der(motor.flange.phi) = 0.0
-  
-  # Vehicle:
-  # initial vehicle.flange.s = 0.0
-  # initial vehicle.v = 0.0
-  
-  # Wheels (if have inertia):
-  # initial wheel_left.flange_rot.phi = 0.0
-  # initial wheel_right.flange_rot.phi = 0.0
-  
-  # ========== VALIDATION EXPECTATIONS ==========
-  # 
-  # What should happen:
-  # 1. Battery provides electrical power
-  # 2. DCDC converts voltage (if used)
-  # 3. Motor converts electrical to mechanical power
-  # 4. Motor controller manages torque command
-  # 5. Differential splits torque to wheels
-  # 6. Wheels convert rotational to translational force
-  # 7. Vehicle accelerates against resistance
-  # 8. During braking: regenerative braking charges battery (SOC increases!)
-  #
-  # Verify:
-  # - Vehicle accelerates from rest
-  # - Battery SOC decreases during acceleration
-  # - Motor operates in correct quadrant (motor vs generator)
-  # - Regenerative braking works (SOC increases when braking)
-  # - Power flows correctly: Battery → Motor → Wheels → Vehicle
-  # - During regen: Vehicle → Wheels → Motor → Battery
-  # - Energy balance: battery energy = kinetic + losses + drag/rolling work
-  # - No unrealistic values (NaN, Inf, excessive speeds)
-  #
-end
-
+# ========== ENERGY STORAGE ==========
+# TODO: Instantiate battery
+# battery = Battery(
+# V_nominal = 400.0,
+# Q_capacity = 75.0,   # 75 A⋅h
+# R_internal = 0.05,
+# SOC_initial = 0.8
+# )
+# TODO: Add electrical ground reference
+# ground_elec = ElectricalComponents.Ground()
+# ========== POWER ELECTRONICS ==========
+# TODO: Instantiate DC-DC converter (optional - can connect battery directly to motor)
+# dcdc = DCDC(
+# ratio = 1.0,         # 1:1 if battery voltage matches motor requirements
+# efficiency = 0.95
+# )
+# ========== ELECTRIC MOTOR ==========
+# TODO: Instantiate electric motor
+# motor = ElectricMotor(
+# K_e = 0.1,
+# K_t = 0.1,
+# R = 0.5,
+# J = 0.01
+# )
+# ========== MOTOR CONTROLLER ==========
+# TODO: Instantiate motor controller
+# motor_controller = MotorController(
+# tau_max_motor = 300.0,
+# tau_max_regen = 150.0,
+# omega_min_regen = 10.0
+# )
+# TODO: Add speed sensor to provide feedback
+# speed_sensor = RotationalComponents.VelocitySensor()
+# ========== MECHANICAL DRIVETRAIN ==========
+# TODO: Instantiate differential
+# differential = Differential(ratio = 3.5)
+# TODO: Instantiate wheels
+# wheel_left = Wheel(radius = 0.3)
+# wheel_right = Wheel(radius = 0.3)
+# TODO: Instantiate brakes
+# brake_left = Brake(tau_max = 2000.0)
+# brake_right = Brake(tau_max = 2000.0)
+# ========== VEHICLE BODY ==========
+# TODO: Instantiate vehicle body
+# vehicle = VehicleBody(
+# m = 1500.0,
+# Cd = 0.28,
+# A = 2.2,
+# rho = 1.225,
+# Crr = 0.012,
+# g = 9.81,
+# theta = 0.0
+# )
+# ========== CONTROL INPUTS ==========
+# TODO: Add control signals for driving cycle
+# Option A: Simple constant inputs
+# throttle_cmd = BlockComponents.Constant(k = 0.5)   # 50% throttle
+# brake_cmd = BlockComponents.Constant(k = 0.0)      # No braking
+# Option B: Drive cycle with acceleration and regeneration
+# throttle_cmd = BlockComponents.Pulse(
+# width = 5.0,        # Accelerate for 5 seconds
+# period = 20.0,
+# amplitude = 0.7,
+# offset = 0.0,
+# startTime = 1.0
+# )
+# brake_cmd = BlockComponents.Step(
+# height = 0.5,       # Apply brake after acceleration
+# offset = 0.0,
+# startTime = 10.0
+# )
+# ========== GROUND REFERENCE ==========
+# TODO: Add mechanical ground reference
+# ground_mech = TranslationalComponents.Fixed()
+# ========== ELECTRICAL CONNECTIONS ==========
+# TODO: Connect battery to DCDC (or directly to motor if no DCDC)
+# Option A: With DCDC
+# connect(battery.p, dcdc.p_in)
+# connect(battery.n, dcdc.n_in)
+# connect(dcdc.p_out, motor.p)
+# connect(dcdc.n_out, motor.n)
+# Option B: Direct connection (no DCDC)
+# connect(battery.p, motor.p)
+# connect(battery.n, motor.n)
+# TODO: Connect electrical grounds
+# connect(battery.n, ground_elec.g)
+# connect(motor.n, ground_elec.g)
+# ========== MOTOR CONTROL CONNECTIONS ==========
+# TODO: Connect control signals to motor controller
+# connect(throttle_cmd.y, motor_controller.throttle_input)
+# connect(brake_cmd.y, motor_controller.brake_input)
+# TODO: Connect speed feedback
+# connect(motor.flange, speed_sensor.flange_a)
+# connect(speed_sensor.w, motor_controller.speed_input)
+# TODO: Connect torque command to motor
+# Note: Motor controller outputs torque command, but motor is voltage-driven
+# Two approaches:
+# 1. Use motor_controller output to control voltage source
+# 2. Implement current controller in motor (students decide)
+# ========== MECHANICAL POWERTRAIN ==========
+# TODO: Connect motor to differential
+# connect(motor.flange, differential.flange_input)
+# ========== LEFT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+# TODO: Connect left side
+# connect(differential.flange_left, brake_left.flange_a)
+# connect(brake_left.flange_b, wheel_left.flange_rot)
+# ========== RIGHT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+# TODO: Connect right side
+# connect(differential.flange_right, brake_right.flange_a)
+# connect(brake_right.flange_b, wheel_right.flange_rot)
+# ========== WHEELS TO VEHICLE BODY ==========
+# TODO: Connect wheels to vehicle
+# connect(wheel_left.flange_trans, vehicle.flange)
+# connect(wheel_right.flange_trans, vehicle.flange)
+# ========== VEHICLE TO GROUND ==========
+# TODO: Connect vehicle to ground
+# connect(vehicle.flange, ground_mech.flange)
+# ========== INITIAL CONDITIONS ==========
+# TODO: Set initial conditions for all differential states
+# Battery:
+# initial battery.SOC = 0.8  # Start at 80% charge
+# Motor:
+# initial motor.flange.phi = 0.0
+# initial der(motor.flange.phi) = 0.0
+# Vehicle:
+# initial vehicle.flange.s = 0.0
+# initial vehicle.v = 0.0
+# Wheels (if have inertia):
+# initial wheel_left.flange_rot.phi = 0.0
+# initial wheel_right.flange_rot.phi = 0.0
+# ========== VALIDATION EXPECTATIONS ==========
+#
+# What should happen:
+# 1. Battery provides electrical power
+# 2. DCDC converts voltage (if used)
+# 3. Motor converts electrical to mechanical power
+# 4. Motor controller manages torque command
+# 5. Differential splits torque to wheels
+# 6. Wheels convert rotational to translational force
+# 7. Vehicle accelerates against resistance
+# 8. During braking: regenerative braking charges battery (SOC increases!)
+#
+# Verify:
+# - Vehicle accelerates from rest
+# - Battery SOC decreases during acceleration
+# - Motor operates in correct quadrant (motor vs generator)
+# - Regenerative braking works (SOC increases when braking)
+# - Power flows correctly: Battery → Motor → Wheels → Vehicle
+# - During regen: Vehicle → Wheels → Motor → Battery
+# - Energy balance: battery energy = kinetic + losses + drag/rolling work
+# - No unrealistic values (NaN, Inf, excessive speeds)
+#
 # TODO: Add analysis for integration test
 # analysis ElectricPowertrainIntegration_Analysis
-#   extends TransientAnalysis(stop = 30.0, alg = "Rodas5P")
-#   model = ElectricPowertrainIntegration()
+# extends TransientAnalysis(stop = 30.0, alg = "Rodas5P")
+# model = ElectricPowertrainIntegration()
 # end
-
 # ============================================================================
 # SYSTEM-LEVEL VALIDATION
 # ============================================================================
@@ -246,8 +195,8 @@ end
 # [ ] Wheels rotate at correct speed
 # [ ] Power balance through entire chain
 # [ ] Energy accounting:
-#     - Acceleration: Battery energy → kinetic + losses
-#     - Regeneration: Kinetic energy → battery + losses
+# - Acceleration: Battery energy → kinetic + losses
+# - Regeneration: Kinetic energy → battery + losses
 # [ ] Regeneration efficiency measurable
 # [ ] System stable (no oscillations)
 #
@@ -260,3 +209,5 @@ end
 # - System efficiency (battery to wheels)
 #
 # ============================================================================
+test component ElectricPowertrainIntegration
+end

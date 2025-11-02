@@ -6,162 +6,79 @@
 # to verify that interfaces are compatible and the system runs.
 #
 # System Architecture:
-#   Throttle → Engine → Gearbox → Differential ─┬→ Brake_L → Wheel_L ─┐
-#   Gear_Cmd ─────────────┘                     │                      ├→ VehicleBody → Ground  
-#   Brake_Cmd ──────────────────────────────────┴→ Brake_R → Wheel_R ─┘
+# Throttle → Engine → Gearbox → Differential ─┬→ Brake_L → Wheel_L ─┐
+# Gear_Cmd ─────────────┘                     │                      ├→ VehicleBody → Ground
+# Brake_Cmd ──────────────────────────────────┴→ Brake_R → Wheel_R ─┘
 #
 # Purpose:
-#   - Verify all component interfaces connect correctly
-#   - Validate system-level behavior
-#   - Test complete power flow from engine to wheels to vehicle
+# - Verify all component interfaces connect correctly
+# - Validate system-level behavior
+# - Test complete power flow from engine to wheels to vehicle
 #
 # Note: This test requires ALL components to be implemented first!
 #
 # Reference: Documentation/task.md (Phase 3)
 # ============================================================================
-
-test component ConventionalPowertrainIntegration
-  # ========== POWERTRAIN COMPONENTS ==========
-  
-  # TODO: Instantiate engine
-  # engine = Engine(
-  #   J = 0.15,
-  #   tau_peak = 200.0,
-  #   omega_peak = 400.0,
-  #   omega_max = 630.0,
-  #   tau_friction = 15.0
-  # )
-  
-  # TODO: Instantiate gearbox
-  # gearbox = Gearbox(
-  #   ratio = 3.0,       # Start with single ratio
-  #   efficiency = 0.95
-  # )
-  
-  # TODO: Instantiate differential
-  # differential = Differential(
-  #   ratio = 3.5
-  # )
-  
-  # ========== WHEEL AND BRAKE ASSEMBLIES ==========
-  
-  # TODO: Instantiate wheels
-  # wheel_left = Wheel(radius = 0.3)
-  # wheel_right = Wheel(radius = 0.3)
-  
-  # TODO: Instantiate brakes
-  # brake_left = Brake(tau_max = 2000.0)
-  # brake_right = Brake(tau_max = 2000.0)
-  
-  # ========== VEHICLE BODY ==========
-  
-  # TODO: Instantiate vehicle body
-  # vehicle = VehicleBody(
-  #   m = 1500.0,
-  #   Cd = 0.32,
-  #   A = 2.2,
-  #   rho = 1.225,
-  #   Crr = 0.015,
-  #   g = 9.81,
-  #   theta = 0.0
-  # )
-  
-  # ========== CONTROL INPUTS ==========
-  
-  # TODO: Add control signals
-  # throttle_cmd = BlockComponents.Constant(k = 0.3)   # 30% throttle
-  # gear_cmd = BlockComponents.Constant(k = 1.0)       # 1st gear
-  # brake_cmd = BlockComponents.Constant(k = 0.0)      # No braking
-  
-  # Or use time-varying signals:
-  # throttle_cmd = BlockComponents.Step(height = 0.5, offset = 0.0, startTime = 1.0)
-  # brake_cmd = BlockComponents.Step(height = 0.3, offset = 0.0, startTime = 10.0)
-  
-  # ========== GROUND REFERENCE ==========
-  
-  # TODO: Add ground reference
-  # ground = TranslationalComponents.Fixed()
-  
-relations
-  # ========== CONTROL CONNECTIONS ==========
-  
-  # TODO: Connect control signals
-  # connect(throttle_cmd.y, engine.throttle_input)
-  # connect(gear_cmd.y, gearbox.gear_input)
-  # connect(brake_cmd.y, brake_left.brake_input)
-  # connect(brake_cmd.y, brake_right.brake_input)
-  
-  # ========== POWERTRAIN CHAIN ==========
-  
-  # TODO: Connect powertrain components
-  # connect(engine.flange, gearbox.flange_in)
-  # connect(gearbox.flange_out, differential.flange_input)
-  
-  # ========== LEFT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
-  
-  # TODO: Connect left side
-  # connect(differential.flange_left, brake_left.flange_a)
-  # connect(brake_left.flange_b, wheel_left.flange_rot)
-  
-  # ========== RIGHT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
-  
-  # TODO: Connect right side
-  # connect(differential.flange_right, brake_right.flange_a)
-  # connect(brake_right.flange_b, wheel_right.flange_rot)
-  
-  # ========== WHEELS TO VEHICLE BODY ==========
-  
-  # TODO: Connect wheels to vehicle
-  # Note: Both wheels push the same vehicle body
-  # connect(wheel_left.flange_trans, vehicle.flange)
-  # connect(wheel_right.flange_trans, vehicle.flange)
-  
-  # ========== VEHICLE TO GROUND ==========
-  
-  # TODO: Connect vehicle to ground
-  # connect(vehicle.flange, ground.flange)
-  
-  # ========== INITIAL CONDITIONS ==========
-  
-  # TODO: Set initial conditions for all differential states
-  # Engine:
-  # initial engine.flange.phi = 0.0
-  # initial der(engine.flange.phi) = 10.0  # Start at idle (~100 rad/s)
-  
-  # Vehicle:
-  # initial vehicle.flange.s = 0.0
-  # initial vehicle.v = 0.0
-  
-  # Wheels (if have inertia):
-  # initial wheel_left.flange_rot.phi = 0.0
-  # initial wheel_right.flange_rot.phi = 0.0
-  
-  # ========== VALIDATION EXPECTATIONS ==========
-  # 
-  # What should happen:
-  # 1. Engine produces torque proportional to throttle
-  # 2. Gearbox multiplies torque, reduces speed
-  # 3. Differential splits torque equally to both wheels
-  # 4. Wheels convert rotational to translational force
-  # 5. Vehicle accelerates against drag and rolling resistance
-  # 6. System reaches steady-state or continues accelerating
-  #
-  # Verify:
-  # - Vehicle accelerates from rest
-  # - Velocity increases (check sign!)
-  # - Engine speed correlated with vehicle speed through ratios
-  # - Power flows correctly through chain
-  # - Energy is conserved (account for losses)
-  # - No unrealistic values (NaN, Inf, excessive speeds)
-  #
-end
-
+# ========== CONTROL CONNECTIONS ==========
+# TODO: Connect control signals
+# connect(throttle_cmd.y, engine.throttle_input)
+# connect(gear_cmd.y, gearbox.gear_input)
+# connect(brake_cmd.y, brake_left.brake_input)
+# connect(brake_cmd.y, brake_right.brake_input)
+# ========== POWERTRAIN CHAIN ==========
+# TODO: Connect powertrain components
+# connect(engine.flange, gearbox.flange_in)
+# connect(gearbox.flange_out, differential.flange_input)
+# ========== LEFT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+# TODO: Connect left side
+# connect(differential.flange_left, brake_left.flange_a)
+# connect(brake_left.flange_b, wheel_left.flange_rot)
+# ========== RIGHT SIDE: DIFFERENTIAL → BRAKE → WHEEL ==========
+# TODO: Connect right side
+# connect(differential.flange_right, brake_right.flange_a)
+# connect(brake_right.flange_b, wheel_right.flange_rot)
+# ========== WHEELS TO VEHICLE BODY ==========
+# TODO: Connect wheels to vehicle
+# Note: Both wheels push the same vehicle body
+# connect(wheel_left.flange_trans, vehicle.flange)
+# connect(wheel_right.flange_trans, vehicle.flange)
+# ========== VEHICLE TO GROUND ==========
+# TODO: Connect vehicle to ground
+# connect(vehicle.flange, ground.flange)
+# ========== INITIAL CONDITIONS ==========
+# TODO: Set initial conditions for all differential states
+# Engine:
+# initial engine.flange.phi = 0.0
+# initial der(engine.flange.phi) = 10.0  # Start at idle (~100 rad/s)
+# Vehicle:
+# initial vehicle.flange.s = 0.0
+# initial vehicle.v = 0.0
+# Wheels (if have inertia):
+# initial wheel_left.flange_rot.phi = 0.0
+# initial wheel_right.flange_rot.phi = 0.0
+# ========== VALIDATION EXPECTATIONS ==========
+#
+# What should happen:
+# 1. Engine produces torque proportional to throttle
+# 2. Gearbox multiplies torque, reduces speed
+# 3. Differential splits torque equally to both wheels
+# 4. Wheels convert rotational to translational force
+# 5. Vehicle accelerates against drag and rolling resistance
+# 6. System reaches steady-state or continues accelerating
+#
+# Verify:
+# - Vehicle accelerates from rest
+# - Velocity increases (check sign!)
+# - Engine speed correlated with vehicle speed through ratios
+# - Power flows correctly through chain
+# - Energy is conserved (account for losses)
+# - No unrealistic values (NaN, Inf, excessive speeds)
+#
 # TODO: Add analysis for integration test
 # analysis ConventionalPowertrainIntegration_Analysis
-#   extends TransientAnalysis(stop = 20.0, alg = "Rodas5P")
-#   model = ConventionalPowertrainIntegration()
+# extends TransientAnalysis(stop = 20.0, alg = "Rodas5P")
+# model = ConventionalPowertrainIntegration()
 # end
-
 # ============================================================================
 # SYSTEM-LEVEL VALIDATION
 # ============================================================================
@@ -186,4 +103,53 @@ end
 # - Brake distance from given speed
 # - Power efficiency through drivetrain
 #
-# ============================================================================
+# =============== # ========== POWERTRAIN COMPONENTS ==========
+# TODO: Instantiate engine
+# engine = Engine(
+# J = 0.15,
+# tau_peak = 200.0,
+# omega_peak = 400.0,
+# omega_max = 630.0,
+# tau_friction = 15.0
+# )
+# TODO: Instantiate gearbox
+# gearbox = Gearbox(
+# ratio = 3.0,       # Start with single ratio
+# efficiency = 0.95
+# )
+# TODO: Instantiate differential
+# differential = Differential(
+# ratio = 3.5
+# )
+# ========== WHEEL AND BRAKE ASSEMBLIES ==========
+# TODO: Instantiate wheels
+# wheel_left = Wheel(radius = 0.3)
+# wheel_right = Wheel(radius = 0.3)
+# TODO: Instantiate brakes
+# brake_left = Brake(tau_max = 2000.0)
+# brake_right = Brake(tau_max = 2000.0)
+# ========== VEHICLE BODY ==========
+# TODO: Instantiate vehicle body
+# vehicle = VehicleBody(
+# m = 1500.0,
+# Cd = 0.32,
+# A = 2.2,
+# rho = 1.225,
+# Crr = 0.015,
+# g = 9.81,
+# theta = 0.0
+# )
+# ========== CONTROL INPUTS ==========
+# TODO: Add control signals
+# throttle_cmd = BlockComponents.Constant(k = 0.3)   # 30% throttle
+# gear_cmd = BlockComponents.Constant(k = 1.0)       # 1st gear
+# brake_cmd = BlockComponents.Constant(k = 0.0)      # No braking
+# Or use time-varying signals:
+# throttle_cmd = BlockComponents.Step(height = 0.5, offset = 0.0, startTime = 1.0)
+# brake_cmd = BlockComponents.Step(height = 0.3, offset = 0.0, startTime = 10.0)
+# ========== GROUND REFERENCE ==========
+# TODO: Add ground reference
+# ground = TranslationalComponents.Fixed()
+# =============================================================
+test component ConventionalPowertrainIntegration
+end

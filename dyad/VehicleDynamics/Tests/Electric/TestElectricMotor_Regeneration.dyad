@@ -10,10 +10,10 @@
 # TODO: Instantiate your ElectricMotor component
 # Example:
 # motor = ElectricMotor(
-#   K_e = 0.1,
-#   K_t = 0.1,
-#   R = 0.5,
-#   J = 0.01
+# K_e = 0.1,
+# K_t = 0.1,
+# R = 0.5,
+# J = 0.01
 # )
 #
 # TODO: Add voltage source and initial speed
@@ -37,8 +37,8 @@
 # TODO: Add analysis
 # Example:
 # analysis TestElectricMotor_Regeneration_Analysis
-#   extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
-#   model = TestElectricMotor_Regeneration()
+# extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+# model = TestElectricMotor_Regeneration()
 # end
 #
 # VALIDATION (calculate BEFORE running):
@@ -55,8 +55,5 @@
 # [ ] Energy balance verified
 # [ ] Generator mode physics correct
 # ============================================================================
-
 test component TestElectricMotor_Regeneration
-  # TODO: Implement test harness following header instructions
-  
 end

@@ -185,14 +185,14 @@ test component ConventionalPowertrainIntegration
   wheel_left = ESPDComponents.VehicleDynamics.Components.Wheel() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 930, "y1": 420, "x2": 1030, "y2": 520, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 940, "y1": 420, "x2": 1040, "y2": 520, "rot": 0}
       }
     }
   }]
   wheel_right = ESPDComponents.VehicleDynamics.Components.Wheel() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 700, "y1": 200, "x2": 800, "y2": 300, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 950, "y1": 200, "x2": 1050, "y2": 300, "rot": 0}
       }
     }
   }]
@@ -206,7 +206,7 @@ test component ConventionalPowertrainIntegration
   brake_right = ESPDComponents.VehicleDynamics.Components.Brake() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 535, "y1": 199, "x2": 635, "y2": 299, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 690, "y1": 200, "x2": 790, "y2": 300, "rot": 0}
       }
     }
   }]
@@ -214,7 +214,7 @@ test component ConventionalPowertrainIntegration
   vehicle = ESPDComponents.VehicleDynamics.Components.VehicleBody() [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 1000, "y1": 220, "x2": 1100, "y2": 320, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 1160, "y1": 320, "x2": 1260, "y2": 420, "rot": 0}
       }
     }
   }]
@@ -236,7 +236,21 @@ test component ConventionalPowertrainIntegration
   brake_cmd = BlockComponents.Constant(k = 0.0) [{
     "Dyad": {
       "placement": {
-        "diagram": {"iconName": "default", "x1": 650, "y1": 80, "x2": 750, "y2": 180, "rot": 0}
+        "diagram": {"iconName": "default", "x1": 570, "y1": -20, "x2": 670, "y2": 80, "rot": 0}
+      }
+    }
+  }]
+  wheel = ESPDComponents.VehicleDynamics.Components.Wheel() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 1150, "y1": 490, "x2": 1250, "y2": 590, "rot": 0}
+      }
+    }
+  }]
+  wheel0 = ESPDComponents.VehicleDynamics.Components.Wheel() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 1150, "y1": 140, "x2": 1250, "y2": 240, "rot": 0}
       }
     }
   }]
@@ -262,7 +276,12 @@ relations
       "renderStyle": "standard"
     }
   }]
-  connect(differential.flange_right, brake_right.flange_a) [{"Dyad": {"edges": [{"S": 1, "M": [], "E": 2}], "renderStyle": "standard"}}]
+  connect(differential.flange_right, brake_right.flange_a) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 520, "y": 249}, {"x": 520, "y": 250}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
   connect(differential.flange_left, brake_left.flange_a) [{
     "Dyad": {
       "edges": [{"S": 1, "M": [{"x": 390, "y": 249}, {"x": 390, "y": 470}], "E": 2}],
@@ -271,27 +290,50 @@ relations
   }]
   connect(brake_cmd.y, brake_left.brake_input) [{
     "Dyad": {
-      "edges": [{"S": 1, "M": [{"x": 840, "y": 130}], "E": 2}],
+      "edges": [{"S": 1, "M": [{"x": 840, "y": 30}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
   connect(brake_right.brake_input, brake_cmd.y) [{
     "Dyad": {
-      "edges": [
-        {
-          "S": 1,
-          "M": [{"x": 585, "y": 50}, {"x": 775, "y": 50}, {"x": 775, "y": 130}],
-          "E": 2
-        }
-      ],
+      "edges": [{"S": 1, "M": [{"x": 740, "y": 30}], "E": 2}],
       "renderStyle": "standard"
     }
   }]
-  connect(wheel_right.flange_rot, brake_right.flange_b) [{"Dyad": {"renderStyle": "standard", "edges": [{"S": 1, "E": 2, "M": []}]}}]
+  connect(wheel_right.flange_rot, brake_right.flange_b) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 792, "y": 250}, {"x": 792, "y": 251}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
   connect(wheel_left.flange_rot, brake_left.flange_b) [{
     "Dyad": {
-      "renderStyle": "standard",
-      "edges": [{"S": 1, "M": [{"x": 909.5, "y": 470}, {"x": 909.5, "y": 471}], "E": 2}]
+      "edges": [{"S": 1, "M": [{"x": 909.5, "y": 470}, {"x": 909.5, "y": 471}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(wheel_left.contact, vehicle.contact_front) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 1110, "y": 470}, {"x": 1110, "y": 370}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(wheel_right.contact, vehicle.contact_front) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 1110, "y": 250}, {"x": 1110, "y": 370}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(wheel.contact, vehicle.contact_rear) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 1310, "y": 540}, {"x": 1310, "y": 370}], "E": 2}],
+      "renderStyle": "standard"
+    }
+  }]
+  connect(wheel0.contact, vehicle.contact_rear) [{
+    "Dyad": {
+      "edges": [{"S": 1, "M": [{"x": 1310, "y": 190}, {"x": 1310, "y": 370}], "E": 2}],
+      "renderStyle": "standard"
     }
   }]
 end

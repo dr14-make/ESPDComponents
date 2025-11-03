@@ -4,11 +4,16 @@ https://help.juliahub.com/dyad/dev/stdlib/RotationalComponents/components/IdealR
 
 Now the IdealRollingWheel has only pure rolling:
 
-  (spline.phi - support_r.phi) * radius = flange.s - support_t.s
-  0 = radius * flange.f + spline.tau
+  (spline.phi - support_r.phi) * radius = flange.s - support_t.s    # or v_wheel = r * omega_wheel
+  0 = radius * flange.f + spline.tau    # statics/force-torque relation
 
+no mass, no slip, no energy loss, purely kinematic
 It has a perfect kinematic constraint between angular motion and translational motion and a static force balance.
 
 https://people.inf.ethz.ch/fcellier/MS/andres_ms.pdf
 
 https://help.juliahub.com/multibody/dev/examples/wheel/
+
+
+https://mecheng.iisc.ac.in/~asitava/Modeling_of_Slip.pdf
+

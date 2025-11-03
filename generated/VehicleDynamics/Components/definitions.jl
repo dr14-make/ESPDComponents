@@ -60,6 +60,7 @@ This connector represents a rotational spline with angle and torque as the poten
 end
 
 include("Brake_definition.jl")
+include("Clutch_definition.jl")
 include("Differential_definition.jl")
 include("Engine_definition.jl")
 include("Gearbox_definition.jl")

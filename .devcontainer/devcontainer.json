@@ -11,15 +11,6 @@
     }
   },
 
-  // Mount the project directory
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
-
-  // Mount JuliaHub authentication files
-  "mounts": [
-    "source=${localEnv:HOME}/.julia/servers,target=/root/.julia/servers,type=bind,readonly"
-  ],
-
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
@@ -41,13 +32,7 @@
       }
     }
   },
-
-  // Post-create command to ensure packages are up to date with JuliaHub auth
-  "postCreateCommand": "julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile(); println(\"✓ Packages ready\")'",
-
-  // Additional Docker CLI arguments
-  "runArgs": ["--env", "DOCKER_BUILDKIT=1"],
-
+  "postStartCommand": "git config --global --add safe.directory /workspac",
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   "remoteUser": "root"
 }

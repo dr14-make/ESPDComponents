@@ -196,7 +196,8 @@ ground = TranslationalComponents.Fixed()
   push!(__systems, @named throttle_cmd = BlockComponents.Constant(k=0.3))
   push!(__systems, @named gear_cmd = BlockComponents.Constant(k=1))
   push!(__systems, @named brake_cmd = BlockComponents.Constant(k=0))
-  push!(__systems, @named ground = TranslationalComponents.Fixed())
+  push!(__systems, @named wheel = ESPDComponents.VehicleDynamics.Components.Wheel())
+  push!(__systems, @named wheel0 = ESPDComponents.VehicleDynamics.Components.Wheel())
 
   ### Guesses
 
@@ -213,17 +214,17 @@ ground = TranslationalComponents.Fixed()
   push!(__eqs, connect(gear_cmd.y, gearbox.gear_input))
   # ========== POWERTRAIN CHAIN ==========
   push!(__eqs, connect(engine.flange, gearbox.flange_in))
-  # ========== WHEELS TO VEHICLE BODY (Rear-wheel drive) ==========
-  # New WheelContact connector: single connection handles both traction and normal forces
-  push!(__eqs, connect(wheel_left.contact, vehicle.contact_rear))
-  push!(__eqs, connect(wheel_right.contact, vehicle.contact_rear))
   push!(__eqs, connect(gearbox.flange_out, differential.flange_input))
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
-  push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))
   push!(__eqs, connect(differential.flange_left, brake_left.flange_a))
-  push!(__eqs, connect(brake_left.flange_b, wheel_left.flange_rot))
   push!(__eqs, connect(brake_cmd.y, brake_left.brake_input))
   push!(__eqs, connect(brake_cmd.y, brake_right.brake_input))
+  push!(__eqs, connect(wheel_right.flange_rot, brake_right.flange_b))
+  push!(__eqs, connect(wheel_left.flange_rot, brake_left.flange_b))
+  push!(__eqs, connect(wheel_left.contact, vehicle.contact_front))
+  push!(__eqs, connect(wheel_right.contact, vehicle.contact_front))
+  push!(__eqs, connect(wheel.contact, vehicle.contact_rear))
+  push!(__eqs, connect(wheel0.contact, vehicle.contact_rear))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

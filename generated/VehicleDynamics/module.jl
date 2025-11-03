@@ -13,8 +13,8 @@ include("types.jl")
 include("precompilation.jl")
 # submodules:
 include("Components/module.jl")
+include("Connectors/module.jl")
 include("IntegrationTests/module.jl")
 include("Tests/module.jl")
-include("Connectors/module.jl")
 
 end # module VehicleDynamics

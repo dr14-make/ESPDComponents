@@ -13,6 +13,7 @@ RuntimeGeneratedFunctions.init(@__MODULE__)
 
 
 include("Brake_test.jl")
+include("Clutch_test.jl")
 include("Differential_test.jl")
 include("Engine_test.jl")
 include("Gearbox_test.jl")

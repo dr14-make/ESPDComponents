@@ -15,14 +15,13 @@ RUN apt-get update && apt-get install -y \
 # Install juliaup and Julia 1.11.7
 RUN curl -fsSL https://install.julialang.org | sh -s -- --yes --default-channel 1.11.7
 
+RUN curl -sSfL https://raw.githubusercontent.com/JuliaComputing/jh/main/install.sh | sh
+
 # Add Julia to PATH
-ENV PATH="/root/.juliaup/bin:${PATH}"
+ENV PATH="/root/.juliaup/bin:/root/.local/bin:${PATH}"
 
 # Verify installations
 RUN git --version && julia --version
-
-# Set working directory
-WORKDIR /workspace
 
 
 # Default command

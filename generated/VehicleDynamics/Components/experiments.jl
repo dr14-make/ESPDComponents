@@ -6,6 +6,7 @@
 
 
 include("Brake_experiment.jl")
+include("Clutch_experiment.jl")
 include("Differential_experiment.jl")
 include("Engine_experiment.jl")
 include("Gearbox_experiment.jl")

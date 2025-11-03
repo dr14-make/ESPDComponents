@@ -72,7 +72,6 @@ end
   push!(__systems, @named throttle_cmd = BlockComponents.Constant(k=0.5))
   push!(__systems, @named gear_cmd = BlockComponents.Constant(k=2))
   push!(__systems, @named brake_cmd = BlockComponents.Constant(k=0))
-  push!(__systems, @named ground = TranslationalComponents.Fixed())
 
   ### Guesses
 
@@ -94,14 +93,12 @@ end
   push!(__eqs, connect(gearbox.flange_out, differential.flange_input))
   # ========== LEFT SIDE ==========
   push!(__eqs, connect(differential.flange_left, brake_left.flange_a))
-  push!(__eqs, connect(brake_left.flange_b, wheel_left.flange_rot))
   # ========== RIGHT SIDE ==========
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
-  push!(__eqs, connect(brake_right.flange_b, wheel_right.flange_rot))
-  # ========== WHEELS TO VEHICLE BODY (rear-wheel drive) ==========
-  # New WheelContact connector: single connection handles both traction and normal forces
-  push!(__eqs, connect(wheel_left.contact, vehicle.contact_rear))
-  push!(__eqs, connect(wheel_right.contact, vehicle.contact_rear))
+  push!(__eqs, connect(wheel_right.flange_rot, brake_right.flange_b))
+  push!(__eqs, connect(vehicle.contact_front, wheel_left.contact))
+  push!(__eqs, connect(vehicle.contact_front, wheel_right.contact))
+  push!(__eqs, connect(wheel_left.flange_rot, brake_left.flange_b))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

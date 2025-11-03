@@ -20,6 +20,10 @@ TODO: Instantiate your VehicleBody component
 Example:
 vehicle = VehicleBody(
 m = 1000.0,
+L = 2.5,
+h_cg = 0.5,
+a = 1.2,
+b = 1.3,
 Cd = 0.32,
 A = 2.2,
 rho = 1.225,
@@ -31,9 +35,10 @@ TODO: Add ground reference
 Example:
 ground = TranslationalComponents.Fixed()
 
-TODO: Connect components
+TODO: Connect components (no forces, just ground)
 Example:
-connect(vehicle.flange, ground.flange)
+connect(vehicle.flange_front, ground.flange)
+connect(vehicle.flange_rear, ground.flange)
 
 TODO: Set initial conditions (coasting from speed)
 Example:

@@ -63,3 +63,9 @@ vizdef = PlotlyVisualizationSpec(res_meta.allowed_symbols[[2, 1]], (;), [Attribu
 
 customizable_visualization(result, vizdef)
 ```
+
+## Docker
+
+```
+docker build -t espdcomponents:latest -f .devcontainer/Dockerfile .
+```

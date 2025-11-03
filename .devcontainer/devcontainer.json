@@ -1,0 +1,53 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+{
+  "name": "ESPDComponents - Ubuntu 24.04 with Julia 1.11.7",
+  // Build from local Dockerfile
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "BUILDKIT_INLINE_CACHE": "1"
+    }
+  },
+
+  // Mount the project directory
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+  // Mount JuliaHub authentication files
+  "mounts": [
+    "source=${localEnv:HOME}/.julia/servers,target=/root/.julia/servers,type=bind,readonly"
+  ],
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "julialang.language-julia",
+        "JuliaComputing.dyad-studio",
+        "juliapluto-pankgeorg.advanced-vscode-extension",
+        "JuliaComputing.juliahub"
+      ],
+      "settings": {
+        "julia.executablePath": "/root/.juliaup/bin/julia",
+        "julia.environmentPath": "/workspace"
+      }
+    }
+  },
+
+  // Post-create command to ensure packages are up to date with JuliaHub auth
+  "postCreateCommand": "julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile(); println(\"✓ Packages ready\")'",
+
+  // Additional Docker CLI arguments
+  "runArgs": ["--env", "DOCKER_BUILDKIT=1"],
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  "remoteUser": "root"
+}

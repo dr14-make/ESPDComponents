@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# Julia
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+.julia
+
+# Generated files (will be regenerated in container)
+generated/
+
+# Documentation
+Documentation/
+docs/
+
+# Analysis notebooks
+analysis/
+
+# Build artifacts
+Manifest.toml.bak

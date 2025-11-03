@@ -11,6 +11,7 @@ The ElectricMotor component models a DC/BLDC motor with electrical-mechanical po
 ### Your Task
 
 Model an electric motor that:
+
 - Converts electrical power to mechanical torque (and vice versa)
 - Has back-EMF proportional to rotational speed
 - Has torque proportional to current
@@ -45,6 +46,7 @@ Model an electric motor that:
    - **Regeneration:** Motor spins faster than no-load speed → negative current → charging battery
 
 ### Simplifications for Phase 2B
+
 - **Ideal motor constants:** K_t = K_e
 - **No saturation:** Linear torque-current relationship
 - **No cogging or ripple:** Smooth torque
@@ -57,10 +59,12 @@ Model an electric motor that:
 ### Interface Requirements
 
 **Connectors:**
-- Two `ElectricalComponents.Pin()` for electrical side
-- `RotationalComponents.Flange()` for mechanical shaft
+
+- Two `Dyad.Pin()` for electrical side (positive and negative terminals)
+- `Dyad.Spline()` for mechanical shaft output
 
 **Suggested Parameters:**
+
 - Back-EMF constant K_e [V/(rad/s)] or [V·s/rad]
 - Torque constant K_t [N·m/A]
 - Winding resistance [Ω]
@@ -81,11 +85,13 @@ Model an electric motor that:
 **Objective:** Verify back-EMF limits no-load speed
 
 **Suggested Test Configuration:**
+
 - Apply constant voltage to motor
 - No mechanical load (free spinning)
 - Observe acceleration to steady-state speed
 
 **What to Validate:**
+
 - Motor accelerates from rest
 - Reaches steady-state speed where back-EMF ≈ applied voltage
 - Calculate expected no-load speed
@@ -96,11 +102,13 @@ Model an electric motor that:
 **Objective:** Verify torque-current relationship
 
 **Suggested Test Configuration:**
+
 - Motor connected to mechanical load (inertia or damper)
 - Apply voltage
 - Measure steady-state current and torque
 
 **What to Validate:**
+
 - Torque proportional to current
 - Power balance: electrical power in = mechanical power out + resistive losses
 - Calculate expected current for given load
@@ -110,17 +118,20 @@ Model an electric motor that:
 **Objective:** Verify generator mode operation
 
 **Suggested Test Configuration:**
+
 - Motor initially spinning at high speed
 - Reduce applied voltage or reverse polarity
 - Motor acts as generator, slowing down
 
 **What to Validate:**
+
 - Current reverses (negative = generating)
 - Motor decelerates
 - Power flows from mechanical to electrical
 - Verify energy is returned (would charge battery in full system)
 
 **Configuration:**
+
 - Apply constant voltage (e.g., 400 V)
 - No load on shaft
 - Measure final speed
@@ -130,6 +141,7 @@ Model an electric motor that:
 ### Test 2: Loaded Operation
 
 **Configuration:**
+
 - Constant voltage
 - Apply constant load torque
 - Measure equilibrium speed and current
@@ -139,6 +151,7 @@ Model an electric motor that:
 ### Test 3: Regenerative Braking
 
 **Configuration:**
+
 - Motor spinning at known speed
 - Apply negative torque (brake)
 - Verify current reverses (charges battery)

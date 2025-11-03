@@ -11,6 +11,7 @@ The MotorController translates driver demand (throttle/brake) into motor torque 
 ### Your Task
 
 Model a motor controller that:
+
 - Receives throttle input (0-1) from driver
 - Receives brake input (0-1) from driver
 - Receives motor speed feedback
@@ -43,6 +44,7 @@ Model a motor controller that:
    - Smooth transition between regen and mechanical
 
 ### Simplifications for Phase 2B
+
 - **Simple logic:** No PID control, direct mapping
 - **No blending:** Regenerative vs mechanical braking not blended (just threshold)
 - **No battery feedback:** Don't check SOC for regen limiting
@@ -55,12 +57,14 @@ Model a motor controller that:
 ### Interface Requirements
 
 **Connectors:**
-- `BlockComponents.RealInput()` for throttle [0-1]
-- `BlockComponents.RealInput()` for brake [0-1]
-- `BlockComponents.RealInput()` for motor speed feedback [rad/s]
-- `BlockComponents.RealOutput()` for torque command [N·m]
+
+- `Dyad.RealInput()` for throttle [0-1]
+- `Dyad.RealInput()` for brake [0-1]
+- `Dyad.RealInput()` for motor speed feedback [rad/s]
+- `Dyad.RealOutput()` for torque command [N·m]
 
 **Suggested Parameters:**
+
 - Maximum motor torque (positive) [N·m]
 - Maximum regen torque (magnitude) [N·m]
 - Minimum speed for regen [rad/s]
@@ -80,11 +84,13 @@ Model a motor controller that:
 **Objective:** Verify throttle to torque mapping
 
 **Suggested Test Configuration:**
+
 - Provide various throttle inputs (0, 0.5, 1.0)
 - Brake = 0
 - Motor speed > 0
 
 **What to Validate:**
+
 - Torque output scales with throttle
 - Torque = throttle × max_torque
 - No regen torque when throttle active
@@ -94,11 +100,13 @@ Model a motor controller that:
 **Objective:** Verify regen mode activation and torque
 
 **Suggested Test Configuration:**
+
 - Throttle = 0
 - Brake input (0.5, then 1.0)
 - Motor speed above regen threshold
 
 **What to Validate:**
+
 - Torque command becomes negative
 - Magnitude proportional to brake input
 - Only activates above speed threshold
@@ -108,10 +116,12 @@ Model a motor controller that:
 **Objective:** Verify regen disables below speed threshold
 
 **Suggested Test Configuration:**
+
 - Brake pressed
 - Motor speed ramping down through threshold
 
 **What to Validate:**
+
 - Regen torque active above threshold
 - Regen torque goes to zero below threshold
 - Smooth transition (no discontinuity)
@@ -121,6 +131,7 @@ Model a motor controller that:
 ### Test 3: Low-Speed Friction Braking
 
 **Configuration:**
+
 - Brake: 0.5
 - Motor speed: 5 rad/s (below regen threshold)
 

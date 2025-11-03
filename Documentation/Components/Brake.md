@@ -11,6 +11,7 @@ The Brake component models friction braking by applying a torque that opposes ro
 ### Your Task
 
 Model a brake that:
+
 - Connects between two rotational flanges (through component, not blocking)
 - Receives a control signal (0 = no braking, 1 = full braking)
 - Applies torque that opposes the direction of rotation
@@ -40,10 +41,12 @@ Model a brake that:
 ### Interface Requirements
 
 **Required Connectors:**
-- Two `RotationalComponents.Flange()` connections (input and output - through component)
-- `BlockComponents.RealInput()` for brake command signal [0, 1]
+
+- Two `Dyad.Spline()` connections (input and output - through component, rotational with phi/tau)
+- `Dyad.RealInput()` for brake command signal [0, 1]
 
 **Suggested Parameters:**
+
 - Maximum brake torque [N⋅m]
 
 ### Test Harness Requirements
@@ -51,18 +54,21 @@ Model a brake that:
 **Objective:** Verify brake can decelerate a spinning mass
 
 **Suggested Test Configuration:**
+
 - Spinning inertia (use `RotationalComponents.Inertia()`)
 - Brake component
 - Step input for brake command (0 → 1 at some time)
 - Fixed reference
 
 **What to Validate:**
+
 - Initial spin-down with no braking
 - Application of brake causes deceleration
 - Calculate expected deceleration from torque and inertia
 - Verify energy dissipation matches kinetic energy loss
 
 **Expected Results:**
+
 - 0 < t < 2s: Free spinning at ω = 50 rad/s
 - t = 2s: Brake applied, deceleration begins
 - Deceleration: α = -τ_brake/J = -1000/2 = -500 rad/s²
@@ -70,6 +76,7 @@ Model a brake that:
 - Total energy dissipated: E = ½Jω² = 0.5×2×50² = 2500 J
 
 **Validation:**
+
 ```julia
 @assert sol(2.01, idxs=sys.brake.tau_brake) ≈ 1000.0
 @assert sol(2.01, idxs=sys.inertia.alpha) ≈ -500.0

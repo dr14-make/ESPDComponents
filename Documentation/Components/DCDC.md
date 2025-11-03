@@ -11,6 +11,7 @@ The DC-DC converter transforms voltage between battery and motor with efficiency
 ### Your Task
 
 Model a DC-DC converter that:
+
 - Transforms voltage level (buck/step-down or boost/step-up)
 - Maintains power balance with efficiency losses
 - Has input and output electrical ports
@@ -36,6 +37,7 @@ Model a DC-DC converter that:
    - Efficiency may differ by direction
 
 ### Simplifications for Phase 2B
+
 - **Fixed ratio:** No pulse-width modulation control
 - **Constant efficiency:** Independent of load
 - **Instantaneous response:** No switching dynamics
@@ -48,10 +50,12 @@ Model a DC-DC converter that:
 ### Interface Requirements
 
 **Connectors:**
-- Two `ElectricalComponents.Pin()` for input side (battery)
-- Two `ElectricalComponents.Pin()` for output side (motor)
+
+- Two `Dyad.Pin()` for input side (battery: high voltage DC)
+- Two `Dyad.Pin()` for output side (motor: transformed voltage DC)
 
 **Suggested Parameters:**
+
 - Voltage transformation ratio
 - Efficiency [0-1] (typical: 0.90-0.98)
 
@@ -70,12 +74,14 @@ Model a DC-DC converter that:
 **Objective:** Verify voltage transformation and power balance
 
 **Suggested Test Configuration:**
+
 - DC-DC converter with known ratio and efficiency
 - Voltage source on input
 - Resistive load on output
 - Measure steady-state voltages, currents, powers
 
 **What to Validate:**
+
 - Output voltage = input voltage × ratio (accounting for efficiency)
 - Power balance: P_in = P_out / efficiency
 - Calculate expected output power from input and efficiency
@@ -86,10 +92,12 @@ Model a DC-DC converter that:
 **Objective:** Verify converter maintains voltage ratio under changing load
 
 **Suggested Test Configuration:**
+
 - Step change in load resistance
 - Observe voltage and power response
 
 **What to Validate:**
+
 - Voltage ratio maintained despite load change
 - Power scales with load
 - Efficiency remains constant
@@ -108,17 +116,20 @@ Model a DC-DC converter that:
 ### Test: Step Load Response
 
 **Configuration:**
+
 - Input: 400 V battery
 - Ratio: 0.5 (buck to 200 V)
 - Efficiency: 0.95
 - Step load from 0 to 50 A at output
 
 **Expected Results (calculate!):**
+
 - V_out = ?
 - I_in = ?
 - P_loss = ?
 
 **Validation:**
+
 - Output voltage = V_in × ratio
 - Power balance: P_in = P_out / η
 - Efficiency = P_out / P_in

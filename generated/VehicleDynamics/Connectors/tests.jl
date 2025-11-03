@@ -11,3 +11,6 @@ using RuntimeGeneratedFunctions
 RuntimeGeneratedFunctions.init(@__MODULE__)
 
 
+
+include("WheelContactBreakout_test.jl")
+include("WheelContactForceSource_test.jl")

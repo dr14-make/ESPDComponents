@@ -82,10 +82,16 @@ Model a wheel that:
 
 **Required Connectors:**
 
-- `flange_rot`: RotationalComponents.Flange (driveline connection - torque input)
-- `flange_trans`: TranslationalComponents.Flange (vehicle body connection - traction force)
-- `flange_normal`: TranslationalComponents.Flange (normal force input from vehicle body)
-- **ACTION:** Read all Flange sources to understand sign conventions!
+- `flange_rot`: Dyad.Spline (driveline connection - torque input from drivetrain)
+- `contact`: VehicleDynamics.Connectors.WheelContact (combined traction + normal force interface to vehicle body)
+  - `contact.s_traction`: Longitudinal position [m]
+  - `contact.f_traction`: Traction force [N] (flow variable)
+  - `contact.s_normal`: Vertical position [m] (typically fixed at 0)
+  - `contact.f_normal`: Normal force [N] (flow variable)
+- **ACTION:** Read WheelContact connector source to understand sign conventions!
+
+**About WheelContact Connector:**
+The WheelContact connector combines both traction and normal forces in a single interface, simplifying connections and ensuring consistent force coupling between wheels and vehicle body. See `dyad/VehicleDynamics/Connectors/WheelContact.dyad` for implementation details.
 
 **Suggested Parameters:**
 

@@ -11,11 +11,63 @@
 ## How to Use This Guide
 
 **Before using ANY component:**
+
 1. Find it in this reference
 2. Read its source file: `cat dyad_resources/dyad_stdlib/[Domain]Components.dyad`
 3. Understand its interface (what flanges/ports it has)
 4. Check what parameters it needs
 5. Look at examples in the source file
+
+---
+
+## Vehicle Dynamics Domain Components
+
+**File:** `dyad/VehicleDynamics/Connectors/`
+
+### Specialized Connectors
+
+#### WheelContact
+
+```dyad
+VehicleDynamics.Connectors.WheelContact
+  # Variables:
+  # - s_traction: longitudinal position [m]
+  # - f_traction: traction force [N] (flow variable)
+  # - s_normal: vertical position [m]
+  # - f_normal: normal force [N] (flow variable)
+  # 
+  # Combines both traction and normal forces in single connector
+  # Used between Wheel and VehicleBody components
+```
+
+**Purpose:** Couples wheel-body interface with both traction and normal forces.
+
+**Documentation:** See [WheelContact.md](Components/WheelContact.md) for detailed guide.
+
+### Helper Components for Testing
+
+| Component | Description | Use Case |
+|-----------|-------------|----------|
+| `WheelContactBreakout` | Converts WheelContact to separate standard Flanges | Testing with standard library components |
+| `WheelContactForceSource` | Applies controlled traction + normal forces | Unit testing wheels with prescribed forces |
+
+**Example Usage:**
+
+```dyad
+test component TestWheelWithStandardLib
+  wheel = Wheel()
+  breakout = VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  # Now use standard library components
+  traction_force = TranslationalComponents.Force()
+  ground = TranslationalComponents.Fixed()
+  
+relations
+  connect(wheel.contact, breakout.contact)
+  connect(breakout.flange_traction, traction_force.flange)
+  connect(breakout.flange_normal, ground.flange)
+end
+```
 
 ---
 
@@ -57,6 +109,7 @@ RotationalComponents.Flange
 | `IdealRollingWheel` | Rolling without slip | `radius` (m) | Wheel-road coupling |
 
 **Usage Example:**
+
 ```dyad
 # In your component
 inertia = RotationalComponents.Inertia(J = 0.5)  # 0.5 kg⋅m²
@@ -101,6 +154,7 @@ TranslationalComponents.Flange
 | `Velocity` | Enforces velocity | Input: `v` [m/s] | Velocity control |
 
 **Usage Example:**
+
 ```dyad
 # Vehicle body with damper for air resistance
 vehicle = TranslationalComponents.Mass(m = 1500.0)     # 1500 kg
@@ -144,6 +198,7 @@ BlockComponents.RealOutput  # Output port for Real signals
 | `Product` | Multiplication | Nonlinear calculations |
 
 **Usage Example:**
+
 ```dyad
 # Test with step input
 test component TestMyComponent
@@ -320,16 +375,19 @@ nano dyad_resources/dyad_stdlib/RotationalComponents.dyad
 ## When You MIGHT Need Custom Components
 
 **Only create custom components if:**
+
 1. No standard library component exists for your physics
 2. You need to combine multiple standard components into a reusable unit
 3. You have domain-specific logic (e.g., engine torque curves)
 
 **Even then:**
+
 - Build from standard library primitives internally
 - Use standard Flange connectors for interfaces
 - Document why standard components were insufficient
 
 **Example of acceptable custom component:**
+
 ```dyad
 component VehicleDynamics.Engine
   # Uses standard Flange for interface

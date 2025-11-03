@@ -92,11 +92,16 @@ The vehicle body should:
 
 **Required Connectors:**
 
-- `flange_front`: TranslationalComponents.Flange (front axle traction input)
-- `flange_rear`: TranslationalComponents.Flange (rear axle traction input)
-- `flange_normal_front`: TranslationalComponents.Flange (front normal force output)
-- `flange_normal_rear`: TranslationalComponents.Flange (rear normal force output)
-- **ACTION:** Read the Flange source to understand the sign convention!
+- `contact_front`: VehicleDynamics.Connectors.WheelContact (front axle - combined traction + normal force)
+  - Receives traction force from front wheels via `contact_front.f_traction`
+  - Provides normal force to front wheels via `contact_front.f_normal`
+- `contact_rear`: VehicleDynamics.Connectors.WheelContact (rear axle - combined traction + normal force)
+  - Receives traction force from rear wheels via `contact_rear.f_traction`
+  - Provides normal force to rear wheels via `contact_rear.f_normal`
+- **ACTION:** Read the WheelContact connector source to understand the sign convention!
+
+**About WheelContact Connector:**
+The WheelContact connector combines both traction and normal forces in a single interface. This simplifies the connection topology and ensures the traction and normal forces are always properly coupled at each axle. See `dyad/VehicleDynamics/Connectors/WheelContact.dyad` for implementation details.
 
 **Suggested Parameters:**
 

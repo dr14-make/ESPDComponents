@@ -57,8 +57,8 @@ Model a battery that:
 
 **Required Connectors:**
 
-- `ElectricalComponents.Pin()` for positive terminal
-- `ElectricalComponents.Pin()` for negative terminal (or reference/ground)
+- `Dyad.Pin()` for positive terminal (electrical connection with voltage/current)
+- `Dyad.Pin()` for negative terminal (or reference/ground)
 
 **Suggested Parameters:**
 

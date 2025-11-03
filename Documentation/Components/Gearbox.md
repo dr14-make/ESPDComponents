@@ -11,6 +11,7 @@ The Gearbox component models a multi-ratio transmission with discrete gear ratio
 ### Your Task
 
 Model a multi-speed gearbox that:
+
 - Has input and output rotational flanges
 - Receives a gear selection command (integer: 1, 2, 3, etc.)
 - Implements different speed ratios for each gear
@@ -42,6 +43,7 @@ Model a multi-speed gearbox that:
    - No clutch slip or synchromesh dynamics
 
 ### Simplifications for Phase 1
+
 - **Instant shifting:** No transition dynamics between gears
 - **No clutch:** Direct connection assumed
 - **Constant efficiency:** Not load or speed dependent
@@ -54,10 +56,12 @@ Model a multi-speed gearbox that:
 ### Interface Requirements
 
 **Required Connectors:**
-- Two `RotationalComponents.Flange()` connections (input from engine, output to driveline)
-- Control input for gear selection (integer signal)
+
+- Two `Dyad.Spline()` connections (input from engine, output to driveline)
+- `Dyad.IntegerInput()` for gear selection (integer signal)
 
 **Suggested Parameters:**
+
 - Array/vector of gear ratios (one per gear)
 - Efficiency value(s)
 - Optional: Input shaft inertia
@@ -78,12 +82,14 @@ Model a multi-speed gearbox that:
 **Objective:** Verify speed ratio and torque multiplication for a single gear
 
 **Suggested Test Configuration:**
+
 - Gearbox set to specific gear (e.g., 2nd gear, ratio = 2.0)
 - Apply input torque
 - Connect load to output
 - Verify relationships
 
 **What to Validate:**
+
 - Output speed = input speed / ratio
 - Output torque ≈ input torque × ratio × efficiency
 - Power conservation with losses
@@ -93,11 +99,13 @@ Model a multi-speed gearbox that:
 **Objective:** Verify behavior when changing gears
 
 **Suggested Test Configuration:**
+
 - Start in one gear
 - Change gear command during simulation
 - Observe speed and torque changes
 
 **What to Validate:**
+
 - Speed ratio changes instantly (Phase 1)
 - Torque multiplication changes accordingly
 - No discontinuities that break solver
@@ -139,6 +147,7 @@ end
 ```
 
 **Expected Results:**
+
 - Gear 3: ratio = 1.5, η = 0.97
 - Input speed: ω_in = 100 rad/s
 - Output speed: ω_out = 100/1.5 = 66.67 rad/s
@@ -146,6 +155,7 @@ end
   - τ_in ≈ τ_loss / (1 - ratio×η) (complex, verify numerically)
 
 **Validation:**
+
 ```julia
 @assert gearbox.gear == 3
 @assert abs(gearbox.ratio - 1.5) < 1e-6
@@ -190,6 +200,7 @@ end
 ```
 
 **Expected Results:**
+
 - Each gear produces different output torque
 - Gear 1 (ratio=3.5): τ_out ≈ 100×3.5×0.96 = 336 N⋅m
 - Gear 4 (ratio=1.0): τ_out ≈ 100×1.0×0.97 = 97 N⋅m
@@ -203,6 +214,7 @@ end
 ### Typical Gear Ratios
 
 **Manual Transmission (5-speed):**
+
 ```
 1st: 3.5-4.5
 2nd: 2.0-2.5
@@ -212,6 +224,7 @@ end
 ```
 
 **Automatic Transmission (6-speed):**
+
 ```
 1st: 4.0-5.0
 2nd: 2.5-3.0
@@ -222,14 +235,17 @@ end
 ```
 
 **Performance (close-ratio):**
+
 - Smaller steps between gears (1.2-1.4× ratio change)
 - Keeps engine in power band
 
 **Economy (wide-ratio):**
+
 - Larger steps (1.5-2.0× ratio change)
 - Optimizes fuel efficiency
 
 ### Efficiency Values
+
 - Manual transmission: η = 0.94-0.97
 - Automatic (torque converter): η = 0.85-0.92
 - Dual-clutch (DCT): η = 0.95-0.98
@@ -240,15 +256,20 @@ end
 ## Advanced Features (Phase 4)
 
 ### Smooth Gear Shifting
+
 Interpolate ratio during shifts:
+
 ```
 gear_actual = gear_cmd + shift_rate × dt
 ratio = interpolate(ratios, gear_actual)
 ```
+
 Prevents discontinuities, models synchronizer action.
 
 ### Shift Dynamics
+
 Add shift time delay and torque interruption:
+
 ```
 if shifting:
   tau_out = 0  # Torque interruption
@@ -256,6 +277,7 @@ if shifting:
 ```
 
 ### Neutral Gear
+
 ```
 if gear == 0:
   flange_in and flange_out decoupled
@@ -263,6 +285,7 @@ if gear == 0:
 ```
 
 ### Reverse Gear
+
 Negative ratio: `ratio_reverse = -3.5`
 
 ---
@@ -281,16 +304,20 @@ Negative ratio: `ratio_reverse = -3.5`
 ## Common Issues
 
 ### Issue 1: Discontinuous Shifts
+
 **Problem:** Instantaneous ratio change causes solver issues
-**Solution:** 
+**Solution:**
+
 - Phase 1: Accept small discontinuity, use stiff solver
 - Phase 4: Implement smooth shifting with time constant
 
 ### Issue 2: Efficiency Direction
+
 **Problem:** Efficiency should degrade in both directions
 **Solution:** Check power flow direction, apply η correctly
 
 ### Issue 3: Invalid Gear Selection
+
 **Problem:** gear_cmd outside valid range
 **Solution:** Bounds checking with default to gear 1
 

@@ -11,6 +11,7 @@ The Engine component models an internal combustion engine as a torque source wit
 ### Your Task
 
 Model an internal combustion engine that:
+
 - Produces torque based on throttle input (0-1 range)
 - Has a characteristic torque curve that varies with engine speed
 - Includes rotational inertia of the crankshaft and moving parts
@@ -39,6 +40,7 @@ Model an internal combustion engine that:
    - Power curve typically peaks at higher RPM than torque curve
 
 ### Simplifications for Phase 1
+
 - **Simple torque curve:** Use analytical function (parabola, polynomial) instead of lookup table
 - **Simplified friction:** Constant friction torque
 - **No thermal effects:** Ignore temperature-dependent performance
@@ -51,10 +53,12 @@ Model an internal combustion engine that:
 ### Interface Requirements
 
 **Required Connectors:**
-- `RotationalComponents.Flange()` for mechanical output to driveline
-- `BlockComponents.RealInput()` for throttle command [0, 1]
+
+- `Dyad.Spline()` for mechanical output to driveline (rotational connector with phi, tau)
+- `Dyad.RealInput()` for throttle command [0, 1]
 
 **Suggested Parameters:**
+
 - Engine inertia [kg⋅m²]
 - Peak torque [N⋅m]
 - Engine speed at peak torque [rad/s or rpm]
@@ -77,11 +81,13 @@ Model an internal combustion engine that:
 **Objective:** Verify torque curve shape and speed-dependent behavior
 
 **Suggested Test Configuration:**
+
 - Engine with no load (free to spin)
 - Ramp throttle from 0 to 100%
 - Observe acceleration profile and final speed
 
 **What to Validate:**
+
 - Engine accelerates when throttle applied
 - Speed increases follow expected torque curve behavior
 - Friction limits maximum no-load speed
@@ -92,11 +98,13 @@ Model an internal combustion engine that:
 **Objective:** Verify equilibrium between engine torque and load
 
 **Suggested Test Configuration:**
+
 - Engine with resistive load (damper or constant torque)
 - Apply constant throttle
 - Wait for steady-state speed
 
 **What to Validate:**
+
 - System reaches equilibrium (constant speed)
 - Calculate expected equilibrium speed where engine torque = load + friction
 - Verify simulation matches calculation
@@ -118,17 +126,21 @@ Model an internal combustion engine that:
 ## Advanced Features (Phase 4)
 
 ### Map-Based Engine
+
 Use 2D lookup table: `τ = f(ω, throttle)`
+
 - Read from external data file
 - More accurate for specific engines
 - Include fuel consumption maps
 
 ### Thermal Effects
+
 - Coolant temperature affects performance
 - Thermal inertia and heat rejection
 - Integration with cooling system
 
 ### Starter Motor
+
 - Cranking torque to start engine
 - Key-on logic
 

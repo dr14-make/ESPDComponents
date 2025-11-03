@@ -11,6 +11,7 @@ The Differential component splits input torque equally between two output shafts
 ### Your Task
 
 Model an open differential that:
+
 - Has one input shaft (from transmission/propshaft)
 - Has two output shafts (to left and right wheels)
 - Splits torque equally between outputs
@@ -41,6 +42,7 @@ Model an open differential that:
    - Input power = sum of left and right output powers
 
 ### Simplifications for Phase 1
+
 - **Open differential:** Equal torque split (no limited-slip or locking)
 - **No efficiency losses:** Ideal gearing
 - **No inertia:** Massless gears
@@ -53,10 +55,12 @@ Model an open differential that:
 ### Interface Requirements
 
 **Required Connectors:**
-- One `RotationalComponents.Flange()` for input (propshaft)
-- Two `RotationalComponents.Flange()` for outputs (left and right axles)
+
+- One `Dyad.Spline()` for input (propshaft from transmission)
+- Two `Dyad.Spline()` for outputs (left and right axles to wheels)
 
 **Suggested Parameters:**
+
 - Final drive ratio [-] (typical: 3.0-5.0 for cars)
 
 ### Important Considerations
@@ -75,12 +79,14 @@ Model an open differential that:
 **Objective:** Verify torque split and speed ratio with equal loads
 
 **Suggested Test Configuration:**
+
 - Differential with known ratio
 - Apply input torque
 - Connect identical inertias to both outputs
 - Observe accelerations and speeds
 
 **What to Validate:**
+
 - Both outputs have equal torque (measure or infer from equal accelerations)
 - Both outputs have equal speed
 - Input-output speed ratio matches final drive ratio
@@ -91,12 +97,14 @@ Model an open differential that:
 **Objective:** Verify differential action with unequal loads
 
 **Suggested Test Configuration:**
+
 - Differential with known ratio
 - Apply input torque
 - Connect different loads to left and right outputs (e.g., one inertia, one damper)
 - Observe speed difference
 
 **What to Validate:**
+
 - Torques remain equal on both sides despite different loads
 - Speeds differ between left and right
 - Average of output speeds maintains kinematic relationship with input
@@ -104,6 +112,7 @@ Model an open differential that:
 - Power conservation still holds
   initial der(diff.flange_input.phi) = 0.0
 end
+
 ```
 
 **Expected Results:**
@@ -136,9 +145,11 @@ Lower ratio = lower acceleration, higher top speed
 ### Limited-Slip Differential (LSD)
 Add torque bias when speed difference exceeds threshold:
 ```
+
 Δτ = k_LSD × (ω_left - ω_right)
 τ_left = τ_base + Δτ
 τ_right = τ_base - Δτ
+
 ```
 
 ### Torque Vectoring
@@ -147,8 +158,10 @@ Active control of left/right torque split for handling.
 ### Efficiency Losses
 Add friction/gear losses:
 ```
+
 η = 0.95-0.98 (typical)
 P_out = η × P_in
+
 ```
 
 ---

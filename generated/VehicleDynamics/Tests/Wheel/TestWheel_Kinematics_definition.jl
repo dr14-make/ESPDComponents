@@ -25,26 +25,40 @@ Example:
 speed_source = RotationalComponents.Speed()
 speed_cmd = BlockComponents.Constant(k = 10.0)  # 10 rad/s
 
-TODO: Apply constant normal force
+TODO: Use WheelContactBreakout to connect to standard library components
 Example:
+breakout = VehicleDynamics.Connectors.WheelContactBreakout()
+
+TODO: Apply traction and normal forces
+Example:
+traction_force = TranslationalComponents.Force()
+traction_cmd = BlockComponents.Constant(k = 0.0)  # No external traction force
 normal_force = TranslationalComponents.Force()
 normal_cmd = BlockComponents.Constant(k = 5000.0)  # 5000 N normal force
 
 TODO: Connect to vehicle body mass
 Example:
 body = TranslationalComponents.Mass(m = 1000.0)
-ground_trans = TranslationalComponents.Fixed()
-ground_normal = TranslationalComponents.Fixed()
+ground = TranslationalComponents.Fixed()
 
 TODO: Connect components
 Example:
-connect(speed_cmd.y, speed_source.w_input)
+# Connect wheel to breakout adapter
+connect(wheel.contact, breakout.contact)
+
+# Connect rotational side (drivetrain)
+connect(speed_cmd.y, speed_source.w)
 connect(speed_source.flange, wheel.flange_rot)
-connect(wheel.flange_trans, body.flange)
-connect(body.flange, ground_trans.flange)
-connect(normal_cmd.y, normal_force.f_input)
-connect(normal_force.flange, wheel.flange_normal)
-connect(wheel.flange_normal, ground_normal.flange)
+
+# Connect traction side through breakout
+connect(traction_cmd.y, traction_force.f)
+connect(traction_force.flange, breakout.flange_traction)
+connect(breakout.flange_traction, body.flange)
+
+# Connect normal force through breakout
+connect(normal_cmd.y, normal_force.f)
+connect(normal_force.flange, breakout.flange_normal)
+connect(breakout.flange_normal, ground.flange)
 
 TODO: Set initial conditions
 Example:

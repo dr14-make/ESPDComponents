@@ -243,6 +243,7 @@ Each component has a documentation file in `Documentation/Components/` that prov
 - [VehicleBody.md](Components/VehicleBody.md) - Vehicle mass dynamics
 - [Wheel.md](Components/Wheel.md) - Rotational-translational coupling
 - [Brake.md](Components/Brake.md) - Friction braking
+- [WheelContact.md](Components/WheelContact.md) - Specialized connector for wheel-body interface
 
 **Conventional Powertrain:**
 
@@ -324,6 +325,7 @@ You will frequently use standard library components. **Full reference:** [Standa
 - `TranslationalComponents.Flange()` - Linear motion (position, force)
 - `RotationalComponents.Flange()` - Rotational motion (angle, torque)
 - `ElectricalComponents.Pin()` - Electrical connection (voltage, current)
+- `VehicleDynamics.Connectors.WheelContact()` - Combined traction + normal force (wheel-body interface)
 - `RealInput()` - Control signal input
 - `RealOutput()` - Sensor output
 

@@ -11,6 +11,7 @@ The DriverController component models driver behavior for speed tracking in driv
 ### Control Strategy
 
 **Simple PI Controller:**
+
 ```
 error = v_target - v_actual
 
@@ -19,12 +20,14 @@ brake = -Kp × error                         (if error < 0)
 ```
 
 **Constraints:**
+
 ```
 throttle ∈ [0, 1]
 brake ∈ [0, 1]
 ```
 
 ### Advanced Strategy (Phase 3+)
+
 - Predictive control: anticipate speed changes
 - Gear selection logic based on speed/throttle
 - Smooth transitions to avoid aggressive inputs
@@ -36,12 +39,12 @@ brake ∈ [0, 1]
 ```dyad
 component DriverControllerPI
   # Inputs
-  speed_target = BlockComponents.RealInput()    # Target speed [m/s]
-  speed_actual = BlockComponents.RealInput()    # Actual speed [m/s]
+  speed_target = Dyad.RealInput()    # Target speed [m/s]
+  speed_actual = Dyad.RealInput()    # Actual speed [m/s]
   
   # Outputs
-  throttle = BlockComponents.RealOutput()       # Throttle command [0, 1]
-  brake = BlockComponents.RealOutput()          # Brake command [0, 1]
+  throttle = Dyad.RealOutput()       # Throttle command [0, 1]
+  brake = Dyad.RealOutput()          # Brake command [0, 1]
   
   # Parameters
   parameter Kp::Real = 0.5                      # Proportional gain
@@ -117,6 +120,7 @@ end
 ```
 
 **Expected Results:**
+
 - At t < 1s: error = 0, throttle = 0, brake = 0
 - At t = 1s: error = 20 m/s, throttle increases
 - Vehicle accelerates, error decreases
@@ -128,16 +132,19 @@ end
 ## Tuning Guidelines
 
 ### Proportional Gain (Kp)
+
 - Too low: slow response, large steady-state error
 - Too high: overshoot, oscillation
 - Typical: 0.1-0.5 for vehicle control
 
 ### Integral Gain (Ki)
+
 - Eliminates steady-state error
 - Too high: overshoot, instability
 - Typical: 0.01-0.1
 
 ### Deadband
+
 - Prevents chattering around target speed
 - Too large: sluggish response
 - Typical: 0.2-1.0 m/s

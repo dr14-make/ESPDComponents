@@ -60,3 +60,5 @@ This connector represents a rotational spline with angle and torque as the poten
 end
 
 include("WheelContact_definition.jl")
+include("WheelContactBreakout_definition.jl")
+include("WheelContactForceSource_definition.jl")

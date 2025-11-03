@@ -1,0 +1,91 @@
+# ============================================================================
+# WheelContact Breakout Component
+# ============================================================================
+#
+# Purpose: Adapter component to connect WheelContact to standard library flanges
+# Use Case: Testing Wheel and VehicleBody components with standard library sources/sensors
+#
+# This component "breaks out" the combined WheelContact interface into two
+# separate standard Flange connections, allowing you to use standard library
+# components (Force, Mass, Fixed, etc.) in test harnesses.
+#
+# Example Usage:
+#
+# test component TestVehicleBody_WithStandardLib
+#   body = VehicleBody()
+#   
+#   # Break out WheelContact to standard flanges
+#   front_breakout = WheelContactBreakout()
+#   rear_breakout = WheelContactBreakout()
+#   
+#   # Now use standard library components
+#   front_force = TranslationalComponents.Force()
+#   front_mass = TranslationalComponents.Mass(m = 750.0)
+#   ground = TranslationalComponents.Fixed()
+#   
+# relations
+#   # Connect body to breakout
+#   connect(body.contact_front, front_breakout.contact)
+#   
+#   # Connect breakout to standard library
+#   connect(front_force.flange, front_breakout.flange_traction)
+#   connect(front_breakout.flange_traction, front_mass.flange)
+#   connect(front_breakout.flange_normal, ground.flange)
+# end
+#
+# Sign Conventions:
+# - WheelContact uses flow variables (sum at connection points)
+# - Standard Flanges use flow variables
+# - This component handles the sign mapping transparently
+#
+# ============================================================================
+
+component WheelContactBreakout
+  # WheelContact side (connects to Wheel or VehicleBody)
+  contact = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": -50, "y1": 450, "x2": 50, "y2": 550, "rot": 0}
+      }
+    }
+  }]
+  
+  # Standard Flange for traction (horizontal/longitudinal)
+  flange_traction = Dyad.Flange() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 900, "y1": 350, "x2": 1000, "y2": 450, "rot": 0}
+      }
+    }
+  }]
+  
+  # Standard Flange for normal force (vertical)
+  flange_normal = Dyad.Flange() [{
+    "Dyad": {
+      "placement": {
+        "diagram": {"iconName": "default", "x1": 900, "y1": 550, "x2": 1000, "y2": 650, "rot": 0}
+      }
+    }
+  }]
+
+relations
+  # Map traction: WheelContact <-> Standard Flange
+  # Position coupling (both represent same physical location)
+  flange_traction.s = contact.s_traction
+  
+  # Force coupling (flow variables - opposite signs due to "into component" convention)
+  flange_traction.f = -contact.f_traction
+  
+  # Map normal: WheelContact <-> Standard Flange
+  # Position coupling
+  flange_normal.s = contact.s_normal
+  
+  # Force coupling
+  flange_normal.f = -contact.f_normal
+
+metadata {
+  "Dyad": {
+    "description": "Adapter: WheelContact to separate standard Flanges for testing"
+  }
+}
+end

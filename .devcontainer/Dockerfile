@@ -23,6 +23,5 @@ ENV PATH="/root/.juliaup/bin:/root/.local/bin:${PATH}"
 # Verify installations
 RUN git --version && julia --version
 
-
 # Default command
 CMD ["/bin/bash"]

@@ -1,5 +1,7 @@
 # Vehicle Body Component Specification
 
+asiigned: Detki Pongrac
+
 ## Overview
 
 The VehicleBody component models the longitudinal and pitch dynamics of a vehicle with separate front and rear axles. It includes load transfer effects during acceleration and braking, which are critical for understanding traction limits and vehicle stability.

@@ -24,7 +24,8 @@
         "julialang.language-julia",
         "JuliaComputing.dyad-studio",
         "juliapluto-pankgeorg.advanced-vscode-extension",
-        "JuliaComputing.juliahub"
+        "JuliaComputing.juliahub",
+        "mhutchie.git-graph"
       ],
       "settings": {
         "julia.executablePath": "/root/.juliaup/bin/julia",

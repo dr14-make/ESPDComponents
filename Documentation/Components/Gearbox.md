@@ -332,6 +332,5 @@ Negative ratio: `ratio_reverse = -3.5`
 
 ## Reference
 
-- Modelica: `temp/modelica/ipowertrain/Gearsets/TransmissionGearbox.mo`
 - Naunheimer, H. "Automotive Transmissions"
 - SAE J2926: Transmission Efficiency Measurement

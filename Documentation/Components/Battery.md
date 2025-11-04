@@ -384,10 +384,6 @@ Realistic S-curve using lookup tables
 - Plett, G.L. "Battery Management Systems" (Artech House)
 - Tremblay, O. "Experimental Validation of a Battery Dynamic Model"
 
-### Modelica Reference
-
-- File: `temp/modelica/ipowertrain/HybridElectric/Battery.mo`
-
 ### Standards
 
 - SAE J1798: Recommended Practice for Performance Rating of Electric Vehicle Battery Modules

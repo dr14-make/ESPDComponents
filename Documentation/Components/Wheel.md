@@ -449,12 +449,6 @@ r_effective = r_nominal × (1 + α_T × ΔT)
 - Gillespie, T.D. "Fundamentals of Vehicle Dynamics" Chapter 2: Tires
 - Pacejka, H.B. "Tire and Vehicle Dynamics" Chapter 3: Tire Modeling
 
-### Modelica Reference
-
-- File: `temp/modelica/ipowertrain/Tyres/BasicTyre.mo`
-- Lines 22-25: Parameter definitions (radius, rolling resistance)
-- Lines 40-49: Force and motion equations
-
 ### Standards
 
 - SAE J2452: Stepwise Coastdown Methodology for Measuring Tire Rolling Resistance

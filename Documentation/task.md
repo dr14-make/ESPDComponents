@@ -6,8 +6,6 @@
 
 **Scope:** This library will model the complete powertrain chain from engine torque generation through transmission, differential, wheels, and vehicle body dynamics including aerodynamic and rolling resistance.
 
-**Reference:** Based on the IPowertrain Modelica library structure found in `temp/modelica/ipowertrain/`
-
 ---
 
 ## Architecture Overview
@@ -730,16 +728,6 @@ end
 ---
 
 ## References
-
-### Modelica Reference Implementation
-
-- Location: `/home/dr14/Projects/CVUT/ESPDComponents/temp/modelica/ipowertrain/`
-- Key files analyzed:
-  - `Vehicles/BasicVehicle.mo` - Vehicle dynamics reference
-  - `Engines/BasicEngine.mo` - Torque source with maps
-  - `Gearsets/TransmissionGearbox.mo` - Multi-ratio gearbox
-  - `Gearsets/BasicDifferential.mo` - Torque splitting
-  - `Tyres/BasicTyre.mo` - Wheel dynamics
 
 ### Vehicle Dynamics Theory
 

@@ -185,5 +185,4 @@ P_out = η × P_in
 
 ## Reference
 
-- Modelica: `temp/modelica/ipowertrain/Gearsets/BasicDifferential.mo`
 - Wong, J.Y. "Theory of Ground Vehicles" Chapter 4: Differentials

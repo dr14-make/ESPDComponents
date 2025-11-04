@@ -166,5 +166,4 @@ Use 2D lookup table: `τ = f(ω, throttle)`
 
 ## Reference
 
-- Modelica: `temp/modelica/ipowertrain/Engines/BasicEngine.mo`
 - Heywood, J.B. "Internal Combustion Engine Fundamentals"

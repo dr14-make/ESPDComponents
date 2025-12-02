@@ -1,6 +1,6 @@
 # Vehicle Body Component Specification
 
-asiigned: Detki Pongrac
+asigned: Detki Pongrac
 
 ## Overview
 

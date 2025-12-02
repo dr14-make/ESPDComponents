@@ -1,65 +1,65 @@
-# ============================================================================
-# VehicleBody Test: Aerodynamic Drag
-# ============================================================================
-#
-# Objective: Verify drag force and terminal velocity
-# Expected: Velocity approaches terminal velocity asymptotically
-#
-# Reference: Documentation/VehicleBody.md
-#
-# TODO: Instantiate your VehicleBody component
-# Example:
-# vehicle = VehicleBody(
-# m = 1000.0,
-# L = 2.5,
-# h_cg = 0.5,
-# a = 1.2,
-# b = 1.3,
-# Cd = 0.4,
-# A = 2.0,
-# rho = 1.225,
-# Crr = 0.0    # No rolling resistance for this test
-# )
-#
-# TODO: Add constant thrust force (rear wheels)
-# Example:
-# force_rear = TranslationalComponents.Force()
-# force_front = TranslationalComponents.Force()
-# thrust_cmd = BlockComponents.Constant(k = 1000.0)  # Constant thrust
-# zero_cmd = BlockComponents.Constant(k = 0.0)
-# ground = TranslationalComponents.Fixed()
-#
-# TODO: Connect components
-# Example:
-# connect(thrust_cmd.y, force_rear.f_input)
-# connect(zero_cmd.y, force_front.f_input)
-# connect(force_front.flange, vehicle.flange_front)
-# connect(force_rear.flange, vehicle.flange_rear)
-# connect(vehicle.flange_front, ground.flange)
-# connect(vehicle.flange_rear, ground.flange)
-#
-# TODO: Set initial conditions
-# Example:
-# initial vehicle.v = 0.0
-#
-# TODO: Add analysis
-# Example:
-# analysis TestVehicleBody_AeroDrag_Analysis
-# extends TransientAnalysis(stop = 50.0, alg = "Rodas5P")
-# model = TestVehicleBody_AeroDrag()
-# end
-#
-# VALIDATION (calculate BEFORE running):
-# - Terminal velocity where thrust = drag
-# - F_drag = 0.5 * rho * Cd * A * v_terminal^2
-# - At steady state: acceleration should be zero
-# - Power balance: P_thrust = P_drag
-#
-# VALIDATION CHECKLIST:
-# [ ] Reaches terminal velocity asymptotically
-# [ ] Terminal velocity matches calculated value (< 1% error)
-# [ ] Power balance verified at steady state
-# ============================================================================
-# TODO: Implement test harness following header instructions
-test component TestVehicleBody_AeroDrag
-end
+component VehicleBody
+  contact_front = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{ }]
+  contact_rear  = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{ }]
+
+  parameter m::Mass = 1500.0
+  parameter L::Length = 2.7
+  parameter h_cg::Length = 0.5
+  parameter a::Length = 1.2
+  parameter b::Length = 1.5
+  parameter Cd::Real = 0.32
+  parameter A::Area = 2.2
+  parameter rho::Density = 1.225
+  parameter Crr::Real = 0.015
+  parameter g::Acceleration = 9.81
+  parameter theta::Angle = 0.0
+  parameter v_eps::Velocity = 1e-6
+
+  variable s::Length
+  variable v::Velocity
+  variable a_long::Acceleration
+  variable F_drag::Force
+  variable F_roll_front::Force
+  variable F_roll_rear::Force
+  variable F_grade::Force
+  variable F_traction_front::Force
+  variable F_traction_rear::Force
+  variable N_static_front::Force
+  variable N_static_rear::Force
+  variable delta_N::Force
+  variable N_front::Force
+  variable N_rear::Force
+
+  relations
+    contact_front.s_traction = s
+    contact_rear.s_traction  = s
+
+    contact_front.s_normal = 0.0
+    contact_rear.s_normal  = 0.0
+
+    F_traction_front = contact_front.f_traction
+    F_traction_rear  = contact_rear.f_traction
+
+    v = der(s)
+    a_long = der(v)
+
+    N_static_front = m * g * cos(theta) * (b / L)
+    N_static_rear  = m * g * cos(theta) * (a / L)
+
+    delta_N = m * a_long * h_cg / L
+
+    N_front = N_static_front - delta_N
+    N_rear  = N_static_rear + delta_N
+
+    F_drag = 0.5 * rho * Cd * A * v * abs(v)
+
+    F_roll_front = Crr * N_front * (v / sqrt(v*v + v_eps*v_eps))
+    F_roll_rear  = Crr * N_rear  * (v / sqrt(v*v + v_eps*v_eps))
+
+    F_grade = m * g * sin(theta)
+
+    m * a_long = F_traction_front + F_traction_rear - F_drag - F_roll_front - F_roll_rear - F_grade
+
+    contact_front.f_normal = -N_front
+    contact_rear.f_normal  = -N_rear
+  end

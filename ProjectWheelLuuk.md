@@ -20,3 +20,31 @@ F_max = μ·N = 0.8 × 5000 = 4000 N
 
 ![alt text](./TestWheel_ForceTorque_Validation.png)
 
+![alt text](./TestWheel_ForceTorque_Validation3000.png)
+
+
+
+### Test 2: Load Transfer Effect on Traction
+- At N = 3000 N: F_max = 0.8 × 3000 = 2400 N
+- At N = 5000 N: F_max = 0.8 × 5000 = 4000 N
+- At N = 7000 N: F_max = 0.8 × 7000 = 5600 N
+- With same torque, traction force should scale with normal force
+
+The traction force scales with the normal force
+
+![alt text](./TestWheel_LoadTransfer_Validation.png)
+
+
+### Test 3: Kinematic Verification (No Slip)
+
+- Calculate expected relationship: v = ω·r
+- Verify v/ω = r (error < 0.1%)
+- Check power conservation: τ·ω = F·v (when not saturated)
+- Verify no slip occurs when within traction limit
+
+J=0
+
+a lot of errors: start over with testwheelkinematics, WheelcontactBreakout (to original), and Wheel.dyad (changes)
+
+
+

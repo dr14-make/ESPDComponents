@@ -6,6 +6,11 @@
 
 using PrecompileTools: @setup_workload, @compile_workload
 
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "IntegrationTests", "precompilation.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "IntegrationTests", "precompilation.jl"))
+end
+
+
 @setup_workload begin
     @compile_workload begin
         

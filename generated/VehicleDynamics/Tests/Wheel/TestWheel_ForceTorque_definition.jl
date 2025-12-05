@@ -8,69 +8,6 @@
    TestWheel_ForceTorque(; name)
 
 ============================================================================
-Wheel Test: Force-Torque Relationship
-============================================================================
-
-Objective: Verify F = τ / r
-Expected: Steady-state force proportional to torque
-
-Reference: Documentation/Wheel.md
-
-TODO: Instantiate your Wheel component
-Example:
-wheel = Wheel(radius = 0.3, mu = 0.8)
-
-TODO: Apply constant torque
-Example:
-torque_source = RotationalComponents.Torque()
-torque_cmd = BlockComponents.Constant(k = 100.0)  # 100 N⋅m
-
-TODO: Apply constant normal force
-Example:
-normal_force = TranslationalComponents.Force()
-normal_cmd = BlockComponents.Constant(k = 5000.0)  # 5000 N
-
-TODO: Connect to mass with damping (load)
-Example:
-body = TranslationalComponents.Mass(m = 1000.0)
-damper = TranslationalComponents.Damper(d = 50.0)
-ground_trans = TranslationalComponents.Fixed()
-ground_normal = TranslationalComponents.Fixed()
-
-TODO: Connect components
-Example:
-connect(torque_cmd.y, torque_source.tau_input)
-connect(torque_source.flange, wheel.flange_rot)
-connect(wheel.flange_trans, body.flange)
-connect(body.flange, damper.flange_a)
-connect(damper.flange_b, ground_trans.flange)
-connect(normal_cmd.y, normal_force.f_input)
-connect(normal_force.flange, wheel.flange_normal)
-connect(wheel.flange_normal, ground_normal.flange)
-
-TODO: Set initial conditions
-Example:
-initial wheel.flange_rot.phi = 0.0
-
-TODO: Add analysis
-Example:
-analysis TestWheel_ForceTorque_Analysis
-extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
-model = TestWheel_ForceTorque()
-end
-
-VALIDATION (calculate BEFORE running):
-- Applied torque τ
-- Expected force F = τ / r
-- Steady-state velocity where F = damping*v
-- Power balance: tau*omega = F*v
-
-VALIDATION CHECKLIST:
-[ ] Force-torque relationship verified (F = τ/r within tolerance)
-[ ] Steady-state velocity matches expected value
-[ ] Power balance verified
-============================================================================
-TODO: Implement test harness following header instructions
 """
 @component function TestWheel_ForceTorque(; name)
   __params = Any[]
@@ -89,10 +26,27 @@ TODO: Implement test harness following header instructions
   __constants = Any[]
 
   ### Components
+  push!(__systems, @named wheel = ESPDComponents.VehicleDynamics.Components.Wheel(radius=0.3, mu=0.8))
+  push!(__systems, @named breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout())
+  push!(__systems, @named torque_source = RotationalComponents.TorqueSource())
+  push!(__systems, @named torque_cmd = BlockComponents.Ramp(duration=10, height=2000, start_time=0, offset=0))
+  push!(__systems, @named ground_rot = RotationalComponents.Fixed())
+  push!(__systems, @named body = TranslationalComponents.Mass(m=1000))
+  push!(__systems, @named damper = TranslationalComponents.Damper(d=50))
+  push!(__systems, @named ground_trans = TranslationalComponents.Fixed())
+  push!(__systems, @named normal_force = TranslationalComponents.Force())
+  push!(__systems, @named normal_cmd = BlockComponents.Constant(k=5000))
+  push!(__systems, @named ground_normal = TranslationalComponents.Fixed())
 
   ### Guesses
+  __guesses[wheel.F_traction] = (0)
+  __guesses[wheel.F_desired] = (0)
+  __guesses[wheel.N] = (5000)
 
   ### Defaults
+  __defaults[wheel.flange_rot.phi] = (0)
+  __defaults[wheel.omega] = (0)
+  __defaults[body.s] = (0)
 
   ### Initialization Equations
 
@@ -100,6 +54,16 @@ TODO: Implement test harness following header instructions
   __assertions = []
 
   ### Equations
+  push!(__eqs, connect(wheel.contact, breakout.contact))
+  push!(__eqs, connect(torque_cmd.y, torque_source.tau))
+  push!(__eqs, connect(torque_source.spline, wheel.flange_rot))
+  push!(__eqs, connect(torque_source.support, ground_rot.spline))
+  push!(__eqs, connect(breakout.flange_traction, body.flange_a))
+  push!(__eqs, connect(body.flange_b, damper.flange_a))
+  push!(__eqs, connect(damper.flange_b, ground_trans.flange))
+  push!(__eqs, connect(normal_cmd.y, normal_force.f))
+  push!(__eqs, connect(normal_force.flange_a, breakout.flange_normal))
+  push!(__eqs, connect(normal_force.flange_b, ground_normal.flange))
 
   # Return completely constructed System
   return System(__eqs, t, __vars, __params; systems=__systems, defaults=__defaults, guesses=__guesses, name, initialization_eqs=__initialization_eqs, assertions=__assertions)

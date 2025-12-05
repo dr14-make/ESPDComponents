@@ -6,20 +6,21 @@
 
 using DyadInterface
 
+using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
 @kwdef mutable struct PIDTestSpec <: AbstractTransientAnalysisSpec
   name::Symbol = :PIDTest
   var"alg"::String = "auto"
-  var"start"::Float64 = 0
-  var"stop"::Float64 = 10
-  var"abstol"::Float64 = 0.01
-  var"reltol"::Float64 = 0.001
-  var"saveat"::Float64 = 0
-  var"dtmax"::Float64 = 0
+  var"start"::Real = 0
+  var"stop"::Real = 10
+  var"abstol"::Real = 0.01
+  var"reltol"::Real = 0.001
+  var"saveat"::Real = 0
+  var"dtmax"::Real = 0
   var"IfLifting"::Bool = false
-  var"Kp"::Float64 = 20
-  var"Ti"::Float64 = 5
-  var"Td"::Float64 = 1
-  var"Nd"::Float64 = 10
+  var"Kp"::Real = 20
+  var"Ti"::Real = 5
+  var"Td"::Real = 1
+  var"Nd"::Real = 10
   var"On"::Bool = false
   # This model was copied from the DyadExampleComponents
   var"model"::Union{Nothing, System} = ESPDComponents.ActiveSuspension(; name=:ActiveSuspension)

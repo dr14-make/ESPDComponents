@@ -7,21 +7,21 @@
 using DyadInterface
 
 using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
-@kwdef mutable struct ConventionalVehicle_Comparison_AnalysisSpec <: AbstractTransientAnalysisSpec
-  name::Symbol = :ConventionalVehicle_Comparison_Analysis
+@kwdef mutable struct TestWheel_ForceTorque_AnalysisSpec <: AbstractTransientAnalysisSpec
+  name::Symbol = :TestWheel_ForceTorque_Analysis
   var"alg"::String = "Rodas5P"
   var"start"::Real = 0
-  var"stop"::Real = 20
+  var"stop"::Real = 10
   var"abstol"::Real = 0.000001
   var"reltol"::Real = 0.000001
   var"saveat"::Real = 0
   var"dtmax"::Real = 0
   var"IfLifting"::Bool = false
   # ============================================================================
-  var"model"::Union{Nothing, System} = ESPDComponents.VehicleDynamics.IntegrationTests.ConventionalVehicle_Comparison(; name=:ConventionalVehicle_Comparison)
+  var"model"::Union{Nothing, System} = ESPDComponents.VehicleDynamics.Tests.Wheel.TestWheel_ForceTorque(; name=:TestWheel_ForceTorque)
 end
 
-function DyadInterface.run_analysis(spec::ConventionalVehicle_Comparison_AnalysisSpec)
+function DyadInterface.run_analysis(spec::TestWheel_ForceTorque_AnalysisSpec)
   spec.model = DyadInterface.update_model(spec.model, (; ))
   base_spec = TransientAnalysisSpec(;
     name=:TransientAnalysis, alg=spec.alg, start=spec.start, stop=spec.stop, abstol=spec.abstol, reltol=spec.reltol, saveat=spec.saveat, dtmax=spec.dtmax, IfLifting=spec.IfLifting, model=spec.model
@@ -29,6 +29,6 @@ function DyadInterface.run_analysis(spec::ConventionalVehicle_Comparison_Analysi
   run_analysis(base_spec)
 end
 
-ConventionalVehicle_Comparison_Analysis(;kwargs...) = run_analysis(ConventionalVehicle_Comparison_AnalysisSpec(;kwargs...))
-export ConventionalVehicle_Comparison_Analysis, ConventionalVehicle_Comparison_AnalysisSpec
-export ConventionalVehicle_Comparison_AnalysisSpec, ConventionalVehicle_Comparison_Analysis
+TestWheel_ForceTorque_Analysis(;kwargs...) = run_analysis(TestWheel_ForceTorque_AnalysisSpec(;kwargs...))
+export TestWheel_ForceTorque_Analysis, TestWheel_ForceTorque_AnalysisSpec
+export TestWheel_ForceTorque_AnalysisSpec, TestWheel_ForceTorque_Analysis

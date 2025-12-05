@@ -6,18 +6,19 @@
 
 using DyadInterface
 
+using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
 @kwdef mutable struct WorldSpec <: AbstractTransientAnalysisSpec
   name::Symbol = :World
   var"alg"::String = "auto"
-  var"start"::Float64 = 0
-  var"stop"::Float64 = 10
-  var"abstol"::Float64 = 0.000001
-  var"reltol"::Float64 = 0.000001
-  var"saveat"::Float64 = 0
-  var"dtmax"::Float64 = 0
+  var"start"::Real = 0
+  var"stop"::Real = 10
+  var"abstol"::Real = 0.000001
+  var"reltol"::Real = 0.000001
+  var"saveat"::Real = 0
+  var"dtmax"::Real = 0
   var"IfLifting"::Bool = false
-  var"T_inf"::Float64 = 300
-  var"h"::Float64 = 0.7
+  var"T_inf"::Real = 300
+  var"h"::Real = 0.7
   # A simple lumped thermal model
   var"model"::Union{Nothing, System} = ESPDComponents.Hello(; name=:Hello)
 end

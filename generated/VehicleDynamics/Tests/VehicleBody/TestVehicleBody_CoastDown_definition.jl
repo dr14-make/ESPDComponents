@@ -8,64 +8,6 @@
    TestVehicleBody_CoastDown(; name)
 
 ============================================================================
-VehicleBody Test: Coast-Down
-============================================================================
-
-Objective: Verify combined drag and rolling resistance
-Expected: Vehicle decelerates to stop
-
-Reference: Documentation/VehicleBody.md
-
-TODO: Instantiate your VehicleBody component
-Example:
-vehicle = VehicleBody(
-m = 1000.0,
-L = 2.5,
-h_cg = 0.5,
-a = 1.2,
-b = 1.3,
-Cd = 0.32,
-A = 2.2,
-rho = 1.225,
-Crr = 0.015,
-g = 9.81
-)
-
-TODO: Add ground reference
-Example:
-ground = TranslationalComponents.Fixed()
-
-TODO: Connect components (no forces, just ground)
-Example:
-connect(vehicle.flange_front, ground.flange)
-connect(vehicle.flange_rear, ground.flange)
-
-TODO: Set initial conditions (coasting from speed)
-Example:
-initial vehicle.v = 30.0  # Start at 30 m/s
-initial vehicle.flange.s = 0.0
-
-TODO: Add analysis
-Example:
-analysis TestVehicleBody_CoastDown_Analysis
-extends TransientAnalysis(stop = 100.0, alg = "Rodas5P")
-model = TestVehicleBody_CoastDown()
-end
-
-VALIDATION (calculate BEFORE running):
-- Initial deceleration at v=30 m/s
-- Drag dominates at high speed (quadratic with v)
-- Rolling resistance dominates at low speed (constant)
-- Calculate expected time and distance to stop
-- Energy balance: initial kinetic energy = work done by drag + work done by rolling resistance
-
-VALIDATION CHECKLIST:
-[ ] Vehicle decelerates continuously
-[ ] Velocity reaches zero
-[ ] Energy dissipated matches initial kinetic energy (< 1% error)
-[ ] Deceleration profile matches physics
-============================================================================
-TODO: Implement test harness following header instructions
 """
 @component function TestVehicleBody_CoastDown(; name)
   __params = Any[]

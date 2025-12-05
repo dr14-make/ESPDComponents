@@ -8,80 +8,12 @@
    WheelContactForceSource(; name)
 
 ============================================================================
-WheelContact Force Source Component
-============================================================================
-
-Purpose: Apply specified traction and normal forces directly to WheelContact
-Use Case: Testing components with controlled force inputs
-
-This component allows you to prescribe both traction and normal forces
-independently using control signals, useful for unit testing wheels and
-vehicle body components.
-
-Example Usage:
-
-test component TestWheel_TractionLimit
-wheel = Wheel(radius = 0.3, mu = 0.8)
-
-# Apply controlled forces
-contact_source = WheelContactForceSource()
-
-# Command signals
-traction_cmd = BlockComponents.Constant(k = 2000.0)  # 2000 N forward
-normal_cmd = BlockComponents.Constant(k = 5000.0)    # 5000 N downward
-
-relations
-connect(contact_source.contact, wheel.contact)
-connect(traction_cmd.y, contact_source.f_traction_input)
-connect(normal_cmd.y, contact_source.f_normal_input)
-end
-
-Sign Conventions:
-- f_traction_input > 0: Apply forward traction force
-- f_normal_input > 0: Apply downward normal force (compression)
-
-============================================================================
 
 ## Connectors
 
- * `contact` - ============================================================================
-WheelContact Connector
-============================================================================
-
-This connector represents the mechanical interface between a wheel and
-vehicle body, combining both traction (tangential) and normal (vertical)
-forces along with their corresponding positions.
-
-Physical Interpretation:
-- s_traction: Longitudinal position of the contact point [m]
-- f_traction: Traction force (tangential to road, propels vehicle) [N]
-- s_normal: Vertical position of the contact point [m] (typically fixed)
-- f_normal: Normal force (perpendicular to road, load on wheel) [N]
-
-Sign Conventions:
-- f_traction > 0: Force pushing vehicle forward (from wheel perspective)
-- f_normal > 0: Force pushing wheel down (weight on wheel)
-
-Usage Example:
-In Wheel component:
-contact = WheelContact()  # Connect to vehicle body
-# Wheel receives: N = -contact.f_normal (normal force from body)
-# Wheel provides: F_traction via contact.f_traction
-
-In VehicleBody component:
-contact_rear = WheelContact()  # Connect to rear wheels
-# Body provides: N via contact_rear.f_normal
-# Body receives: F_traction from wheels via contact_rear.f_traction
-
-Connection Pattern:
-connect(wheel_left.contact, vehicle.contact_rear)
-connect(wheel_right.contact, vehicle.contact_rear)
-
-This single connection handles BOTH traction and normal forces automatically!
-
-============================================================================ ([`WheelContact`](@ref))
- * `f_traction_input` - This connector represents a real signal as an input to a component ([`RealInput`](@ref))
- * `f_normal_input` - This connector represents a real signal as an input to a component ([`RealInput`](@ref))
+ * `contact` - ============================================================================ ([`WheelContact`](@ref))
+ * `f_traction_input` - ([`RealInput`](@ref))
+ * `f_normal_input` - ([`RealInput`](@ref))
 """
 @component function WheelContactForceSource(; name)
   __params = Any[]
@@ -114,11 +46,8 @@ This single connection handles BOTH traction and normal forces automatically!
   __assertions = []
 
   ### Equations
-  # Apply traction force from input signal
   push!(__eqs, contact.f_traction ~ f_traction_input)
-  # Apply normal force from input signal
   push!(__eqs, contact.f_normal ~ f_normal_input)
-  # Fix positions (this is a pure force source, not position-dependent)
   push!(__eqs, contact.s_traction ~ 0)
   push!(__eqs, contact.s_normal ~ 0)
 

@@ -6,15 +6,16 @@
 
 using DyadInterface
 
+using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
 @kwdef mutable struct SimpleCarTestSpec <: AbstractTransientAnalysisSpec
   name::Symbol = :SimpleCarTest
   var"alg"::String = "auto"
-  var"start"::Float64 = 0
-  var"stop"::Float64
-  var"abstol"::Float64 = 0.000001
-  var"reltol"::Float64 = 0.000001
-  var"saveat"::Float64 = 0
-  var"dtmax"::Float64 = 0
+  var"start"::Real = 0
+  var"stop"::Real
+  var"abstol"::Real = 0.000001
+  var"reltol"::Real = 0.000001
+  var"saveat"::Real = 0
+  var"dtmax"::Real = 0
   var"IfLifting"::Bool = false
   # short SimpleCar component description
   var"model"::Union{Nothing, System} = ESPDComponents.SimpleCar(; name=:SimpleCar)

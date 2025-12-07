@@ -21,7 +21,7 @@ using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
   # ============================================================================
   # Objective: Verify that increasing normal force increases traction capacity
   # Test Configuration:
-  # - Apply ramping torque (0 to 2000 N⋅m over 10 seconds)
+  # - Apply ramping torque (0 to 3000 N⋅m over 10 seconds)
   # * N = 3000 N → F_max = 2400 N
   # * N = 7000 N → F_max = 5600 N
   # Expected Results:

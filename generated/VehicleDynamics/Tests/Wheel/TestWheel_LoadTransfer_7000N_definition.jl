@@ -27,7 +27,7 @@
   push!(__systems, @named wheel = ESPDComponents.VehicleDynamics.Components.Wheel(radius=0.3, mu=0.8, J=0.5))
   push!(__systems, @named breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout())
   push!(__systems, @named torque_source = RotationalComponents.TorqueSource())
-  push!(__systems, @named torque_cmd = BlockComponents.Ramp(duration=10, height=2000, start_time=0, offset=0))
+  push!(__systems, @named torque_cmd = BlockComponents.Ramp(height=3000, duration=10, start_time=0, offset=0))
   push!(__systems, @named ground_rot = RotationalComponents.Fixed())
   push!(__systems, @named body = TranslationalComponents.Mass(m=1000))
   push!(__systems, @named damper = TranslationalComponents.Damper(d=50))

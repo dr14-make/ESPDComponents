@@ -92,5 +92,40 @@ Vehicle accelerates slowly (1.2 m/s²) despite high engine power
 ![alt text](./TestWheel_WheelSpin_Focus.png)
 ![alt text](./TestWheel_WheelSpin_Detailed.png)
 
+none of the issues appear right now.
+
+### Physic Validation:
+
+#### Kinematic Consistency
+
+- [ ] v = ω·r verified numerically (error < 0.1%)
+- [ ] At all times, not just steady state
+- [ ] Works for both positive and negative velocities
+
+DONE
+
+#### Force-Torque Relationship
+
+- [ ] F·r = τ verified numerically (error < 1%)
+- [ ] Power conservation: P_rot = τ·ω = F·v = P_trans
+- [ ] Energy balance over time matches
+
+DONE
+
+#### Dynamic Response (with Inertia) - needs slip model!!!
+
+- [ ] Angular acceleration α = τ_net/J (error < 5%)
+- [ ] Transient response time scale matches J/damping
+- [ ] Step response has correct initial slope
+
+#### Steady-State Accuracy
+
+- [ ] Final velocity matches applied force/damping ratio
+- [ ] Final angular velocity matches v/r
+- [ ] Zero torque → constant velocity (no drift)
+
+### SLIP MODEL
+
+
 
 

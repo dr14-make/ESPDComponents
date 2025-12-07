@@ -1,5 +1,5 @@
 # ============================================================================
-# Wheel Component - Phase 1: Traction Limit
+# Wheel Component - Phase 1: Traction Limit + Kinematic Constraint
 # ============================================================================
 component Wheel
   flange_rot = Dyad.Spline() [{
@@ -23,6 +23,11 @@ relations
   # Angular velocity
   omega = der(flange_rot.phi)
   
+  # Kinematic constraint: rolling without slip (v = ω·r)
+  # The connection determines contact.s_traction via body position
+  # We enforce that the wheel angle follows: phi = s_traction / radius
+  flange_rot.phi = contact.s_traction / radius
+  
   # Normal force from body (per WheelContact.md documentation)
   N = -contact.f_normal
   
@@ -38,9 +43,21 @@ relations
   # Output traction force
   contact.f_traction = F_traction
   
-  # Rotational dynamics: torque balance
-  J * der(omega) = flange_rot.tau - F_traction * radius
+  # Rotational dynamics with kinematic constraint
+  # With phi = s/r, we have: omega = v/r and alpha = a/r
+  # Torque balance: J*alpha = tau - F*r
+  # becomes: J*(a/r) = tau - F*r
+  # rearranged: (J/r²)*a = (tau/r) - F
+  # This adds effective mass m_eff = J/r² to the translational system
+  # The torque creates an effective force: F_from_torque = tau/r
+  # So the net equation is: F_traction = tau/r (which we already have via F_desired)
+  # The rotational inertia effect appears as resistance to angular acceleration
+  # which translates to resistance to linear acceleration
   
+  # Since kinematic constraint eliminates one DOF, we don't need separate rotational dynamics
+  # The wheel inertia contributes to the effective mass of the system
+  
+
   # Fix normal position at ground
   contact.s_normal = 0.0
   

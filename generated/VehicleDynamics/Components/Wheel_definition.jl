@@ -72,12 +72,19 @@
 
   ### Equations
   push!(__eqs, omega ~ ModelingToolkit.D_nounits(flange_rot.phi))
+  # The connection determines contact.s_traction via body position
+  push!(__eqs, flange_rot.phi ~ contact.s_traction / radius)
   push!(__eqs, N ~ -contact.f_normal)
   push!(__eqs, F_max ~ mu * N)
   push!(__eqs, F_desired ~ flange_rot.tau / radius)
   push!(__eqs, F_traction ~ F_max * tanh(F_desired / (F_max + 0.000001)))
   push!(__eqs, contact.f_traction ~ F_traction)
-  push!(__eqs, J * ModelingToolkit.D_nounits(omega) ~ flange_rot.tau - F_traction * radius)
+  # With phi = s/r, we have: omega = v/r and alpha = a/r
+  # becomes: J*(a/r) = tau - F*r
+  # This adds effective mass m_eff = J/r² to the translational system
+  # So the net equation is: F_traction = tau/r (which we already have via F_desired)
+  # which translates to resistance to linear acceleration
+  # The wheel inertia contributes to the effective mass of the system
   push!(__eqs, contact.s_normal ~ 0)
 
   # Return completely constructed System

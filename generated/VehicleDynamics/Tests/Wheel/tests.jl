@@ -19,4 +19,7 @@ end
 include("TestWheel_ForceTorque_test.jl")
 include("TestWheel_Inertia_test.jl")
 include("TestWheel_Kinematics_test.jl")
+include("TestWheel_LoadTransfer_3000N_test.jl")
+include("TestWheel_LoadTransfer_5000N_test.jl")
+include("TestWheel_LoadTransfer_7000N_test.jl")
 end

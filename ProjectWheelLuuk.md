@@ -42,6 +42,7 @@ The traction force scales with the normal force:
 N = 3000 N: F_max = 2400 N, 100% saturated, v = 16.3 m/s
 N = 5000 N: F_max = 4000 N, 98.7% saturated, v = 24.0 m/s
 N = 7000 N: F_max = 5600 N, 94.5% saturated, v = 29.3 m/s
+- absolute speeds
 
 ![alt text](./TestWheel_LoadTransfer_Validation.png)
 
@@ -53,9 +54,7 @@ N = 7000 N: F_max = 5600 N, 94.5% saturated, v = 29.3 m/s
 - Check power conservation: τ·ω = F·v (when not saturated)
 - Verify no slip occurs when within traction limit
 
-J=0
-
-a lot of errors: start over with testwheelkinematics, WheelcontactBreakout (to original), and Wheel.dyad (changes)
+Implementation of the kinematic equations in Wheel.dyad
 
 
 

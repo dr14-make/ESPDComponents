@@ -1,0 +1,68 @@
+# ============================================================================
+# Wheel Test: Kinematic Verification - Low Torque
+# ============================================================================
+#
+# Objective: Verify power conservation τ·ω = F·v at low saturation
+# Low torque ensures tanh() is in linear region
+#
+test component TestWheel_Kinematics_LowTorque
+  # Wheel under test
+  wheel = ESPDComponents.VehicleDynamics.Components.Wheel(
+    radius = 0.3,
+    mu = 0.8,
+    J = 0.5
+  )
+  
+  # Use WheelContactBreakout to interface with standard library components
+  breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  # Rotational side: Apply LOW constant torque (well below traction limit)
+  torque_source = RotationalComponents.TorqueSource()
+  torque_cmd = BlockComponents.Constant(k = 100.0)  # 100 N⋅m (vs 600 in original)
+  ground_rot = RotationalComponents.Fixed()
+  
+  # Translational side (traction): Connect to mass with damping
+  body = TranslationalComponents.Mass(m = 1000.0)
+  damper = TranslationalComponents.Damper(d = 50.0)
+  ground_trans = TranslationalComponents.Fixed()
+  
+  # Normal force: Apply constant normal force (5000 N)
+  normal_force = TranslationalComponents.Force()
+  normal_cmd = BlockComponents.Constant(k = 5000.0)
+  ground_normal = TranslationalComponents.Fixed()
+  
+relations
+  # Connect wheel to breakout adapter
+  connect(wheel.contact, breakout.contact)
+  
+  # Rotational connection: torque source to wheel
+  connect(torque_cmd.y, torque_source.tau)
+  connect(torque_source.spline, wheel.flange_rot)
+  connect(torque_source.support, ground_rot.spline)
+  
+  # Traction connection: wheel through breakout to body with damping
+  connect(breakout.flange_traction, body.flange_a)
+  connect(body.flange_b, damper.flange_a)
+  connect(damper.flange_b, ground_trans.flange)
+  
+  # Normal force connection: constant force to wheel
+  connect(normal_cmd.y, normal_force.f)
+  connect(normal_force.flange_a, breakout.flange_normal)
+  connect(normal_force.flange_b, ground_normal.flange)
+  
+  # Initial conditions
+  initial wheel.flange_rot.phi = 0.0
+  initial wheel.omega = 0.0
+  initial body.s = 0.0
+  
+  # Guesses for algebraic variables
+  guess wheel.F_traction = 0.0
+  guess wheel.F_desired = 0.0
+  guess wheel.N = 5000.0
+end
+
+# Analysis
+analysis TestWheel_Kinematics_LowTorque_Analysis
+  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+  model = TestWheel_Kinematics_LowTorque()
+end

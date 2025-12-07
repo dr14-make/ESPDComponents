@@ -56,5 +56,18 @@ N = 7000 N: F_max = 5600 N, 94.5% saturated, v = 29.3 m/s
 
 Implementation of the kinematic equations in Wheel.dyad
 
+![alt text](./TestWheel_Kinematics_Validation.png)
+
+No slip: v = ω·r satisfied perfectly
+
+Power Conservation Results
+Low Torque Test (τ = 100 N·m)
+Saturation: 8.33% (F_desired/F_max = 333/4000)
+Power error: 0.231% ✓
+Conclusion: Excellent power conservation when operating far below traction limit
+Original Test (τ = 600 N·m)
+Saturation: 50% (F_desired/F_max = 2000/4000)
+Power error: 7.58%
+Conclusion: Moderate power loss due to tanh() nonlinearity
 
 

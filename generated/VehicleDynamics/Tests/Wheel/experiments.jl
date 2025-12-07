@@ -11,6 +11,7 @@ end
 
 include("TestWheel_ForceTorque_experiment.jl")
 include("TestWheel_Inertia_experiment.jl")
+include("TestWheel_Kinematics_LowTorque_experiment.jl")
 include("TestWheel_Kinematics_experiment.jl")
 include("TestWheel_LoadTransfer_3000N_experiment.jl")
 include("TestWheel_LoadTransfer_5000N_experiment.jl")

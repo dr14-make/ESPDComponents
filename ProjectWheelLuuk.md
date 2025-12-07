@@ -71,3 +71,26 @@ Power error: 7.58%
 Conclusion: Moderate power loss due to tanh() nonlinearity
 
 
+### Test 4: Wheel Spin Scenario
+
+- Rear-wheel-drive scenario
+- Low normal force (e.g., lightweight vehicle or ice)
+- High torque demand (aggressive acceleration)
+- Observe traction saturation and reduced acceleration
+
+F_max = μ·N = 0.3 × 2000 = 600 N
+acceleration limited by traction: a = 1.2 m/s² (not the desired 20 m/s²)
+Acceleration loss: 94% at t=10s (massive wheel spin)
+Energy waste: 94% (89,780 W wasted in wheel spin)
+
+Driver demands 3000 N·m torque → wheel wants to produce 10,000 N force
+Ice only provides 600 N traction → wheel spins
+Vehicle accelerates slowly (1.2 m/s²) despite high engine power
+94% of engine power is wasted spinning the wheel, not moving the vehicle
+
+![alt text](./TestWheel_WheelSpin_Validation.png)
+![alt text](./TestWheel_WheelSpin_Focus.png)
+![alt text](./TestWheel_WheelSpin_Detailed.png)
+
+
+

@@ -1,0 +1,82 @@
+# ============================================================================
+# Wheel Test 4: Wheel Spin Scenario
+# ============================================================================
+#
+# Objective: Verify behavior when traction limit is exceeded
+#
+# Test Configuration:
+# - Low normal force (lightweight vehicle or icy conditions)
+# - High torque demand (aggressive acceleration)
+# - Observe traction saturation and reduced acceleration
+#
+# Expected Results:
+# - F_desired = τ/r (unlimited)
+# - F_max = μ·N (limited by friction)
+# - F_traction saturates at F_max
+# - Vehicle acceleration = F_max/m (NOT F_desired/m)
+# - Excess torque "wasted" in wheel spin
+#
+# Reference: Documentation/Components/Wheel.md - Test 4
+# ============================================================================
+
+test component TestWheel_WheelSpin
+  # Wheel under test (icy conditions: mu=0.3)
+  wheel = ESPDComponents.VehicleDynamics.Components.Wheel(
+    radius = 0.3,
+    mu = 0.3,
+    J = 0.5
+  )
+  
+  # Use WheelContactBreakout to interface with standard library components
+  breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  # Rotational side: Apply HIGH torque (aggressive acceleration)
+  torque_source = RotationalComponents.TorqueSource()
+  torque_cmd = BlockComponents.Ramp(height=3000.0, duration=10.0, start_time=0.0, offset=0.0)
+  ground_rot = RotationalComponents.Fixed()
+  
+  # Translational side: Lightweight vehicle (500 kg)
+  body = TranslationalComponents.Mass(m = 500.0)
+  damper = TranslationalComponents.Damper(d = 20.0)
+  ground_trans = TranslationalComponents.Fixed()
+  
+  # Normal force: LOW (2000 N - lightweight + ice)
+  normal_force = TranslationalComponents.Force()
+  normal_cmd = BlockComponents.Constant(k = 2000.0)
+  ground_normal = TranslationalComponents.Fixed()
+  
+relations
+  # Connect wheel to breakout adapter
+  connect(wheel.contact, breakout.contact)
+  
+  # Rotational connection: torque source to wheel
+  connect(torque_cmd.y, torque_source.tau)
+  connect(torque_source.spline, wheel.flange_rot)
+  connect(torque_source.support, ground_rot.spline)
+  
+  # Traction connection: wheel through breakout to body with damping
+  connect(breakout.flange_traction, body.flange_a)
+  connect(body.flange_b, damper.flange_a)
+  connect(damper.flange_b, ground_trans.flange)
+  
+  # Normal force connection: constant force to wheel
+  connect(normal_cmd.y, normal_force.f)
+  connect(normal_force.flange_a, breakout.flange_normal)
+  connect(normal_force.flange_b, ground_normal.flange)
+  
+  # Initial conditions
+  initial wheel.flange_rot.phi = 0.0
+  initial wheel.omega = 0.0
+  initial body.s = 0.0
+  
+  # Guesses for algebraic variables
+  guess wheel.F_traction = 0.0
+  guess wheel.F_desired = 0.0
+  guess wheel.N = 2000.0
+end
+
+# Analysis
+analysis TestWheel_WheelSpin_Analysis
+  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+  model = TestWheel_WheelSpin()
+end

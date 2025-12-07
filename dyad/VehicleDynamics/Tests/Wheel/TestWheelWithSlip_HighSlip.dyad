@@ -1,0 +1,78 @@
+# ============================================================================
+# Test: WheelWithSlip with High Slip (Ice Conditions)
+# ============================================================================
+#
+# Objective: Demonstrate significant wheel slip with Pacejka model
+#
+# Test Configuration:
+# - Icy conditions (low friction)
+# - High torque demand
+# - Low normal force
+# - Expect high slip ratio and wheel spin
+#
+# Expected Results:
+# - High slip ratio (κ > 20%)
+# - v_tread >> v_body (wheel spinning faster than vehicle moving)
+# - F_traction limited by Pacejka curve
+# - Independent rotational and translational dynamics
+#
+# ============================================================================
+
+test component TestWheelWithSlip_Ice
+  # Wheel with slip model - ICE CONDITIONS
+  wheel = ESPDComponents.VehicleDynamics.Components.WheelWithSlip(
+    radius = 0.3,
+    J = 0.5,
+    B = 4.0,
+    C = 2.0,
+    D = 0.1,
+    E = 1.0
+  )
+  
+  breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  # High torque (aggressive acceleration)
+  torque_source = RotationalComponents.TorqueSource()
+  torque_cmd = BlockComponents.Ramp(height=2000.0, duration=10.0, start_time=0.0, offset=0.0)
+  ground_rot = RotationalComponents.Fixed()
+  
+  # Lightweight vehicle
+  body = TranslationalComponents.Mass(m = 500.0)
+  damper = TranslationalComponents.Damper(d = 20.0)
+  ground_trans = TranslationalComponents.Fixed()
+  
+  # Low normal force (ice + light vehicle)
+  normal_force = TranslationalComponents.Force()
+  normal_cmd = BlockComponents.Constant(k = 2000.0)
+  ground_normal = TranslationalComponents.Fixed()
+  
+relations
+  connect(wheel.contact, breakout.contact)
+  
+  connect(torque_cmd.y, torque_source.tau)
+  connect(torque_source.spline, wheel.flange_rot)
+  connect(torque_source.support, ground_rot.spline)
+  
+  connect(breakout.flange_traction, body.flange_a)
+  connect(body.flange_b, damper.flange_a)
+  connect(damper.flange_b, ground_trans.flange)
+  
+  connect(normal_cmd.y, normal_force.f)
+  connect(normal_force.flange_a, breakout.flange_normal)
+  connect(normal_force.flange_b, ground_normal.flange)
+  
+  # Initial conditions
+  initial wheel.flange_rot.phi = 0.0
+  initial wheel.omega = 0.0
+  initial body.s = 0.0
+  
+  # Guesses
+  guess wheel.F_traction = 0.0
+  guess wheel.kappa = 0.0
+  guess wheel.N = 2000.0
+end
+
+analysis TestWheelWithSlip_Ice_Analysis
+  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+  model = TestWheelWithSlip_Ice()
+end

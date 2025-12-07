@@ -9,6 +9,8 @@ if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |>
 end
 
 
+include("TestWheelWithSlip_Ice_experiment.jl")
+include("TestWheelWithSlip_NoSlip_experiment.jl")
 include("TestWheel_ForceTorque_experiment.jl")
 include("TestWheel_Inertia_experiment.jl")
 include("TestWheel_Kinematics_LowTorque_experiment.jl")

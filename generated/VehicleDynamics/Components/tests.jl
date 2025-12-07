@@ -22,6 +22,7 @@ include("Differential_test.jl")
 include("Engine_test.jl")
 include("Gearbox_test.jl")
 include("VehicleBody_test.jl")
+include("WheelWithSlip_test.jl")
 include("Wheel_test.jl")
 end
   include("Electric/tests.jl")

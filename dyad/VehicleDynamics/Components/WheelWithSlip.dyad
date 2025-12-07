@@ -1,0 +1,93 @@
+# ============================================================================
+# WheelWithSlip Component - Pacejka Magic Formula with Slip
+# ============================================================================
+#
+# This wheel model allows slip between wheel rotation and vehicle motion.
+# Uses simplified Pacejka Magic Formula for tire-road interaction.
+#
+# Key Differences from Wheel:
+# - NO kinematic constraint (phi ≠ s/r in general)
+# - Independent rotational dynamics with inertia
+# - Slip ratio κ = -(V_x - r·ω) / |V_x|
+# - Force from Pacejka: F_x = F_z · μ_eff(κ)
+#
+# Reference: Documentation/Components/PacejkaTireModel.md
+# ============================================================================
+
+component WheelWithSlip
+  flange_rot = Dyad.Spline() [{
+    "Dyad": {"placement": {"diagram": {"iconName": "default", "x1": -60, "y1": 450, "x2": 40, "y2": 550, "rot": 0}}}
+  }]
+  contact = ESPDComponents.VehicleDynamics.Connectors.WheelContact() [{
+    "Dyad": {"placement": {"diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}}}
+  }]
+  
+  # Basic wheel parameters
+  parameter radius::Length = 0.3
+  parameter J::Inertia = 0.5
+  
+  # Pacejka Magic Formula coefficients (simplified)
+  parameter B::Real = 10.0
+  parameter C::Real = 1.9
+  parameter D::Real = 1.0
+  parameter E::Real = 0.97
+  
+  # Numerical smoothing parameters
+  parameter V_low::Velocity = 0.1
+  parameter kappa_max::Real = 1.0
+  parameter kappa_min::Real = -1.0
+  
+  # State variables
+  variable omega::AngularVelocity
+  variable v_contact::Velocity
+  
+  # Tire model variables
+  variable N::Force
+  variable V_tread::Velocity
+  variable V_slip::Velocity
+  variable kappa::Real
+  variable kappa_smooth::Real
+  variable mu_eff::Real
+  variable F_traction::Force
+  
+relations
+  # Angular velocity
+  omega = der(flange_rot.phi)
+  
+  # Contact velocity (from connection to body)
+  v_contact = der(contact.s_traction)
+  
+  # Normal force from body
+  N = -contact.f_normal
+  
+  # Tire tread velocity (tangential velocity of wheel)
+  V_tread = omega * radius
+  
+  # Slip velocity
+  V_slip = v_contact - V_tread
+  
+  # Raw slip ratio: κ = -V_slip / |V_x|
+  # Saturate denominator to avoid division by zero
+  kappa = -V_slip / (abs(v_contact) + V_low)
+  
+  # Smooth slip near zero velocity and saturate at limits
+  kappa_smooth = tanh(kappa / kappa_max) * kappa_max
+  
+  # Simplified Pacejka: μ_eff(κ) = D · sin(C · arctan(B·κ))
+  # Approximation: μ_eff ≈ D · tanh(B·C·κ) for small κ
+  mu_eff = D * tanh(B * C * kappa_smooth)
+  
+  # Longitudinal force from Pacejka
+  F_traction = N * mu_eff
+  
+  # Output traction force
+  contact.f_traction = F_traction
+  
+  # Rotational dynamics: independent of translational motion
+  J * der(omega) = flange_rot.tau - F_traction * radius
+  
+  # Fix normal position at ground
+  contact.s_normal = 0.0
+  
+metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Wheel.svg"}}}
+end

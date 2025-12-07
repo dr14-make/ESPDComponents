@@ -16,6 +16,8 @@ end
 
 
 @testset "`ESPDComponents.VehicleDynamics.Tests.Wheel`" begin
+include("TestWheelWithSlip_Ice_test.jl")
+include("TestWheelWithSlip_NoSlip_test.jl")
 include("TestWheel_ForceTorque_test.jl")
 include("TestWheel_Inertia_test.jl")
 include("TestWheel_Kinematics_LowTorque_test.jl")

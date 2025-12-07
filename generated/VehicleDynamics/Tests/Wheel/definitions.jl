@@ -51,6 +51,10 @@ end
   return System(Equation[], t, vars, []; name)
 end
 
+include("TestWheelWithSlip_Ice_Analysis_definition.jl")
+include("TestWheelWithSlip_Ice_definition.jl")
+include("TestWheelWithSlip_NoSlip_Analysis_definition.jl")
+include("TestWheelWithSlip_NoSlip_definition.jl")
 include("TestWheel_ForceTorque_Analysis_definition.jl")
 include("TestWheel_ForceTorque_definition.jl")
 include("TestWheel_Inertia_definition.jl")

@@ -1,0 +1,123 @@
+# ============================================================================
+# Test: Wheel vs WheelWithSlip Comparison
+# ============================================================================
+#
+# Objective: Compare kinematic (no-slip) vs slip wheel models side-by-side
+#
+# Test Configuration:
+# - Snow conditions (moderate friction, D=0.3)
+# - High torque that exceeds traction limit
+# - Both models see identical inputs
+#
+# Expected Results:
+# - Original Wheel: No slip, v = ω·r always
+# - WheelWithSlip: Moderate slip, wheel spins faster than vehicle moves
+# - Both produce same force (limited by traction)
+# - Different velocities and slip behavior
+#
+# ============================================================================
+
+# Original Wheel (no-slip kinematic constraint)
+test component TestWheel_NoSlip_Snow
+  wheel = ESPDComponents.VehicleDynamics.Components.Wheel(
+    radius = 0.3,
+    mu = 0.3,
+    J = 0.5
+  )
+  
+  breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  torque_source = RotationalComponents.TorqueSource()
+  torque_cmd = BlockComponents.Ramp(height=1500.0, duration=10.0, start_time=0.0, offset=0.0)
+  ground_rot = RotationalComponents.Fixed()
+  
+  body = TranslationalComponents.Mass(m = 800.0)
+  damper = TranslationalComponents.Damper(d = 30.0)
+  ground_trans = TranslationalComponents.Fixed()
+  
+  normal_force = TranslationalComponents.Force()
+  normal_cmd = BlockComponents.Constant(k = 3000.0)
+  ground_normal = TranslationalComponents.Fixed()
+  
+relations
+  connect(wheel.contact, breakout.contact)
+  
+  connect(torque_cmd.y, torque_source.tau)
+  connect(torque_source.spline, wheel.flange_rot)
+  connect(torque_source.support, ground_rot.spline)
+  
+  connect(breakout.flange_traction, body.flange_a)
+  connect(body.flange_b, damper.flange_a)
+  connect(damper.flange_b, ground_trans.flange)
+  
+  connect(normal_cmd.y, normal_force.f)
+  connect(normal_force.flange_a, breakout.flange_normal)
+  connect(normal_force.flange_b, ground_normal.flange)
+  
+  initial wheel.flange_rot.phi = 0.0
+  initial wheel.omega = 0.0
+  initial body.s = 0.0
+  
+  guess wheel.F_traction = 0.0
+  guess wheel.F_desired = 0.0
+  guess wheel.N = 3000.0
+end
+
+analysis TestWheel_NoSlip_Snow_Analysis
+  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+  model = TestWheel_NoSlip_Snow()
+end
+
+# WheelWithSlip (Pacejka slip model)
+test component TestWheelWithSlip_Snow
+  wheel = ESPDComponents.VehicleDynamics.Components.WheelWithSlip(
+    radius = 0.3,
+    J = 0.5,
+    B = 5.0,
+    C = 2.0,
+    D = 0.3,
+    E = 1.0
+  )
+  
+  breakout = ESPDComponents.VehicleDynamics.Connectors.WheelContactBreakout()
+  
+  torque_source = RotationalComponents.TorqueSource()
+  torque_cmd = BlockComponents.Ramp(height=1500.0, duration=10.0, start_time=0.0, offset=0.0)
+  ground_rot = RotationalComponents.Fixed()
+  
+  body = TranslationalComponents.Mass(m = 800.0)
+  damper = TranslationalComponents.Damper(d = 30.0)
+  ground_trans = TranslationalComponents.Fixed()
+  
+  normal_force = TranslationalComponents.Force()
+  normal_cmd = BlockComponents.Constant(k = 3000.0)
+  ground_normal = TranslationalComponents.Fixed()
+  
+relations
+  connect(wheel.contact, breakout.contact)
+  
+  connect(torque_cmd.y, torque_source.tau)
+  connect(torque_source.spline, wheel.flange_rot)
+  connect(torque_source.support, ground_rot.spline)
+  
+  connect(breakout.flange_traction, body.flange_a)
+  connect(body.flange_b, damper.flange_a)
+  connect(damper.flange_b, ground_trans.flange)
+  
+  connect(normal_cmd.y, normal_force.f)
+  connect(normal_force.flange_a, breakout.flange_normal)
+  connect(normal_force.flange_b, ground_normal.flange)
+  
+  initial wheel.flange_rot.phi = 0.0
+  initial wheel.omega = 0.0
+  initial body.s = 0.0
+  
+  guess wheel.F_traction = 0.0
+  guess wheel.kappa = 0.0
+  guess wheel.N = 3000.0
+end
+
+analysis TestWheelWithSlip_Snow_Analysis
+  extends TransientAnalysis(stop = 10.0, alg = "Rodas5P")
+  model = TestWheelWithSlip_Snow()
+end

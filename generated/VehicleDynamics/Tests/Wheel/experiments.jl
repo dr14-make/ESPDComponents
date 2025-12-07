@@ -9,8 +9,10 @@ if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |>
 end
 
 
+include("TestWheelWithSlip_DryTarmac_experiment.jl")
 include("TestWheelWithSlip_Ice_experiment.jl")
 include("TestWheelWithSlip_NoSlip_experiment.jl")
+include("TestWheelWithSlip_Snow_experiment.jl")
 include("TestWheel_ForceTorque_experiment.jl")
 include("TestWheel_Inertia_experiment.jl")
 include("TestWheel_Kinematics_LowTorque_experiment.jl")
@@ -18,4 +20,6 @@ include("TestWheel_Kinematics_experiment.jl")
 include("TestWheel_LoadTransfer_3000N_experiment.jl")
 include("TestWheel_LoadTransfer_5000N_experiment.jl")
 include("TestWheel_LoadTransfer_7000N_experiment.jl")
+include("TestWheel_NoSlip_DryTarmac_experiment.jl")
+include("TestWheel_NoSlip_Snow_experiment.jl")
 include("TestWheel_WheelSpin_experiment.jl")

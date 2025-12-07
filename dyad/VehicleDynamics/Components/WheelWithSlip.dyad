@@ -26,11 +26,11 @@ component WheelWithSlip
   parameter radius::Length = 0.3
   parameter J::Inertia = 0.5
   
-  # Pacejka Magic Formula coefficients (simplified)
-  parameter B::Real = 10.0
-  parameter C::Real = 1.9
-  parameter D::Real = 1.0
-  parameter E::Real = 0.97
+  # Pacejka Magic Formula coefficients (full formula)
+  parameter B::Real = 10.0      # Stiffness factor
+  parameter C::Real = 1.9       # Shape factor
+  parameter D::Real = 1.0       # Peak value (μ_peak)
+  parameter E::Real = 0.97      # Curvature factor (enables post-peak decline)
   
   # Numerical smoothing parameters
   parameter V_low::Velocity = 0.1
@@ -73,9 +73,9 @@ relations
   # Smooth slip near zero velocity and saturate at limits
   kappa_smooth = tanh(kappa / kappa_max) * kappa_max
   
-  # Simplified Pacejka: μ_eff(κ) = D · sin(C · arctan(B·κ))
-  # Approximation: μ_eff ≈ D · tanh(B·C·κ) for small κ
-  mu_eff = D * tanh(B * C * kappa_smooth)
+  # Full Pacejka Magic Formula: F_x = F_z · D · sin(C · arctan(B·κ - E(B·κ - arctan(B·κ))))
+  # This includes the post-peak decline controlled by E
+  mu_eff = D * sin(C * atan(B * kappa_smooth - E * (B * kappa_smooth - atan(B * kappa_smooth))))
   
   # Longitudinal force from Pacejka
   F_traction = N * mu_eff

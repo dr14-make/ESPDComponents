@@ -124,7 +124,38 @@ DONE
 - [ ] Final angular velocity matches v/r
 - [ ] Zero torque → constant velocity (no drift)
 
-### SLIP MODEL
+## SLIP MODEL - WheelWithSlip.dyad
+
+PacejkaTireModel.md implemented ---- Magic Formula with Constant Coefficients!!!!!
+
+![alt text](./Pacejka_MultiSurface_Comparison.png)
+
+![alt text](./Pacejka_Force_Slip_Characteristic.png)
+
+Dry Tarmac comparison - - 
+
+The comparison is already consistent - both models represent dry tarmac conditions. The difference in forces (1748 N vs 2012 N) comes from:
+
+No-slip uses tanh() saturation which gives μ_eff = 0.583 at the operating point
+With-slip uses Pacejka at κ=4.31% which gives μ_eff = 0.670 (still in rising region)
+
+With-slip higher velocity because more traction force.
+
+![alt text](./Wheel_Comparison_Realistic_DryTarmac.png)
+
+At t = 10.0s:
+  v_body = 15.8 m/s
+  v_tread = r·ω = 15.45 m/s
+  Slip ratio κ = 2.24%
+  F_traction = 2006.6 N
+
+
+extreme version on ice
+
+![alt text](./TestWheelWithSlip_Ice_Validation.png)
+
+Comparison
+
 
 
 

@@ -23,10 +23,10 @@ This wheel model allows slip between wheel rotation and vehicle motion.
 | `radius`         |                          | m  |   0.3 |
 | `J`         |                          | kg.m2  |   0.5 |
 | `B`         |                          | --  |   10 |
-| `C`         |                          | --  |   1.9 |
-| `D`         |                          | --  |   1 |
-| `E`         |                          | --  |   0.97 |
-| `V_low`         |                          | m/s  |   0.1 |
+| `C`         | Stiffness factor                         | --  |   1.9 |
+| `D`         | Shape factor                         | --  |   1 |
+| `E`         | Peak value (μ_peak)                         | --  |   0.97 |
+| `V_low`         | Curvature factor (enables post-peak decline)                         | m/s  |   0.1 |
 | `kappa_max`         |                          | --  |   1 |
 | `kappa_min`         |                          | --  |   -1 |
 
@@ -62,10 +62,10 @@ This wheel model allows slip between wheel rotation and vehicle motion.
   append!(__params, @parameters (radius::Real = radius))
   append!(__params, @parameters (J::Real = J))
   append!(__params, @parameters (B::Real = B))
-  append!(__params, @parameters (C::Real = C))
-  append!(__params, @parameters (D::Real = D))
-  append!(__params, @parameters (E::Real = E))
-  append!(__params, @parameters (V_low::Real = V_low))
+  append!(__params, @parameters (C::Real = C), [description = "Stiffness factor"])
+  append!(__params, @parameters (D::Real = D), [description = "Shape factor"])
+  append!(__params, @parameters (E::Real = E), [description = "Peak value (μ_peak)"])
+  append!(__params, @parameters (V_low::Real = V_low), [description = "Curvature factor (enables post-peak decline)"])
   append!(__params, @parameters (kappa_max::Real = kappa_max))
   append!(__params, @parameters (kappa_min::Real = kappa_min))
 
@@ -105,8 +105,8 @@ This wheel model allows slip between wheel rotation and vehicle motion.
   # Saturate denominator to avoid division by zero
   push!(__eqs, kappa ~ -V_slip / (abs(v_contact) + V_low))
   push!(__eqs, kappa_smooth ~ tanh(kappa / kappa_max) * kappa_max)
-  # Approximation: μ_eff ≈ D · tanh(B·C·κ) for small κ
-  push!(__eqs, mu_eff ~ D * tanh(B * C * kappa_smooth))
+  # This includes the post-peak decline controlled by E
+  push!(__eqs, mu_eff ~ D * sin(C * atan(B * kappa_smooth - E * (B * kappa_smooth - atan(B * kappa_smooth)))))
   push!(__eqs, F_traction ~ N * mu_eff)
   push!(__eqs, contact.f_traction ~ F_traction)
   push!(__eqs, J * ModelingToolkit.D_nounits(omega) ~ flange_rot.tau - F_traction * radius)

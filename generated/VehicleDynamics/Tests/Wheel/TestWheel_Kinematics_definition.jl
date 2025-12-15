@@ -8,81 +8,43 @@
    TestWheel_Kinematics(; name)
 
 ============================================================================
-Wheel Test: Kinematic Verification
 ============================================================================
-
 Objective: Verify rolling-without-slip constraint
-Expected: Linear velocity = angular velocity × radius
 
-Reference: Documentation/Wheel.md
 
-TODO: Instantiate your Wheel component
 Example:
-wheel = Wheel(radius = 0.3, mu = 0.8)
 
-TODO: Apply constant angular velocity
 Example:
-speed_source = RotationalComponents.Speed()
 speed_cmd = BlockComponents.Constant(k = 10.0)  # 10 rad/s
-
 TODO: Use WheelContactBreakout to connect to standard library components
-Example:
 breakout = VehicleDynamics.Connectors.WheelContactBreakout()
-
 TODO: Apply traction and normal forces
-Example:
 traction_force = TranslationalComponents.Force()
-traction_cmd = BlockComponents.Constant(k = 0.0)  # No external traction force
 normal_force = TranslationalComponents.Force()
-normal_cmd = BlockComponents.Constant(k = 5000.0)  # 5000 N normal force
 
-TODO: Connect to vehicle body mass
 Example:
-body = TranslationalComponents.Mass(m = 1000.0)
 ground = TranslationalComponents.Fixed()
-
 TODO: Connect components
-Example:
 # Connect wheel to breakout adapter
-connect(wheel.contact, breakout.contact)
 
-# Connect rotational side (drivetrain)
 connect(speed_cmd.y, speed_source.w)
-connect(speed_source.flange, wheel.flange_rot)
 
-# Connect traction side through breakout
 connect(traction_cmd.y, traction_force.f)
-connect(traction_force.flange, breakout.flange_traction)
 connect(breakout.flange_traction, body.flange)
-
 # Connect normal force through breakout
-connect(normal_cmd.y, normal_force.f)
 connect(normal_force.flange, breakout.flange_normal)
-connect(breakout.flange_normal, ground.flange)
 
-TODO: Set initial conditions
 Example:
-initial wheel.flange_rot.phi = 0.0
 
-TODO: Add analysis
 Example:
-analysis TestWheel_Kinematics_Analysis
 extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
-model = TestWheel_Kinematics()
 end
-
 VALIDATION (calculate BEFORE running):
-- With omega = 10 rad/s, radius = 0.3 m:
 - Expected linear velocity: v = omega * r = ? m/s
-- Should reach steady state quickly
 - Power balance: tau*omega = F*v
-
 VALIDATION CHECKLIST:
-[ ] Kinematic constraint verified (v = ω*r within tolerance)
 [ ] Power conservation verified (|P_rot - P_trans| < 0.1%)
-[ ] No slip occurs (constraint satisfied)
 [ ] Transient behavior physically reasonable
-============================================================================
 TODO: Implement test harness following header instructions
 """
 @component function TestWheel_Kinematics(; name)

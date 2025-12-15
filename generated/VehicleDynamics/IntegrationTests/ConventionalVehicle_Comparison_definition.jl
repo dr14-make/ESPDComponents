@@ -8,41 +8,23 @@
    ConventionalVehicle_Comparison(; name)
 
 ============================================================================
-Conventional Vehicle Comparison Test
 ============================================================================
-
 This integration test runs conventional powertrain for performance comparison.
-
 Purpose:
-- Baseline ICE performance measurement
 - Energy efficiency measurement
-- Acceleration and top speed measurement
 
-Note: Requires all conventional components to be implemented!
 Run this AFTER individual component tests pass.
-
 ============================================================================
-TODO: Implement conventional powertrain comparison test
 Conventional powertrain components needed:
-- engine = Engine(...)
 - gearbox = Gearbox(...)
-- differential_conv = Differential(ratio = 3.5)
 - wheel_left_conv = Wheel(radius = 0.3)
-- wheel_right_conv = Wheel(radius = 0.3)
 - brake_left_conv = Brake(tau_max = 2000.0)
-- brake_right_conv = Brake(tau_max = 2000.0)
 - vehicle_conv = VehicleBody(m = 1500.0, Cd = 0.32, A = 2.2, ...)
-
 Control inputs:
-- throttle_cmd = BlockComponents.Constant(k = 0.5)
 - gear_cmd = BlockComponents.Constant(k = 2.0)  # 2nd gear
-- brake_cmd = BlockComponents.Constant(k = 0.0)
 - ground = TranslationalComponents.Fixed()
-TODO: Add analysis when component is implemented
 analysis ConventionalVehicle_Comparison_Analysis
-extends TransientAnalysis(stop = 20.0, alg = "Rodas5P")
 model = ConventionalVehicle_Comparison()
-end
 """
 @component function ConventionalVehicle_Comparison(; name)
   __params = Any[]
@@ -83,17 +65,13 @@ end
   __assertions = []
 
   ### Equations
-  # ========== CONTROL CONNECTIONS ==========
   push!(__eqs, connect(throttle_cmd.y, engine.throttle_input))
   push!(__eqs, connect(gear_cmd.y, gearbox.gear_input))
   push!(__eqs, connect(brake_cmd.y, brake_left.brake_input))
   push!(__eqs, connect(brake_cmd.y, brake_right.brake_input))
-  # ========== POWERTRAIN CHAIN ==========
   push!(__eqs, connect(engine.flange, gearbox.flange_in))
   push!(__eqs, connect(gearbox.flange_out, differential.flange_input))
-  # ========== LEFT SIDE ==========
   push!(__eqs, connect(differential.flange_left, brake_left.flange_a))
-  # ========== RIGHT SIDE ==========
   push!(__eqs, connect(differential.flange_right, brake_right.flange_a))
   push!(__eqs, connect(wheel_right.flange_rot, brake_right.flange_b))
   push!(__eqs, connect(vehicle.contact_front, wheel_left.contact))

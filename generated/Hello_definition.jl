@@ -13,12 +13,12 @@ A simple lumped thermal model
 
 | Name         | Description                         | Units  |   Default value |
 | ------------ | ----------------------------------- | ------ | --------------- |
-| `T_inf`         | Ambient temperature                         | K  |   300 |
-| `T0`         | Initial temperature                         | K  |   320 |
-| `h`         | Convective heat transfer coefficient                         | W/(m2.K)  |   0.7 |
-| `A`         | Surface area                         | m2  |   1 |
-| `m`         | Mass of thermal capacitance                         | kg  |   0.1 |
-| `c_p`         | Specific Heat                         | J/(kg.K)  |   1.2 |
+| `T_inf`         |                          | K  |   300 |
+| `T0`         |                          | K  |   320 |
+| `h`         |                          | W/(m2.K)  |   0.7 |
+| `A`         |                          | m2  |   1 |
+| `m`         |                          | kg  |   0.1 |
+| `c_p`         |                          | J/(kg.K)  |   1.2 |
 
 ## Variables
 
@@ -36,12 +36,12 @@ A simple lumped thermal model
   __eqs = Equation[]
 
   ### Symbolic Parameters
-  append!(__params, @parameters (T_inf::Real = T_inf), [description = "Ambient temperature"])
-  append!(__params, @parameters (T0::Real = T0), [description = "Initial temperature"])
-  append!(__params, @parameters (h::Real = h), [description = "Convective heat transfer coefficient"])
-  append!(__params, @parameters (A::Real = A), [description = "Surface area"])
-  append!(__params, @parameters (m::Real = m), [description = "Mass of thermal capacitance"])
-  append!(__params, @parameters (c_p::Real = c_p), [description = "Specific Heat"])
+  append!(__params, @parameters (T_inf::Real = T_inf))
+  append!(__params, @parameters (T0::Real = T0))
+  append!(__params, @parameters (h::Real = h))
+  append!(__params, @parameters (A::Real = A))
+  append!(__params, @parameters (m::Real = m))
+  append!(__params, @parameters (c_p::Real = c_p))
 
   ### Variables
   append!(__vars, @variables (T(t)::Real))
@@ -62,7 +62,6 @@ A simple lumped thermal model
   __assertions = []
 
   ### Equations
-  # Newton's law of cooling/heating
   push!(__eqs, m * c_p * ModelingToolkit.D_nounits(T) ~ h * A * (T_inf - T))
 
   # Return completely constructed System

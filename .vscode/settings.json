@@ -1,5 +1,6 @@
 {
   "julia.NumThreads": "auto",
   "files.autoSave": "off",
-  "dyad-studio.autoCompile": false
+  "dyad-studio.autoCompile": false,
+  "julia.environmentPath": "/Users/vojtechfrait/Documents/ESPD/ESPDComponents"
 }

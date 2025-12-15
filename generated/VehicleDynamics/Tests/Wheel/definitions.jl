@@ -6,11 +6,15 @@
 
 using ModelingToolkit
 import Markdown
+import Moshi
 using ModelingToolkit: t_nounits as t
 using OrdinaryDiffEqDefault
 using RuntimeGeneratedFunctions
 RuntimeGeneratedFunctions.init(@__MODULE__)
 
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Tests", "Wheel", "definitions.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Tests", "Wheel", "definitions.jl"))
+end
 
 import BlockComponents
 import DyadExampleComponents
@@ -18,9 +22,6 @@ import DyadInterface
 import ElectricalComponents
 import RotationalComponents
 import TranslationalComponents
-@doc Markdown.doc"""
-This connector represents an electrical pin with voltage and current as the potential and flow variables, respectively.
-"""
 @connector function __Dyad__Pin(; name)
   vars = @variables begin
     (v(t)::Real), []
@@ -28,9 +29,6 @@ This connector represents an electrical pin with voltage and current as the pote
   end
   return System(Equation[], t, vars, []; name)
 end
-@doc Markdown.doc"""
-This connector represents a thermal node with temperature and heat flow as the potential and flow variables, respectively.
-"""
 @connector function __Dyad__Node(; name)
   vars = @variables begin
     (T(t)::Real), []
@@ -38,9 +36,6 @@ This connector represents a thermal node with temperature and heat flow as the p
   end
   return System(Equation[], t, vars, []; name)
 end
-@doc Markdown.doc"""
-This connector represents a mechanical flange with position and force as the potential and flow variables, respectively.
-"""
 @connector function __Dyad__Flange(; name)
   vars = @variables begin
     (s(t)::Real), []
@@ -48,9 +43,6 @@ This connector represents a mechanical flange with position and force as the pot
   end
   return System(Equation[], t, vars, []; name)
 end
-@doc Markdown.doc"""
-This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively.
-"""
 @connector function __Dyad__Spline(; name)
   vars = @variables begin
     (phi(t)::Real), []

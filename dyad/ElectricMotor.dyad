@@ -1,0 +1,162 @@
+# DC brushed motor with electro-mechanical energy conversion
+component ElectricMotor
+  p = Pin() {^p}
+  n = Pin() {^n}
+  flange = Spline() {^flange}
+  parameter K_e::Real = 0.1
+  parameter K_t::Real = 0.1
+  parameter R::Resistance = 0.5
+  parameter J::Inertia = 0.01
+  variable V::Voltage
+  variable I::Current
+  variable V_bemf::Voltage
+  variable omega::AngularVelocity
+  variable alpha::AngularAcceleration
+  variable tau_motor::Torque
+  variable P_elec::Power
+  variable P_mech::Power
+  variable P_loss::Power
+relations
+  V = p.v - n.v
+  p.i + n.i = 0.0
+  I = p.i
+  V_bemf = K_e * omega
+  V = V_bemf + I * R
+  omega = der(flange.phi)
+  alpha = der(omega)
+  tau_motor = K_t * I
+  J * alpha = tau_motor + flange.tau
+  P_elec = V * I
+  P_mech = tau_motor * omega
+  P_loss = I ^ 2 * R
+metadata {
+  "_links": {
+    "p": {
+      "Dyad": {
+        "placement": {
+          "diagram": {"iconName": "default", "x1": 90, "y1": -50, "x2": 190, "y2": 50, "rot": 0}
+        },
+        "tags": []
+      }
+    },
+    "n": {
+      "Dyad": {
+        "placement": {
+          "diagram": {"iconName": "default", "x1": 730, "y1": -50, "x2": 830, "y2": 50, "rot": 0}
+        },
+        "tags": []
+      }
+    },
+    "flange": {
+      "Dyad": {
+        "placement": {
+          "diagram": {"iconName": "default", "x1": 950, "y1": 460, "x2": 1050, "y2": 560, "rot": 0}
+        },
+        "tags": []
+      }
+    }
+  }
+}
+end
+
+test component TestMotorNoLoad
+  voltage_signal = BlockComponents.Constant(k = 12.0)
+  source = ElectricalComponents.VoltageSource()
+  motor = ElectricMotor(K_e = 0.1, K_t = 0.1, R = 1.0, J = 0.01)
+  ground = ElectricalComponents.Ground()
+relations
+  connect(voltage_signal.y, source.V)
+  connect(source.p, motor.p)
+  connect(motor.n, ground.g)
+  connect(source.n, ground.g)
+  initial motor.flange.phi = 0.0
+  initial motor.omega = 0.0
+  guess motor.V = 10.0
+  guess motor.I = 1.0
+end
+
+analysis TestMotorNoLoadTransient
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestMotorNoLoad()
+end
+
+test component TestMotorWithLoad
+  voltage_signal = BlockComponents.Constant(k = 24.0)
+  source = ElectricalComponents.VoltageSource()
+  motor = ElectricMotor(K_e = 0.2, K_t = 0.2, R = 2.0, J = 0.02)
+  load = RotationalComponents.Damper(d = 0.5)
+  ground_elec = ElectricalComponents.Ground()
+  ground_mech = RotationalComponents.Fixed()
+relations
+  connect(voltage_signal.y, source.V)
+  connect(source.p, motor.p)
+  connect(motor.n, ground_elec.g)
+  connect(source.n, ground_elec.g)
+  connect(motor.flange, load.spline_a)
+  connect(load.spline_b, ground_mech.spline)
+  initial motor.flange.phi = 0.0
+  initial motor.omega = 0.0
+  guess motor.V = 20.0
+  guess motor.I = 2.0
+  guess load.phi_rel = 0.0
+end
+
+analysis TestMotorWithLoadTransient
+  extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
+  model = TestMotorWithLoad()
+end
+
+test component TestMotorWithInertia
+  voltage_signal = BlockComponents.Constant(k = 12.0)
+  source = ElectricalComponents.VoltageSource()
+  motor = ElectricMotor(K_e = 0.1, K_t = 0.1, R = 1.0, J = 0.01)
+  load_inertia = RotationalComponents.Inertia(J = 0.05)
+  ground_elec = ElectricalComponents.Ground()
+relations
+  connect(voltage_signal.y, source.V)
+  connect(source.p, motor.p)
+  connect(motor.n, ground_elec.g)
+  connect(source.n, ground_elec.g)
+  connect(motor.flange, load_inertia.spline_a)
+  initial motor.flange.phi = 0.0
+  initial motor.omega = 0.0
+  initial load_inertia.spline_a.phi = 0.0
+  initial load_inertia.w = 0.0
+  guess motor.V = 10.0
+  guess motor.I = 1.0
+end
+
+analysis TestMotorWithInertiaTransient
+  extends TransientAnalysis(stop = 3.0, alg = "Rodas5P")
+  model = TestMotorWithInertia()
+end
+
+test component TestMotorGeneratorMode
+  voltage_signal = BlockComponents.Constant(k = 6.0)
+  source = ElectricalComponents.VoltageSource()
+  load_resistor = ElectricalComponents.Resistor(R = 5.0)
+  generator = ElectricMotor(K_e = 0.1, K_t = 0.1, R = 1.0, J = 0.01)
+  torque_source = RotationalComponents.TorqueSource()
+  torque_input = BlockComponents.Constant(k = 2.0)
+  ground_elec = ElectricalComponents.Ground()
+  ground_mech = RotationalComponents.Fixed()
+relations
+  connect(voltage_signal.y, source.V)
+  connect(source.p, load_resistor.p)
+  connect(load_resistor.n, generator.p)
+  connect(generator.n, ground_elec.g)
+  connect(source.n, ground_elec.g)
+  connect(torque_source.spline, generator.flange)
+  connect(torque_source.support, ground_mech.spline)
+  connect(torque_input.y, torque_source.tau)
+  initial generator.flange.phi = 0.0
+  initial generator.omega = 0.0
+  guess generator.V = 5.0
+  guess generator.I = -0.5
+  guess torque_source.phi = 0.0
+end
+
+analysis TestMotorGeneratorModeTransient
+  extends TransientAnalysis(stop = 5.0, alg = "Rodas5P")
+  model = TestMotorGeneratorMode()
+end

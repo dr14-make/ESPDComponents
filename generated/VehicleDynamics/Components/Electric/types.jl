@@ -5,3 +5,9 @@
 ### Instead, update the Dyad source code and regenerate this file
 
 using ModelingToolkit
+import Moshi
+
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Components", "Electric", "types.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Components", "Electric", "types.jl"))
+end
+

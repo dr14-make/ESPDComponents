@@ -7,10 +7,12 @@ module VehicleBody
 
 using ..ESPDComponents
 
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Tests", "VehicleBody", "module.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Tests", "VehicleBody", "module.jl"))
+end
+include("types.jl")
 include("definitions.jl")
 include("experiments.jl")
-include("types.jl")
 include("precompilation.jl")
-# submodules:
 
 end # module VehicleBody

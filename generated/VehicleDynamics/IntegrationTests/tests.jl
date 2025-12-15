@@ -10,9 +10,14 @@ using OrdinaryDiffEqDefault
 using RuntimeGeneratedFunctions
 RuntimeGeneratedFunctions.init(@__MODULE__)
 
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "IntegrationTests", "tests.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "IntegrationTests", "tests.jl"))
+end
 
 
+@testset "`ESPDComponents.VehicleDynamics.IntegrationTests`" begin
 include("ConventionalPowertrainIntegration_test.jl")
 include("ConventionalVehicle_Comparison_test.jl")
 include("ElectricPowertrainIntegration_test.jl")
 include("ElectricVehicle_Comparison_test.jl")
+end

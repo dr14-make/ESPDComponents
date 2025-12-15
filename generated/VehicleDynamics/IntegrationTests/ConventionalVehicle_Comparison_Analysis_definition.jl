@@ -6,52 +6,35 @@
 
 using DyadInterface
 
+using DyadInterface: AbstractTransientAnalysisSpec, TransientAnalysisSpec
 @kwdef mutable struct ConventionalVehicle_Comparison_AnalysisSpec <: AbstractTransientAnalysisSpec
   name::Symbol = :ConventionalVehicle_Comparison_Analysis
   var"alg"::String = "Rodas5P"
-  var"start"::Float64 = 0
-  var"stop"::Float64 = 20
-  var"abstol"::Float64 = 0.000001
-  var"reltol"::Float64 = 0.000001
-  var"saveat"::Float64 = 0
-  var"dtmax"::Float64 = 0
+  var"start"::Real = 0
+  var"stop"::Real = 20
+  var"abstol"::Real = 0.000001
+  var"reltol"::Real = 0.000001
+  var"saveat"::Real = 0
+  var"dtmax"::Real = 0
   var"IfLifting"::Bool = false
   # ============================================================================
-  # Conventional Vehicle Comparison Test
   # ============================================================================
-  # 
   # This integration test runs conventional powertrain for performance comparison.
-  # 
   # Purpose:
-  # - Baseline ICE performance measurement
   # - Energy efficiency measurement
-  # - Acceleration and top speed measurement
   # 
-  # Note: Requires all conventional components to be implemented!
   # Run this AFTER individual component tests pass.
-  # 
   # ============================================================================
-  # TODO: Implement conventional powertrain comparison test
   # Conventional powertrain components needed:
-  # - engine = Engine(...)
   # - gearbox = Gearbox(...)
-  # - differential_conv = Differential(ratio = 3.5)
   # - wheel_left_conv = Wheel(radius = 0.3)
-  # - wheel_right_conv = Wheel(radius = 0.3)
   # - brake_left_conv = Brake(tau_max = 2000.0)
-  # - brake_right_conv = Brake(tau_max = 2000.0)
   # - vehicle_conv = VehicleBody(m = 1500.0, Cd = 0.32, A = 2.2, ...)
-  # 
   # Control inputs:
-  # - throttle_cmd = BlockComponents.Constant(k = 0.5)
   # - gear_cmd = BlockComponents.Constant(k = 2.0)  # 2nd gear
-  # - brake_cmd = BlockComponents.Constant(k = 0.0)
   # - ground = TranslationalComponents.Fixed()
-  # TODO: Add analysis when component is implemented
   # analysis ConventionalVehicle_Comparison_Analysis
-  # extends TransientAnalysis(stop = 20.0, alg = "Rodas5P")
   # model = ConventionalVehicle_Comparison()
-  # end
   var"model"::Union{Nothing, System} = ESPDComponents.VehicleDynamics.IntegrationTests.ConventionalVehicle_Comparison(; name=:ConventionalVehicle_Comparison)
 end
 

@@ -8,58 +8,35 @@
    Brake(; name)
 
 ============================================================================
-Brake Component
 ============================================================================
-
 Description: Friction braking with control input
-Domain: Rotational mechanics
 
-Physics to Model:
 - Brake torque proportional to command signal
-- Torque opposes rotation direction
 - Through component (rigid connection)
-- Energy dissipation as heat
 
-Interface:
 - flange_a: RotationalComponents.Flange (input side)
-- flange_b: RotationalComponents.Flange (output side)
 - brake_input: RealInput (brake command 0-1)
-
 Status: Empty skeleton - students implement physics
-Reference: Documentation/Brake.md
 
-TODO: Add parameters
 Example:
-parameter tau_max::Torque = 2000.0   # Maximum brake torque [N⋅m]
 
-TODO: Add variables
 Example:
-variable brake_cmd::Real             # Brake command [0-1]
 variable omega::AngularVelocity      # Shaft speed [rad/s]
-variable tau_brake::Torque           # Applied brake torque [N⋅m]
 variable P_dissipated::Power         # Dissipated power [W]
-
 TODO: Implement physics
-Hints:
 1. Read brake command: brake_cmd = brake_input
-2. Enforce rigid connection: flange_a.phi = flange_b.phi
 3. Extract speed: omega = der(flange_a.phi)
-4. Calculate brake torque: tau_brake = brake_cmd * tau_max * sign(omega)
 5. Apply torque balance: flange_a.tau + tau_brake + flange_b.tau = 0
-6. Calculate power dissipation: P_dissipated = tau_brake * omega
 
-Remember:
 - Brake torque must oppose motion direction
-- Handle sign smoothly at omega=0 (use tanh or smooth approximation)
 - Through component: positions must be equal
-- All dissipated power becomes heat
 ============================================================================
 
 ## Connectors
 
- * `flange_a` - This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively. ([`Spline`](@ref))
- * `flange_b` - This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively. ([`Spline`](@ref))
- * `brake_input` - This connector represents a real signal as an input to a component ([`RealInput`](@ref))
+ * `flange_a` - ([`Spline`](@ref))
+ * `flange_b` - ([`Spline`](@ref))
+ * `brake_input` - ([`RealInput`](@ref))
 """
 @component function Brake(; name)
   __params = Any[]
@@ -92,7 +69,6 @@ Remember:
   __assertions = []
 
   ### Equations
-  # Placeholder to prevent compilation error (REMOVE when implementing):
   push!(__eqs, flange_a.phi ~ flange_b.phi)
   push!(__eqs, flange_a.tau + flange_b.tau ~ 0)
 

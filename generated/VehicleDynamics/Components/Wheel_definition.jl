@@ -8,107 +8,58 @@
    Wheel(; name)
 
 ============================================================================
-Wheel Component
 ============================================================================
-
 Description: Rotational-translational coupling with normal force dependency
-Domain: Mixed (Rotational + Translational)
 
-Physics to Model:
 - Rolling without slip: v = ω × r
-- Force-torque relationship: F = τ / r
 - Power conservation: P_rot = P_trans
-- Traction limit: F_max depends on normal force (μ × N)
 - Optional: Wheel inertia J × α = τ_net
-
 Interface:
-- flange_rot: RotationalComponents.Flange (connects to driveline)
 - flange_trans: TranslationalComponents.Flange (connects to vehicle body for traction)
-- flange_normal: TranslationalComponents.Flange (receives normal force from vehicle body)
 
-Status: Empty skeleton - students implement physics
 Reference: Documentation/Components/Wheel.md
-
 TODO: Add parameters
-Example:
 parameter radius::Length = 0.3           # Rolling radius [m] (typical: 0.25-0.40)
-parameter J::Inertia = 1.0               # Rotational inertia [kg⋅m²] (optional)
 parameter mu::Real = 0.8                 # Tire-road friction coefficient [-] (typical: 0.7-1.0 dry)
-
 TODO: Add variables
-Example:
 variable omega::AngularVelocity          # Wheel angular velocity [rad/s]
-variable v::Velocity                     # Linear velocity [m/s]
 variable tau::Torque                     # Drive torque [N⋅m]
-variable F_traction::Force               # Actual traction force [N]
 variable F_max::Force                    # Maximum traction force [N]
-variable N::Force                        # Normal force on wheel [N]
 variable slip::Real                      # Slip indicator (optional advanced)
-
 TODO: Implement physics
-Hints:
 1. Extract velocities: omega = der(flange_rot.phi), v = der(flange_trans.s)
-2. Kinematic constraint (no slip): v = omega * radius
 3. Extract normal force: N = -flange_normal.f (force from vehicle body)
-4. Calculate maximum traction: F_max = mu * N
 5. Extract torque: tau = flange_rot.tau
-6. Calculate desired traction: F_desired = tau / radius
 7. Apply traction limit: F_traction = saturate(F_desired, -F_max, F_max)
-- Use smooth saturation: F_traction = F_max * tanh(F_desired / F_max)
 - Or simple clamp if F_max is always positive
-8. Connect traction to flange: flange_trans.f = -F_traction
 9. Connect normal flange position: flange_normal.s = 0.0 (acts at fixed wheel position)
-10. Optional: Add inertia dynamics: J * der(omega) = tau - F_traction * radius
 
-Remember:
 - Check sign conventions on all flanges!
-- Normal force must be positive for traction to work
 - During acceleration: rear wheels have higher N (more traction)
-- During braking: front wheels have higher N (more traction, risk of lockup)
 - Power should be conserved (no losses in ideal wheel): tau*omega = F*v
-- If slip occurs: kinematic constraint breaks, need slip model (advanced)
 - For Phase 1: assume no slip, saturate traction force
-============================================================================
 
 ## Connectors
 
- * `flange_rot` - This connector represents a rotational spline with angle and torque as the potential and flow variables, respectively. ([`Spline`](@ref))
+ * `flange_rot` - ([`Spline`](@ref))
  * `contact` - ============================================================================
-WheelContact Connector
 ============================================================================
-
 This connector represents the mechanical interface between a wheel and
-vehicle body, combining both traction (tangential) and normal (vertical)
 forces along with their corresponding positions.
-
 Physical Interpretation:
-- s_traction: Longitudinal position of the contact point [m]
 - f_traction: Traction force (tangential to road, propels vehicle) [N]
-- s_normal: Vertical position of the contact point [m] (typically fixed)
 - f_normal: Normal force (perpendicular to road, load on wheel) [N]
-
 Sign Conventions:
-- f_traction > 0: Force pushing vehicle forward (from wheel perspective)
 - f_normal > 0: Force pushing wheel down (weight on wheel)
-
 Usage Example:
-In Wheel component:
 contact = WheelContact()  # Connect to vehicle body
-# Wheel receives: N = -contact.f_normal (normal force from body)
 # Wheel provides: F_traction via contact.f_traction
-
 In VehicleBody component:
-contact_rear = WheelContact()  # Connect to rear wheels
 # Body provides: N via contact_rear.f_normal
-# Body receives: F_traction from wheels via contact_rear.f_traction
 
-Connection Pattern:
 connect(wheel_left.contact, vehicle.contact_rear)
-connect(wheel_right.contact, vehicle.contact_rear)
 
-This single connection handles BOTH traction and normal forces automatically!
-
-============================================================================ ([`WheelContact`](@ref))
+ ([`WheelContact`](@ref))
 """
 @component function Wheel(; name)
   __params = Any[]
@@ -140,11 +91,9 @@ This single connection handles BOTH traction and normal forces automatically!
   __assertions = []
 
   ### Equations
-  # Placeholder to prevent compilation error (REMOVE when implementing):
   push!(__eqs, flange_rot.tau ~ 0)
   push!(__eqs, contact.f_traction ~ 0)
   push!(__eqs, contact.f_normal ~ 0)
-  # Normal position fixed at ground level
   push!(__eqs, contact.s_normal ~ 0)
 
   # Return completely constructed System

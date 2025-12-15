@@ -7,11 +7,13 @@ module Components
 
 using ..ESPDComponents
 
+if isfile(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Components", "module.jl"))
+  include(joinpath((@__DIR__) |> Base.dirname |> Base.dirname |> Base.dirname, "dyad", "VehicleDynamics", "Components", "module.jl"))
+end
+include("types.jl")
 include("definitions.jl")
 include("experiments.jl")
-include("types.jl")
-include("precompilation.jl")
-# submodules:
 include("Electric/module.jl")
+include("precompilation.jl")
 
 end # module Components

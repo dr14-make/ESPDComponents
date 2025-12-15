@@ -8,67 +8,40 @@
    DCDC(; name)
 
 ============================================================================
-DC-DC Converter Component
 ============================================================================
-
 Description: Voltage transformation with efficiency losses
-Domain: Electrical (Power Electronics)
 
-Physics to Model:
 - Voltage transformation (buck/boost)
-- Power balance with efficiency
 - Current relationship from power conservation
-- Bidirectional operation (forward and regeneration)
 
-Interface:
 - p_in, n_in: ElectricalComponents.Pin (input side - battery)
-- p_out, n_out: ElectricalComponents.Pin (output side - motor)
 
-Status: Empty skeleton - students implement physics
 Reference: Documentation/DCDC.md
-
 TODO: Add parameters
-Example:
 parameter ratio::Real = 0.5              # Voltage transformation ratio [-]
-parameter efficiency::Real = 0.95        # Conversion efficiency [-] (typical: 0.90-0.98)
 
-TODO: Add variables
 Example:
-variable V_in::Voltage                   # Input voltage [V]
 variable V_out::Voltage                  # Output voltage [V]
-variable I_in::Current                   # Input current [A]
 variable I_out::Current                  # Output current [A]
-variable P_in::Power                     # Input power [W]
 variable P_out::Power                    # Output power [W]
-variable P_loss::Power                   # Power loss [W]
 
-TODO: Implement physics
 Hints:
-1. Extract voltages: V_in = p_in.v - n_in.v, V_out = p_out.v - n_out.v
 2. Voltage transformation: V_out = V_in * ratio (ideal)
-- Buck converter: ratio < 1 (step down)
 - Boost converter: ratio > 1 (step up)
-3. Power balance: P_in = P_out / efficiency
 - Forward mode (motor): efficiency < 1
-- Reverse mode (regen): may use different efficiency
 4. Current relationship from power: V_in * I_in = V_out * I_out / efficiency
-- Solve for I_in = I_out * V_out / (V_in * efficiency)
 5. Pin current conservation: p_in.i + n_in.i = 0, p_out.i + n_out.i = 0
-6. Power loss: P_loss = P_in - P_out
 
-Remember:
 - Power must be conserved (with losses)
-- Handle bidirectional operation (motor vs regen)
 - Check signs for power flow direction
-- Efficiency always < 1.0
 ============================================================================
 
 ## Connectors
 
- * `p_in` - This connector represents an electrical pin with voltage and current as the potential and flow variables, respectively. ([`Pin`](@ref))
- * `n_in` - This connector represents an electrical pin with voltage and current as the potential and flow variables, respectively. ([`Pin`](@ref))
- * `p_out` - This connector represents an electrical pin with voltage and current as the potential and flow variables, respectively. ([`Pin`](@ref))
- * `n_out` - This connector represents an electrical pin with voltage and current as the potential and flow variables, respectively. ([`Pin`](@ref))
+ * `p_in` - ([`Pin`](@ref))
+ * `n_in` - ([`Pin`](@ref))
+ * `p_out` - ([`Pin`](@ref))
+ * `n_out` - ([`Pin`](@ref))
 """
 @component function DCDC(; name)
   __params = Any[]
@@ -102,11 +75,8 @@ Remember:
   __assertions = []
 
   ### Equations
-  # Placeholder to prevent compilation error (REMOVE when implementing):
   push!(__eqs, p_out.v - n_out.v ~ (p_in.v - n_in.v) * 0.5)
-  # Voltage transformation
   push!(__eqs, p_in.i ~ -p_out.i * 0.5)
-  # Current relationship (simplified)
   push!(__eqs, n_in.i ~ -p_in.i)
   push!(__eqs, n_out.i ~ -p_out.i)
 

@@ -74,10 +74,16 @@ component Differential
       }
     }
   }]
+  
+  # Final drive ratio (typical 3.0-5.0 for cars)
+  parameter ratio::Real = 4.0
+  
 relations
-  # Placeholder to prevent compilation error (REMOVE when implementing):
-  flange_input.tau = 0.0
-  flange_left.tau = 0.0
-  flange_right.tau = 0.0
+  # Torque split: equal torque to both outputs (open differential)
+  flange_left.tau = -flange_input.tau / ratio
+  flange_right.tau = -flange_input.tau / ratio
+  
+  # Speed averaging: input angle is average of output angles times ratio
+  flange_input.phi = (flange_left.phi + flange_right.phi) / 2.0 * ratio
 metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Differential.svg"}}}
 end

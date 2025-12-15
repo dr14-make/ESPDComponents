@@ -1,0 +1,14 @@
+# Simple constant torque source for differential testing
+partial component PartialTorqueAndSupport
+  spline = Spline()
+  support = Spline()
+end
+
+component ConstantTorque
+  extends PartialTorqueAndSupport
+  parameter tau::Torque = 100.0
+relations
+  spline.tau = -tau
+  support.tau = tau
+  support.phi = 0.0
+end

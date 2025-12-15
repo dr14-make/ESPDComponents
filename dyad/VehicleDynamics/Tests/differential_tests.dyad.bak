@@ -1,0 +1,78 @@
+# TEST 1: Symmetric load (straight line driving)
+# Both outputs have equal inertia, should accelerate equally
+test component TestDifferentialSymmetric
+  # Input torque source
+  input_torque = RotationalComponents.TorqueSource(tau = 700.0)
+  
+  # Differential under test (need to update Differential.dyad first)
+  diff = VehicleDynamics.Differential(ratio = 3.5)
+  
+  # Equal inertias on both outputs (simulating equal wheel loads)
+  left_inertia = RotationalComponents.Inertia(J = 2.0)
+  right_inertia = RotationalComponents.Inertia(J = 2.0)
+  
+  # Fixed reference
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  # Connect input torque to differential
+  connect(input_torque.spline, diff.flange_input)
+  connect(input_torque.support, fixed.spline)
+  
+  # Connect outputs to inertias
+  connect(diff.flange_left, left_inertia.spline_a)
+  connect(diff.flange_right, right_inertia.spline_a)
+  
+  # Fix other side of inertias
+  connect(left_inertia.spline_b, fixed.spline)
+  connect(right_inertia.spline_b, fixed.spline)
+  
+  # Initial conditions
+  initial left_inertia.phi = 0.0
+  initial left_inertia.w = 0.0
+  initial right_inertia.phi = 0.0
+  initial right_inertia.w = 0.0
+end
+
+analysis TestDifferentialSymmetricTransient
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestDifferentialSymmetric()
+end
+
+# TEST 2: Asymmetric load (turning or one wheel on ice)
+# Different damping on left and right simulates different loads
+test component TestDifferentialAsymmetric
+  # Input torque source
+  input_torque = RotationalComponents.TorqueSource(tau = 700.0)
+  
+  # Differential under test
+  diff = VehicleDynamics.Differential(ratio = 3.5)
+  
+  # Different loads on outputs: left has more resistance
+  left_damper = RotationalComponents.Damper(d = 0.5)
+  right_damper = RotationalComponents.Damper(d = 0.3)
+  
+  # Fixed reference
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  # Connect input torque to differential
+  connect(input_torque.spline, diff.flange_input)
+  connect(input_torque.support, fixed.spline)
+  
+  # Connect outputs to dampers
+  connect(diff.flange_left, left_damper.spline_a)
+  connect(diff.flange_right, right_damper.spline_a)
+  
+  # Fix other side of dampers
+  connect(left_damper.spline_b, fixed.spline)
+  connect(right_damper.spline_b, fixed.spline)
+  
+  # Initial conditions for input shaft
+  initial der(diff.flange_input.phi) = 0.0
+end
+
+analysis TestDifferentialAsymmetricTransient
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestDifferentialAsymmetric()
+end

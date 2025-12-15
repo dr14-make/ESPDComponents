@@ -1,0 +1,58 @@
+# ============================================================================
+# Differential Test: Symmetric Load (Straight Line Driving)
+# ============================================================================
+#
+# Objective: Verify torque split and speed ratio with equal loads
+# Expected: 
+# - Both outputs have equal torque (τ_left = τ_right)
+# - Both outputs have equal angular acceleration
+# - Both outputs reach equal speeds
+# - Input-output speed ratio matches final drive ratio
+# - Power conservation: P_in = P_left + P_right
+#
+# Test Configuration:
+# - Differential with ratio = 3.5
+# - Input torque: 700 N⋅m (constant)
+# - Equal inertias on both outputs: J = 2.0 kg⋅m²
+# - Expected output torque: τ_out = 700 / 3.5 = 200 N⋅m each
+# - Expected angular acceleration: α = τ/J = 200/2.0 = 100 rad/s²
+# ============================================================================
+
+test component TestDifferential_Symmetric
+  # Input torque source
+  input_torque = VehicleDynamics.Tests.Differential.ConstantTorque(tau = 700.0)
+  
+  # Differential under test
+  diff = VehicleDynamics.Differential(ratio = 3.5)
+  
+  # Equal inertias on both outputs (simulating equal wheel loads)
+  left_inertia = RotationalComponents.Inertia(J = 2.0)
+  right_inertia = RotationalComponents.Inertia(J = 2.0)
+  
+  # Fixed reference
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  # Connect input torque to differential
+  connect(input_torque.spline, diff.flange_input)
+  connect(input_torque.support, fixed.spline)
+  
+  # Connect outputs to inertias
+  connect(diff.flange_left, left_inertia.spline_a)
+  connect(diff.flange_right, right_inertia.spline_a)
+  
+  # Fix other side of inertias
+  connect(left_inertia.spline_b, fixed.spline)
+  connect(right_inertia.spline_b, fixed.spline)
+  
+  # Initial conditions
+  initial left_inertia.phi = 0.0
+  initial left_inertia.w = 0.0
+  initial right_inertia.phi = 0.0
+  initial right_inertia.w = 0.0
+end
+
+analysis TestDifferential_Symmetric_Analysis
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestDifferential_Symmetric()
+end

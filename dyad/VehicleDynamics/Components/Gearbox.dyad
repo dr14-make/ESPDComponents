@@ -1,92 +1,92 @@
 # ============================================================================
-# Gearbox Component
+# Gearbox Component - Multi-Ratio Transmission with Reverse
 # ============================================================================
 #
 # Description: Multi-ratio transmission with discrete gear selection
 # Domain: Rotational mechanics
 #
-# Physics to Model:
-# - Multiple discrete gear ratios
-# - Speed ratio: ω_out = ω_in / ratio
-# - Torque multiplication: τ_out = τ_in × ratio × η
-# - Efficiency losses
-# - Gear selection logic
+# Physics:
+# - 6 forward gears + 1 reverse gear
+# - Gear selection via integer input (R=0, 1, 2, 3, 4, 5, 6)
+# - Speed ratio: ω_out = ω_in / ratio[gear]
+# - Torque multiplication: τ_out = -τ_in × ratio[gear] × η[gear]
+# - Efficiency losses per gear
+# - Instant gear changes (Phase 1)
 #
 # Interface:
-# - flange_in: RotationalComponents.Flange (input from engine)
-# - flange_out: RotationalComponents.Flange (output to driveline)
-# - gear_input: RealInput (gear selection, integer)
+# - flange_in: Spline (input from engine)
+# - flange_out: Spline (output to driveline)
+# - gear_input: RealInput (gear selection: 0=R, 1-6=forward)
 #
-# Status: Empty skeleton - students implement physics
-# Reference: Documentation/Gearbox.md
+# Gear Convention:
+# - gear_input = 0  → Reverse (negative ratio)
+# - gear_input = 1  → 1st gear (highest ratio, max torque)
+# - gear_input = 6  → 6th gear (overdrive, max speed)
+# - gear_input < 0  → Defaults to Reverse
+# - gear_input > 6  → Defaults to 6th gear
 #
-# TODO: Add parameters
-# Example (START SIMPLE - single ratio):
-# parameter ratio::Real = 3.0          # Gear ratio [-]
-# parameter efficiency::Real = 0.95    # Mechanical efficiency [-]
-#
-# Example (ADVANCED - multiple ratios, may need array syntax):
-# parameter ratios::Vector{Real} = [3.5, 2.0, 1.3, 1.0, 0.8]  # 5-speed ratios
-# parameter efficiencies::Vector{Real} = [0.96, 0.97, 0.97, 0.97, 0.97]
-# Note: Check Dyad documentation for array/vector syntax!
-#
-# TODO: Add variables
-# Example:
-# variable gear::Real                  # Current gear selection
-# variable ratio::Real                 # Active ratio
-# variable eta::Real                   # Active efficiency
-# variable omega_in::AngularVelocity   # Input speed [rad/s]
-# variable omega_out::AngularVelocity  # Output speed [rad/s]
-# variable tau_in::Torque              # Input torque [N⋅m]
-# variable tau_out::Torque             # Output torque [N⋅m]
-#
-# TODO: Implement physics
-# Hints:
-# 1. Read gear command: gear = gear_input
-# 2. Select appropriate ratio:
-# - Simple: use fixed ratio parameter
-# - Advanced: lookup from array (ratio = ratios[gear])
-# - Handle bounds checking (what if gear < 1 or gear > N?)
-# 3. Extract speeds: omega_in = der(flange_in.phi), omega_out = der(flange_out.phi)
-# 4. Kinematic constraint: omega_out = omega_in / ratio
-# 5. Extract torques from flanges
-# 6. Torque multiplication: tau_out = -tau_in * ratio * eta
-# 7. Verify power balance: P_out = P_in * eta
-#
-# Remember:
-# - Low gears (1st, 2nd): high ratio = high torque, low speed
-# - High gears (5th): low ratio = low torque, high speed
-# - Efficiency < 1.0 (typical: 0.95-0.98)
-# - Instant gear changes (Phase 1 - no clutch dynamics)
-# - Check signs for power flow direction
+# Status: Phase 1 - 6-speed with reverse
 # ============================================================================
+
 component Gearbox
-  # Input and output
-  flange_in = Dyad.Spline() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "default", "x1": -50, "y1": 450, "x2": 50, "y2": 550, "rot": 0}
-      }
-    }
-  }]
-  flange_out = Dyad.Spline() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "default", "x1": 950, "y1": 450, "x2": 1050, "y2": 550, "rot": 0}
-      }
-    }
-  }]
-  # Gear selection
-  gear_input = RealInput() [{
-    "Dyad": {
-      "placement": {
-        "diagram": {"iconName": "default", "x1": 460, "y1": 780, "x2": 560, "y2": 880, "rot": 0}
-      }
-    }
-  }]
+  flange_in = Spline()
+  flange_out = Spline()
+  gear_input = RealInput()
+  
+  # Gear configuration (6-speed + reverse)
+  structural parameter N_gears::Integer = 6
+  
+  # Gear ratios array (low gears = high ratio = high torque, low speed)
+  parameter ratios::Real[6] = [4.0, 2.5, 1.7, 1.2, 1.0, 0.8]
+  parameter efficiencies::Real[6] = [0.95, 0.96, 0.97, 0.97, 0.97, 0.97]
+  
+  # Reverse gear (negative ratio = backward direction)
+  parameter ratio_reverse::Real = -3.5
+  parameter efficiency_reverse::Real = 0.94
+  
+  # Active gear state
+  variable gear::Real           # Gear number from input (0=R, 1-6=forward)
+  variable ratio::Real          # Active ratio (negative for reverse)
+  variable eta::Real            # Active efficiency
+  variable omega_in::AngularVelocity
+  variable omega_out::AngularVelocity
 relations
-  # Placeholder to prevent compilation error (REMOVE when implementing):
-  flange_in.tau = 0.0
-  flange_out.tau = 0.0
+  # Read gear command and clamp to valid range [0, N_gears]
+  # 0 = Reverse, 1-6 = Forward gears
+  gear = ifelse(gear_input < 0.0, 0.0,
+                ifelse(gear_input > N_gears, N_gears,
+                       gear_input))
+  
+  # Lookup ratio based on gear
+  # 0 → Reverse (negative ratio)
+  # 1-6 → Forward gears (positive ratios)
+  ratio = ifelse(gear < 0.5, ratio_reverse,
+                 ifelse(gear < 1.5, ratios[1],
+                        ifelse(gear < 2.5, ratios[2],
+                               ifelse(gear < 3.5, ratios[3],
+                                      ifelse(gear < 4.5, ratios[4],
+                                             ifelse(gear < 5.5, ratios[5],
+                                                    ratios[6]))))))
+  
+  # Lookup efficiency based on gear
+  eta = ifelse(gear < 0.5, efficiency_reverse,
+               ifelse(gear < 1.5, efficiencies[1],
+                      ifelse(gear < 2.5, efficiencies[2],
+                             ifelse(gear < 3.5, efficiencies[3],
+                                    ifelse(gear < 4.5, efficiencies[4],
+                                           ifelse(gear < 5.5, efficiencies[5],
+                                                  efficiencies[6]))))))
+  
+  # Speed relationships
+  omega_in = der(flange_in.phi)
+  omega_out = der(flange_out.phi)
+  
+  # Kinematic constraint: output speed = input speed / ratio
+  # For reverse (negative ratio), output rotates backward
+  omega_out = omega_in / ratio
+  
+  # Torque balance with efficiency
+  # For reverse, negative ratio gives proper backward torque
+  flange_out.tau = -flange_in.tau * ratio * eta
 metadata {"Dyad": {"icons": {"default": "dyad://ESPDComponents/Gearbox.svg"}}}
 end

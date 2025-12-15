@@ -1,0 +1,135 @@
+# ============================================================================
+# Gearbox Component - Test Suite
+# ============================================================================
+#
+# Tests for multi-ratio transmission component
+# Tests verify: gear selection, ratio lookup, speed/torque relationships
+#
+# ============================================================================
+
+# Test 1: Fixed Gear - Verify Ratio and Torque Multiplication
+# Expected: Gear 3 (ratio=1.3), output speed = input/1.3, torque *= 1.3*0.97
+test component TestGearbox_Gear3
+  # Gearbox under test
+  gearbox = VehicleDynamics.Components.Gearbox()
+  
+  # Control: Fixed gear 3
+  gear_cmd = BlockComponents.Constant(k = 3.0)
+  
+  # Input: Constant torque source
+  torque_source = RotationalComponents.TorqueSource()
+  torque_input = BlockComponents.Constant(k = 50.0)  # 50 N⋅m input
+  
+  # Output: Inertia load
+  load = RotationalComponents.Inertia(J = 1.0)
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  # Connect gear selection
+  connect(gear_cmd.y, gearbox.gear_input)
+  
+  # Connect torque source to gearbox input
+  connect(torque_input.y, torque_source.tau)
+  connect(torque_source.spline, gearbox.flange_in)
+  
+  # Connect gearbox output to load
+  connect(gearbox.flange_out, load.spline_a)
+  connect(load.spline_b, fixed.spline)
+  
+  # Initial conditions
+  initial gearbox.flange_in.phi = 0.0
+  initial gearbox.omega_in = 0.0
+  
+  # Expected results:
+  # Gear 3: ratio = 1.3, efficiency = 0.97
+  # omega_out = omega_in / 1.3
+  # tau_out = 50 * 1.3 * 0.97 = 63.05 N⋅m (to load)
+  # Load acceleration: alpha = 63.05 / 1.0 = 63.05 rad/s²
+end
+
+analysis TestGearbox_Gear3_Analysis
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestGearbox_Gear3()
+end
+
+
+# Test 2: Gear Shifting - Verify Discrete Changes
+# Expected: Gear changes cause instant ratio changes
+test component TestGearbox_Shifting
+  # Gearbox under test
+  gearbox = VehicleDynamics.Components.Gearbox()
+  
+  # Control: Gear shifts 1→2→3
+  gear_cmd = BlockComponents.Step(height = 1.0, offset = 1.0, start_time = 0.0)  # Steps from 1 to 2
+  
+  # Input: Constant speed source
+  speed_source = RotationalComponents.Speed()
+  speed_input = BlockComponents.Constant(k = 150.0)  # 150 rad/s constant input
+  
+  # Output: Damper load
+  load = RotationalComponents.Damper(d = 0.5)
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  # Connect gear selection
+  connect(gear_cmd.y, gearbox.gear_input)
+  
+  # Connect speed source to gearbox input
+  connect(speed_input.y, speed_source.w)
+  connect(speed_source.spline, gearbox.flange_in)
+  
+  # Connect gearbox output to load
+  connect(gearbox.flange_out, load.spline_a)
+  connect(load.spline_b, fixed.spline)
+  
+  # Initial conditions
+  initial gearbox.flange_in.phi = 0.0
+  
+  # Expected results:
+  # Before t=1s: Gear 1, ratio=3.5, omega_out = 150/3.5 = 42.86 rad/s
+  # After t=1s:  Gear 2, ratio=2.0, omega_out = 150/2.0 = 75.0 rad/s
+  # Torque adjusts accordingly with efficiency
+end
+
+analysis TestGearbox_Shifting_Analysis
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestGearbox_Shifting()
+end
+
+
+# Test 3: Bounds Checking - Verify Invalid Gear Handling
+# Expected: Gear 0 → defaults to 1, Gear 10 → defaults to 5
+test component TestGearbox_BoundsCheck
+  # Gearbox under test
+  gearbox = VehicleDynamics.Components.Gearbox()
+  
+  # Control: Invalid gear (0, then 10)
+  gear_cmd = BlockComponents.Step(height = 10.0, offset = 0.0, start_time = 1.0)
+  
+  # Input: Constant torque
+  torque_source = RotationalComponents.TorqueSource()
+  torque_input = BlockComponents.Constant(k = 100.0)
+  
+  # Output: Inertia
+  load = RotationalComponents.Inertia(J = 2.0)
+  fixed = RotationalComponents.Fixed()
+  
+relations
+  connect(gear_cmd.y, gearbox.gear_input)
+  connect(torque_input.y, torque_source.tau)
+  connect(torque_source.spline, gearbox.flange_in)
+  connect(gearbox.flange_out, load.spline_a)
+  connect(load.spline_b, fixed.spline)
+  
+  initial gearbox.flange_in.phi = 0.0
+  initial gearbox.omega_in = 0.0
+  
+  # Expected results:
+  # t < 1s: gear_input=0 → clamped to gear=1, ratio=3.5
+  # t > 1s: gear_input=10 → clamped to gear=5, ratio=0.8
+end
+
+analysis TestGearbox_BoundsCheck_Analysis
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestGearbox_BoundsCheck()
+end

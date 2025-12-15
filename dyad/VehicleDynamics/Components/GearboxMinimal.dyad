@@ -1,0 +1,8 @@
+component GearboxMinimal
+  flange_in = Spline()
+  flange_out = Spline()
+  parameter ratio::Real = 3.0
+relations
+  flange_out.tau = -flange_in.tau * ratio
+  der(flange_out.phi) = der(flange_in.phi) / ratio
+end

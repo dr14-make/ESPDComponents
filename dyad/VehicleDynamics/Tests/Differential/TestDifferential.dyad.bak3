@@ -1,0 +1,143 @@
+# ============================================================================
+# Differential Test: Self-Contained Test with Embedded Components
+# ============================================================================
+#
+# This test verifies the Differential component behavior by creating
+# a complete test system with embedded inertia and torque source components.
+#
+# Test 1: Symmetric Load - Both outputs have equal inertia
+# Expected: Equal torques, equal speeds, correct gear ratio
+#
+# Configuration:
+# - Differential ratio: 3.5
+# - Input torque: 700 N⋅m
+# - Left inertia: J = 2.0 kg⋅m²
+# - Right inertia: J = 2.0 kg⋅m²
+# - Expected output torque: 700 / 3.5 = 200 N⋅m each
+# - Expected acceleration: α = 200 / 2.0 = 100 rad/s²
+# ============================================================================
+
+# Simple embedded inertia component (avoids stdlib dependency)
+partial component PartialTwoSplines
+  spline_a = Spline()
+  spline_b = Spline()
+end
+
+component SimpleInertia
+  extends PartialTwoSplines
+  parameter J::MomentOfInertia
+  variable phi::Angle
+  variable w::AngularVelocity
+  variable a::AngularAcceleration
+relations
+  phi = spline_a.phi
+  phi = spline_b.phi
+  der(phi) = w
+  der(w) = a
+  J*a = spline_a.tau + spline_b.tau
+end
+
+# Simple fixed reference
+component SimpleFixed
+  spline = Spline()
+relations
+  spline.phi = 0.0
+end
+
+# Simple constant torque source with support
+partial component PartialTorqueAndSupport
+  spline = Spline()
+  support = Spline()
+end
+
+component SimpleTorque
+  extends PartialTorqueAndSupport
+  parameter tau::Torque
+relations
+  spline.tau = -tau
+  support.tau = tau
+  support.phi = 0.0
+end
+
+# ============================================================================
+# Test 1: Symmetric Load Test
+# ============================================================================
+test component TestDifferential_Symmetric
+  # Components
+  torque = SimpleTorque(tau = 700.0)
+  diff = VehicleDynamics.Components.Differential(ratio = 3.5)
+  left_inertia = SimpleInertia(J = 2.0)
+  right_inertia = SimpleInertia(J = 2.0)
+  fixed = SimpleFixed()
+  
+relations
+  # Connect torque source to differential
+  connect(torque.spline, diff.flange_input)
+  connect(torque.support, fixed.spline)
+  
+  # Connect differential outputs to inertias
+  connect(diff.flange_left, left_inertia.spline_a)
+  connect(diff.flange_right, right_inertia.spline_a)
+  
+  # Fix other side of inertias
+  connect(left_inertia.spline_b, fixed.spline)
+  connect(right_inertia.spline_b, fixed.spline)
+  
+  # Initial conditions
+  initial left_inertia.phi = 0.0
+  initial left_inertia.w = 0.0
+  initial right_inertia.phi = 0.0
+  initial right_inertia.w = 0.0
+end
+
+analysis TestDifferential_Symmetric_Analysis
+  extends TransientAnalysis(stop = 2.0, alg = "Rodas5P")
+  model = TestDifferential_Symmetric()
+end
+
+# ============================================================================
+# Test 2: Asymmetric Load Test
+# ============================================================================
+
+# Simple damper component
+component SimpleDamper
+  extends PartialTwoSplines
+  parameter d::Real
+  variable phi_rel::Angle
+  variable w_rel::AngularVelocity
+relations
+  phi_rel = spline_a.phi - spline_b.phi
+  w_rel = der(phi_rel)
+  spline_a.tau = -d * w_rel
+  spline_b.tau = -spline_a.tau
+end
+
+test component TestDifferential_Asymmetric
+  # Components
+  torque = SimpleTorque(tau = 700.0)
+  diff = VehicleDynamics.Components.Differential(ratio = 3.5)
+  left_damper = SimpleDamper(d = 0.5)
+  right_damper = SimpleDamper(d = 0.3)
+  fixed = SimpleFixed()
+  
+relations
+  # Connect torque source to differential
+  connect(torque.spline, diff.flange_input)
+  connect(torque.support, fixed.spline)
+  
+  # Connect differential outputs to dampers
+  connect(diff.flange_left, left_damper.spline_a)
+  connect(diff.flange_right, right_damper.spline_a)
+  
+  # Fix other side of dampers
+  connect(left_damper.spline_b, fixed.spline)
+  connect(right_damper.spline_b, fixed.spline)
+  
+  # Initial condition
+  initial der(diff.flange_input.phi) = 0.0
+end
+
+analysis TestDifferential_Asymmetric_Analysis
+  extends TransientAnalysis(stop = 3.0, alg = "Rodas5P")
+  model = TestDifferential_Asymmetric()
+end

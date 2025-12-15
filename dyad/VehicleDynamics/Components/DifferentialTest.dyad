@@ -1,0 +1,55 @@
+# ============================================================================
+# Differential Test: Simple Inertia Load Test
+# ============================================================================
+#
+# This test verifies the Differential component with a symmetric load.
+# Tests a differential driving two equal inertias.
+#
+# Expected behavior with ratio=3.5, input torque 700 N⋅m:
+# - Output torques: τ_L = τ_R = 200 N⋅m
+# - With J=2.0: angular acceleration α = 100 rad/s²
+# - Speeds stay equal (symmetric load)
+# - At t=2s: ω = 200 rad/s, φ = 200 rad
+# ============================================================================
+test component TestDifferentialSimple
+  # Parameters
+  parameter J_left::MomentOfInertia = 2.0
+  parameter J_right::MomentOfInertia = 2.0
+  parameter tau_input::Torque = 700.0
+  
+  # Differential under test
+  diff = Differential(ratio = 3.5)
+  
+  # State variables for left and right inertias
+  variable phi_left::Angle
+  variable w_left::AngularVelocity
+  variable phi_right::Angle
+  variable w_right::AngularVelocity
+  
+relations
+  # Left inertia dynamics: J * α = τ
+  der(phi_left) = w_left
+  J_left * der(w_left) = diff.flange_left.tau
+  
+  # Right inertia dynamics: J * α = τ
+  der(phi_right) = w_right
+  J_right * der(w_right) = diff.flange_right.tau
+  
+  # Connect differential flanges to inertia positions
+  diff.flange_left.phi = phi_left
+  diff.flange_right.phi = phi_right
+  
+  # Apply constant input torque
+  diff.flange_input.tau = -tau_input
+  
+  # Initial conditions
+  initial phi_left = 0.0
+  initial w_left = 0.0
+  initial phi_right = 0.0
+  initial w_right = 0.0
+end
+
+analysis TestDifferentialSimple_Analysis
+  extends TransientAnalysis(stop = 2.0)
+  model = TestDifferentialSimple()
+end
